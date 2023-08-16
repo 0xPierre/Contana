@@ -1,0 +1,29 @@
+@import './template/core.scss';
+
+// Override vue-feather
+.vue-feather {
+  display: block;
+}
+
+.b-overlay .spinner-border {
+  color: $primary;
+}
+
+.dark-layout .swal2-popup {
+  background-color: #283046;
+  color: #d0d2d6;
+}
+
+.btn.btn-with-icon {
+  display: flex;
+  align-items: center;
+}
+
+.collapsed > .when-opened,
+.not-collapsed > .when-closed {
+  display: none;
+}
+
+.flatpickr-input {
+  background-color: inherit !important;
+}
