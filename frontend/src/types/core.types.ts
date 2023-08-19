@@ -10,7 +10,7 @@ export interface Permissions {
 export enum DocumentsType {
   Facture = 'facture',
   Devis = 'devis',
-  Acompte = 'acompte'
+  Avoir = 'avoir'
 }
 
 export enum PaymentsMethod {

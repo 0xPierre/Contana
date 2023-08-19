@@ -7,23 +7,26 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "lint": "eslint --ext .js,.ts,.vue .",
+    "format": "prettier --write \"src/**/*.{js,ts,vue}\""
   },
   "dependencies": {
+    "@dinero.js/currencies": "^2.0.0-alpha.14",
     "@types/vue-select": "^3.16.2",
-    "@vuelidate/core": "^2.0.2",
     "@vue/compat": "3.3.2",
+    "@vuelidate/core": "^2.0.2",
     "@vuelidate/validators": "^2.0.2",
     "axios": "^1.4.0",
     "bootstrap": "4.6.0",
     "bootstrap-vue": "^2.23.1",
+    "currency.js": "^2.0.4",
     "feather-icons": "4",
     "install": "^0.13.0",
     "pinia": "^2.0.36",
     "pinia-plugin-persistedstate": "^3.1.0",
     "sass": "1.30.0",
     "sweetalert2": "^11.7.12",
+    "uuid": "^9.0.0",
     "vue": "^3.3.4",
     "vue-feather": "2",
     "vue-flatpickr-component": "^11.0.3",
@@ -31,9 +34,11 @@
     "vue-ripple-directive": "^2.0.1",
     "vue-router": "^4.2.0",
     "vue-select": "^3.20.2",
-    "vue-toastification": "^2.0.0-rc.5"
+    "vue-toastification": "^2.0.0-rc.5",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
     "@vitejs/plugin-vue": "^4.2.3",

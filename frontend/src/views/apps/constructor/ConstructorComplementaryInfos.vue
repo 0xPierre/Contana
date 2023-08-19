@@ -99,7 +99,7 @@ const modalInfos = ref<HTMLElement | null>(null)
           <b-form-group label="Mention autre">
             <b-form-input
               v-model="constructorStore.otherMention"
-              placeholder=""
+              placeholder="TVA non applicable, article 293 B du CGI"
             />
           </b-form-group>
         </b-col>

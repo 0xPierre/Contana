@@ -1,12 +1,66 @@
 <script lang="ts" setup>
-import { onBeforeMount } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 import ConstructorClient from './ConstructorClient.vue'
 import ConstructorComplementaryInfos from './ConstructorComplementaryInfos.vue'
 import ConstructorCatalogue from './Catalogue/ConstructorCatalogue.vue'
 import { useConstructorStore } from '@/stores/apps/Constructor'
-import { PaymentsMethod, DocumentsType } from '@/types/core.types'
+import { DocumentsType, PaymentsMethod } from '@/types/core.types'
+import draggable from 'vuedraggable'
+import { v4 as uuidv4 } from 'uuid'
+import { Section, SectionsType } from '@/types/constructor.types.ts'
+import SectionTitle from '@/components/constructor/sections/SectionTitle.vue'
+import SectionSubtotal from '@/components/constructor/sections/SectionSubtotal.vue'
+import SectionArticle from '@/components/constructor/sections/SectionArticle.vue'
+import { storeToRefs } from 'pinia'
 
+draggable.compatConfig = { MODE: 3 }
 const constructorStore = useConstructorStore()
+const { sections } = storeToRefs(constructorStore)
+/**
+ * Sections available in the constructor
+ */
+const availableSections = [
+  {
+    title: 'Article',
+    type: 'section-article',
+    values: {
+      title: '',
+      description: '',
+
+      unitPriceHT: 0,
+      vatRate: 20,
+      quantity: 1,
+
+      articleType: 'service',
+
+      discount: 0,
+      discountType: null,
+      discountDescription: '',
+
+      unit: '',
+
+      displayPriceInfos: true
+    },
+    component: SectionArticle
+  },
+  {
+    title: 'Titre',
+    type: 'section-title',
+    values: {
+      title: ''
+    },
+    component: SectionTitle
+  },
+  {
+    title: 'Sous-total',
+    type: 'section-subtotal',
+    values: {
+      title: ''
+    },
+    component: SectionSubtotal
+  }
+]
+const dragging = ref(false)
 
 onBeforeMount(() => {
   constructorStore.client = null
@@ -20,7 +74,29 @@ onBeforeMount(() => {
   constructorStore.notes =
     'En cas de retard de paiement, il sera appliqué des pénalités et intérêts de retard suivant le taux minimum légal en vigueur, par mois de retard. En outre, une indemnité forfaitaire pour frais de recouvrement de 40€ sera due.'
   constructorStore.otherMention = ''
+  constructorStore.sections = []
 })
+
+/**
+ * Used to clone/deepclone section to the constructor
+ */
+const clone = (
+  section: Omit<
+    Section<
+      SectionsType.Article | SectionsType.Title | SectionsType.Subtotal
+    >,
+    'id'
+  >
+): Section<
+  SectionsType.Article | SectionsType.Title | SectionsType.Subtotal
+> => {
+  return {
+    id: uuidv4(),
+    type: section.type,
+    values: { ...section.values },
+    component: section.component
+  }
+}
 </script>
 
 <template>
@@ -65,200 +141,67 @@ onBeforeMount(() => {
         </b-card>
 
         <b-card no-body>
-          <vue-perfect-scrollbar
-            :settings="{
-              wheelPropagation: true
-            }"
-            class="area"
-          >
-            <!-- <div
-              class="empty-area d-flex justify-content-center align-items-center cursor-pointer"
+          <div class="area">
+            <draggable
+              v-model="sections"
+              item-key="id"
+              class="sections"
+              :group="{ name: 'sections' }"
+              :scroll-sensitivity="200"
             >
-              <vue-feather type="plus-circle" size="28" />
-              <span class="ml-1 font-medium-1">Ajouter une section</span>
-            </div> -->
-            <div class="sections">
-              <div class="section section-title">
-                <b-row>
-                  <b-col cols="5">
-                    <h5 class="mb-0 font-small-5">Titre de section</h5>
-                    <div class="d-flex mt-1" style="gap: 1.2rem">
-                      <vue-feather
-                        type="copy"
-                        size="22"
-                        class="cursor-pointer"
-                      />
-                      <vue-feather
-                        type="trash-2"
-                        size="22"
-                        class="cursor-pointer"
-                      />
-                    </div>
-                  </b-col>
-                  <b-col cols="7">
-                    <b-form-input
-                      placeholder="Titre de la section"
-                      type="text"
-                    />
-                  </b-col>
-                </b-row>
-              </div>
-              <div class="section section-subtotal">
-                <b-row>
-                  <b-col cols="5">
-                    <h5 class="mb-0 font-small-5">Sous total</h5>
-                    <div class="d-flex mt-1" style="gap: 1.2rem">
-                      <vue-feather
-                        type="copy"
-                        size="22"
-                        class="cursor-pointer"
-                      />
-                      <vue-feather
-                        type="trash-2"
-                        size="22"
-                        class="cursor-pointer"
-                      />
-                    </div>
-                  </b-col>
-                  <b-col cols="4">
-                    <b-form-input
-                      placeholder="Titre du sous total"
-                      type="text"
-                    />
-                  </b-col>
-                  <b-col cols="3">
-                    <b-input-group append="€">
-                      <b-form-input
-                        placeholder="Prix du sous total"
-                        type="number"
-                        :value="18"
-                        :disabled="true"
-                      />
-                    </b-input-group>
-                  </b-col>
-                </b-row>
-              </div>
-              <div class="section section-title-with-price">
-                <div class="d-flex justify-content-between">
-                  <h5 class="mb-0 font-small-5">Titre avec prix</h5>
-                  <div>
-                    <vue-feather
-                      type="settings"
-                      size="22"
-                      class="cursor-pointer"
-                    />
-                  </div>
+              <template #item="{ element }">
+                <div>
+                  <component :is="element.component" :section="element" />
                 </div>
+              </template>
 
-                <b-row class="mt-50">
-                  <b-col md="4">
-                    <b-form-group label="Titre">
-                      <b-form-input
-                        type="text"
-                        placeholder="Titre de la section"
-                      />
-                    </b-form-group>
-                  </b-col>
-                  <b-col md="3">
-                    <b-form-group label="Prix">
-                      <b-input-group append="€">
-                        <b-form-input
-                          type="number"
-                          placeholder="Prix de la section"
-                          min="0"
-                          step="0.01"
-                        />
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                  <b-col md="3">
-                    <b-form-group label="TVA">
-                      <v-select
-                        :options="[
-                          {
-                            label: '20 %',
-                            value: 20
-                          },
-                          {
-                            label: '10 %',
-                            value: 10
-                          },
-                          {
-                            label: '5.5 %',
-                            value: 5.5
-                          },
-                          {
-                            label: '2.1 %',
-                            value: 2.1
-                          },
-                          {
-                            label: '0 %',
-                            value: 0
-                          }
-                        ]"
-                        :clearable="false"
-                        style="width: 100%"
-                      />
-                    </b-form-group>
-                  </b-col>
-                  <b-col md="2">
-                    <b-form-group label="Qté">
-                      <b-form-input
-                        type="number"
-                        placeholder="Quantité"
-                        min="0"
-                      />
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-form-textarea
-                  placeholder="Description de la section"
-                  rows="3"
-                  class="mb-1"
-                  max-rows="10"
-                />
-                <div class="d-flex justify-content-between mt-25">
-                  <div class="d-flex" style="gap: 1.2rem">
-                    <vue-feather
-                      type="copy"
-                      size="22"
-                      class="cursor-pointer"
-                    />
-                    <vue-feather
-                      type="trash-2"
-                      size="22"
-                      class="cursor-pointer"
-                    />
-                  </div>
-                  <div class="font-medium-1">
-                    Total HT :
-                    <span class="font-weight-bolder text-primary"
-                      >&nbsp;0 €</span
-                    >
-                  </div>
+              <template #footer>
+                <div
+                  class="area dropping-area d-flex justify-content-center align-items-center"
+                  :class="{
+                    dragging,
+                    'empty-area': sections.length === 0
+                  }"
+                >
+                  <vue-feather type="move" size="28" />
+                  <span class="ml-1 font-medium-1">
+                    Glissez et déposez des élements ici
+                  </span>
                 </div>
-              </div>
-            </div>
-          </vue-perfect-scrollbar>
+              </template>
+            </draggable>
+          </div>
         </b-card>
       </b-col>
       <b-col md="3" class="pl-md-50">
         <vue-perfect-scrollbar class="actions-col" tagname="div">
           <ConstructorClient />
           <b-card class="mb-1 user-select-none p-1" no-body>
-            <div class="draggable article mx-75">
-              <vue-feather type="move" size="16" class="cursor-pointer" />
-              <span>Article</span>
-            </div>
-            <div class="draggable article mx-75">
-              <vue-feather type="move" size="16" class="cursor-pointer" />
-              <span>Titre</span>
-            </div>
-            <div class="draggable article mx-75">
-              <vue-feather type="move" size="16" class="cursor-pointer" />
-              <span>Sous-total</span>
-            </div>
+            <draggable
+              :list="availableSections"
+              item-key="type"
+              div="div"
+              :group="{
+                name: 'sections',
+                pull: 'clone',
+                put: false,
+                sort: false
+              }"
+              @start="dragging = true"
+              @end="dragging = false"
+              :clone="clone"
+            >
+              <template #item="{ element }">
+                <div class="draggable article mx-75">
+                  <vue-feather
+                    type="move"
+                    size="16"
+                    class="cursor-pointer"
+                  />
+                  <span>{{ element.title }}</span>
+                </div>
+              </template>
+            </draggable>
             <hr class="px-2" />
             <ConstructorCatalogue />
           </b-card>
@@ -269,15 +212,15 @@ onBeforeMount(() => {
                 class="d-flex justify-content-between font-weight-bolder"
               >
                 <span>Total HT</span>
-                <span>0,00 €</span>
+                <span>{{ constructorStore.totalHT.format() }} €</span>
               </div>
               <div class="d-flex justify-content-between">
                 <span>TVA</span>
-                <span>0,00 €</span>
+                <span>{{ constructorStore.totalTVA.format() }} €</span>
               </div>
               <div class="d-flex justify-content-between">
                 <span>Total TTC</span>
-                <span>0,00 €</span>
+                <span>{{ constructorStore.totalTTC.format() }} €</span>
               </div>
             </div>
 
@@ -347,7 +290,9 @@ onBeforeMount(() => {
 
 .dark-layout {
   .area {
-    border-color: #d0d2d6;
+    .dropping-area {
+      border-color: #d0d2d6;
+    }
   }
   .draggable.article {
     background-color: #161d31;
@@ -359,27 +304,49 @@ onBeforeMount(() => {
 }
 
 .area {
-  min-height: 350px;
   max-height: calc(100vh - 102px - 1rem - 100px - 1rem);
+  overflow: auto;
 
-  .empty-area {
+  .dropping-area {
+    min-height: 200px;
     border: 2px dashed rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+  }
+
+  .empty-area {
     min-height: 350px;
-    margin: 1.5rem;
+
+    &.dragging {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
   }
 }
 
 .sections {
+  min-height: 350px;
+  padding: 1.5rem;
   .section {
-    margin: 1rem 1.5rem;
+    margin: 0 0 1rem 0;
     user-select: none;
     cursor: move;
     padding: 1.2rem;
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    margin-bottom: 1rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
+}
+
+.dark-layout {
+  .section {
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+
+.no-move {
+  transition: transform 0s;
 }
 </style>

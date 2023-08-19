@@ -9,7 +9,6 @@ const appConfigStore = useAppConfigStore()
 const userStore = useUserStore()
 
 const route = useRoute()
-console.log(import.meta)
 
 const LayoutFull = () => import('@/layouts/layout-full/LayoutFull.vue')
 const LayoutVertical = () =>
