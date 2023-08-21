@@ -146,6 +146,15 @@ onBeforeMount(() => {
             />
           </b-form-group>
         </b-col>
+        <b-col md="4">
+          <b-form-group label="Clients par page">
+            <v-select
+              :options="[10, 25, 50, 100]"
+              v-model="filters.perPage"
+              :clearable="false"
+            />
+          </b-form-group>
+        </b-col>
       </b-row>
 
       <b-overlay :show="isListingLoading">
