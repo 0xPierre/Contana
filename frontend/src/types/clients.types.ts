@@ -34,4 +34,5 @@ export interface ClientConstructor {
   city: string
   zip_code: string
   country: string
+  client_number: string
 }

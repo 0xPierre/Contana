@@ -31,7 +31,10 @@ const entrepriseStore = useEntrepriseStore()
         v-if="can('access_documents')"
         :item="{
           title: 'Documents',
-          route: { name: 'home' },
+          route: {
+            name: 'entreprise-documents',
+            params: { entrepriseSlug: entrepriseStore.entreprise?.slug }
+          },
           icon: 'file-text'
         }"
       />

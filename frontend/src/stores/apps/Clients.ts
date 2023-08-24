@@ -1,6 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import http from '@/helpers/http'
 import type {
+  ClientConstructor,
   ClientCreationForm,
   ClientModel
 } from '@/types/clients.types'
@@ -29,7 +30,7 @@ export const useClientsStore = defineStore('clients', {
   getters: {},
 
   actions: {
-    async createClient(data: ClientCreationForm) {
+    async createClient(data: ClientCreationForm | ClientConstructor) {
       const entrepriseStore = useEntrepriseStore()
 
       return http.post<ApiResponse<ClientModel>>(

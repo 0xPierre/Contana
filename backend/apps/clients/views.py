@@ -1,4 +1,4 @@
-from typing import List
+from django.db.models import QuerySet
 
 from ..clients.models import Client
 from ..core.permissions import HasPermissionsOf, IsInEntreprise
@@ -30,7 +30,9 @@ class ClientsViewSet(viewsets.ModelViewSet):
         return ClientsDetailSerializer
 
     def get_queryset(self):
-        queryset: List[Client] = getEntrepriseFromRequest(self.request).clients.all()
+        queryset: QuerySet[Client] = getEntrepriseFromRequest(
+            self.request
+        ).clients.all()
 
         if self.request.query_params.get("search"):
             search = self.request.query_params.get("search")
@@ -145,12 +147,13 @@ class ClientsViewSet(viewsets.ModelViewSet):
     @permission_classes(
         [IsAuthenticated, IsInEntreprise, HasPermissionsOf("update_clients")]
     )
-    def savefile(self, *args, **kwargs):
+    def save_file(self, *args, **kwargs):
         client = self.get_object()
 
-        files_id = [
-            int(file_id) for file_id in self.request.data.getlist("files_id", None)
-        ]
+        files_id = []
+        if "files_id" in self.request.data:
+            files_id = [int(file_id) for file_id in self.request.data["files_id"]]
+
         files = self.request.FILES.getlist("files", None)
 
         for file in client.files.all():

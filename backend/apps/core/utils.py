@@ -1,8 +1,8 @@
 from ..entreprise.models import Entreprise
-from django.http import HttpRequest
+from rest_framework.request import Request
 
 
-def getEntrepriseFromRequest(request: HttpRequest) -> Entreprise or None:
+def getEntrepriseFromRequest(request: Request) -> Entreprise or None:
     """
     Get entreprise from request
     """

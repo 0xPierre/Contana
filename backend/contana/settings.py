@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "apps.user",
     "apps.entreprise",
     "apps.clients",
+    "apps.constructor",
+    "apps.documents",
 ]
 
 MIDDLEWARE = [

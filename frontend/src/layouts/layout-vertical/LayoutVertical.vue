@@ -4,8 +4,10 @@ import useVerticalLayout from './useVerticalLayout'
 import AppNavbarVerticalLayout from '../components/app-navbar/AppNavbarVerticalLayout.vue'
 import VerticalNavMenu from './vertical-nav-menu/VerticalNavMenu.vue'
 import { onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 const appConfigStore = useAppConfigStore()
+const route = useRoute()
 
 const {
   isVerticalMenuActive,
@@ -71,6 +73,7 @@ onUnmounted(() => {
         <div
           class="app-content content"
           :class="[$route.meta.contentClass]"
+          :key="route.fullPath"
         >
           <div class="content-overlay" />
           <div class="header-navbar-shadow" />

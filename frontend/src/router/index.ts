@@ -6,6 +6,7 @@ import legalRoutes from './routes/legals'
 import entrepriseRoutes from './routes/entreprise'
 import clientsRoutes from './routes/clients'
 import constructorRoute from './routes/constructor'
+import documentsRoute from './routes/documents'
 import { useUserStore } from '@/stores/apps/User'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise'
 
@@ -26,11 +27,12 @@ const router = createRouter({
     ...userRoutes,
     ...entrepriseRoutes,
     ...clientsRoutes,
-    ...constructorRoute
+    ...constructorRoute,
+    ...documentsRoute
   ]
 })
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   const userStore = useUserStore()
   const entrepriseStore = useEntrepriseStore()
 

@@ -1,17 +1,25 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 // import http from '@/helpers/http'
-import type { ClientModel } from '@/types/clients.types'
 import { DocumentsType, PaymentsMethod } from '@/types/core.types'
 import { Section, SectionsType } from '@/types/constructor.types.ts'
 import { v4 as uuidv4 } from 'uuid'
 import { euro } from '@/helpers/utils.ts'
+import http from '@/helpers/http.ts'
+import { ApiResponse } from '@/types/api.types.ts'
+import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
+import { ClientConstructor } from '@/types/clients.types.ts'
+import strftime from 'strftime'
+import SectionArticle from '@/components/constructor/sections/SectionArticle.vue'
+import SectionTitle from '@/components/constructor/sections/SectionTitle.vue'
+import SectionSubtotal from '@/components/constructor/sections/SectionSubtotal.vue'
 
 interface State {
-  client: ClientModel | null
+  documentNumber: string
+  client: ClientConstructor | null
   subject: string
   forme: DocumentsType
   paymentMethod: PaymentsMethod
-  validityDate: Date
+  validityDate: string
   paymentMention: string
   notes: string
   vatPayer: boolean
@@ -24,12 +32,14 @@ interface State {
 export const useConstructorStore = defineStore('constructeur', {
   state: (): State => {
     return {
+      documentNumber: '',
       client: null,
       subject: '',
       forme: DocumentsType.Facture,
       paymentMethod: PaymentsMethod.BankTransfer,
-      validityDate: new Date(
-        new Date().setDate(new Date().getDate() + 90)
+      validityDate: strftime(
+        '%d/%m/%Y',
+        new Date(new Date().setDate(new Date().getDate() + 90))
       ),
       paymentMention: 'À réception de la facture',
       notes: '',
@@ -161,6 +171,112 @@ export const useConstructorStore = defineStore('constructeur', {
         component: section.component
       }
       this.sections.splice(index + 1, 0, newSection)
+    },
+
+    async saveDraft() {
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.post<ApiResponse<void>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/draft/`,
+        {
+          document_number: this.documentNumber,
+          client: this.client,
+          subject: this.subject,
+          forme: this.forme,
+          payment_method: this.paymentMethod,
+          validity_date: this.validityDate,
+          payment_mention: this.paymentMention,
+          notes: this.notes,
+          vat_payer: this.vatPayer,
+          other_mention: this.otherMention,
+          sections: this.sections,
+          total_ht: this.totalHT,
+          total_tva: this.totalTVA,
+          total_ttc: this.totalTTC
+        }
+      )
+    },
+
+    async produceDocument() {
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.post<ApiResponse<void>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/produce/`,
+        {
+          client: this.client,
+          subject: this.subject,
+          forme: this.forme,
+          payment_method: this.paymentMethod,
+          validity_date: this.validityDate,
+          payment_mention: this.paymentMention,
+          notes: this.notes,
+          vat_payer: this.vatPayer,
+          other_mention: this.otherMention,
+          sections: this.sections,
+          total_ht: this.totalHT,
+          total_tva: this.totalTVA,
+          total_ttc: this.totalTTC
+        }
+      )
+    },
+
+    async getDraft(documentNumber: string) {
+      const entrepriseStore = useEntrepriseStore()
+
+      const {
+        data: { data }
+      } = await http.get<
+        ApiResponse<{
+          document_number: string
+          client: ClientConstructor
+          subject: string
+          forme: DocumentsType
+          payment_method: PaymentsMethod
+          validity_date: string
+          payment_mention: string
+          notes: string
+          vat_payer: boolean
+          other_mention: string
+          sections: Omit<
+            Section<
+              | SectionsType.Article
+              | SectionsType.Title
+              | SectionsType.Subtotal
+            >,
+            'component'
+          >[]
+        }>
+      >(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/draft/${documentNumber}/`
+      )
+
+      this.documentNumber = data.document_number
+      this.client = data.client
+      this.subject = data.subject
+      this.forme = data.forme
+      this.paymentMethod = data.payment_method
+      this.validityDate = strftime(
+        '%d/%m/%Y',
+        new Date(data.validity_date)
+      )
+      this.paymentMention = data.payment_mention
+      this.notes = data.notes
+      this.vatPayer = data.vat_payer
+      this.otherMention = data.other_mention
+
+      const SectionComponent = {
+        [SectionsType.Article]: SectionArticle,
+        [SectionsType.Title]: SectionTitle,
+        [SectionsType.Subtotal]: SectionSubtotal
+      }
+
+      data.sections.forEach((section) => {
+        this.sections.push({
+          ...section,
+          id: uuidv4(),
+          component: SectionComponent[section.type]
+        })
+      })
     }
   },
 

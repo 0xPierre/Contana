@@ -5,9 +5,11 @@ import { ref, reactive, watch, onMounted } from 'vue'
 import { notify, notifyApiError } from '@/helpers/notify'
 import { AxiosError } from 'axios'
 import type { ClientConstructor, ClientModel } from '@/types/clients.types'
+import { useRoute } from 'vue-router'
 
 const constructorStore = useConstructorStore()
 const clientsStore = useClientsStore()
+const route = useRoute()
 
 const isLoading = ref(false)
 const isListingLoading = ref(false)
@@ -25,12 +27,12 @@ const defaultFilters = {
 const filters = reactive({ ...defaultFilters })
 const newClientData: ClientConstructor = {
   id: -1,
-  client_number: '',
   socialreasonorname: '',
   country: '',
   city: '',
   zip_code: '',
-  address: ''
+  address: '',
+  client_number: ''
 }
 const newClient = reactive({ ...newClientData })
 
@@ -108,7 +110,7 @@ watch(
   }
 )
 
-const selectTemporaryClient = (client: Partial<ClientModel>[]) => {
+const selectTemporaryClient = (client: ClientConstructor[]) => {
   if (client.length === 0) selectedClient.value = null
   else {
     selectedClient.value = {
@@ -123,10 +125,10 @@ const selectTemporaryClient = (client: Partial<ClientModel>[]) => {
   }
 }
 
-const selectClient = (client: Partial<ClientModel>) => {
+const selectClient = (client: ClientConstructor) => {
   if (client) {
     /**
-     * Used when double clicking on a client in the listing modal
+     * Used when double-clicking on a client in the listing modal
      */
     selectTemporaryClient([client])
   }
@@ -138,7 +140,9 @@ const selectClient = (client: Partial<ClientModel>) => {
 }
 
 onMounted(() => {
-  openClientListingModal()
+  if (route.name === 'entreprise-constructor') {
+    openClientListingModal()
+  }
 })
 </script>
 
@@ -173,11 +177,6 @@ onMounted(() => {
             <h4 class="mb-0 font-medium-1">
               {{ constructorStore.client.socialreasonorname }}
             </h4>
-            <!-- <p class="mb-0">
-              {{ constructorStore.client.address }}<br />
-              {{ constructorStore.client.zip_code }}
-              {{ constructorStore.client.city }}
-            </p> -->
           </div>
         </div>
         <div v-show="constructorStore.client">

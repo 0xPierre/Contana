@@ -27,3 +27,10 @@
 .flatpickr-input {
   background-color: inherit !important;
 }
+
+.truncate-text-ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -24,4 +24,12 @@ urlpatterns = [
         include("apps.entreprise.urls"),
     ),
     path("api/entreprise/<str:entreprise_slug>/clients/", include("apps.clients.urls")),
+    path(
+        "api/entreprise/<str:entreprise_slug>/constructor/",
+        include("apps.constructor.urls"),
+    ),
+    path(
+        "api/entreprise/<str:entreprise_slug>/documents/",
+        include("apps.documents.urls"),
+    ),
 ]

@@ -12,10 +12,15 @@ import SectionTitle from '@/components/constructor/sections/SectionTitle.vue'
 import SectionSubtotal from '@/components/constructor/sections/SectionSubtotal.vue'
 import SectionArticle from '@/components/constructor/sections/SectionArticle.vue'
 import { storeToRefs } from 'pinia'
+import { notify } from '@/helpers/notify.ts'
+import strftime from 'strftime'
+import { useRoute } from 'vue-router'
 
 draggable.compatConfig = { MODE: 3 }
 const constructorStore = useConstructorStore()
 const { sections } = storeToRefs(constructorStore)
+const isLoading = ref(false)
+const route = useRoute()
 /**
  * Sections available in the constructor
  */
@@ -62,12 +67,13 @@ const availableSections = [
 ]
 const dragging = ref(false)
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   constructorStore.client = null
   constructorStore.paymentMethod = PaymentsMethod.BankTransfer
   constructorStore.forme = DocumentsType.Devis
-  constructorStore.validityDate = new Date(
-    new Date().setDate(new Date().getDate() + 90)
+  constructorStore.validityDate = strftime(
+    '%d/%m/%Y',
+    new Date(new Date().setDate(new Date().getDate() + 90))
   )
   constructorStore.paymentMention = 'À réception de la facture'
   constructorStore.vatPayer = true
@@ -75,6 +81,21 @@ onBeforeMount(() => {
     'En cas de retard de paiement, il sera appliqué des pénalités et intérêts de retard suivant le taux minimum légal en vigueur, par mois de retard. En outre, une indemnité forfaitaire pour frais de recouvrement de 40€ sera due.'
   constructorStore.otherMention = ''
   constructorStore.sections = []
+  constructorStore.subject = ''
+  constructorStore.documentNumber = ''
+
+  if (route.name === 'entreprise-constructor-draft') {
+    isLoading.value = true
+    try {
+      // Store is initialized in the action
+      await constructorStore.getDraft(
+        route.params.documentNumber as string
+      )
+    } catch {
+      this.notify('Impossible de charger le brouillon', 'danger')
+    }
+    isLoading.value = false
+  }
 })
 
 /**
@@ -97,165 +118,211 @@ const clone = (
     component: section.component
   }
 }
+
+const saveDraft = async () => {
+  isLoading.value = true
+
+  try {
+    const { data } = await constructorStore.saveDraft()
+
+    if (data.status === 'success') {
+      notify('Brouillon enregistré avec succès')
+    } else {
+      notify(data.error, 'danger')
+    }
+  } catch {
+    notify(
+      "Une erreur est survenue lors de l'enregistrement du brouillon",
+      'danger'
+    )
+  }
+
+  isLoading.value = false
+}
+
+const produceDocument = async () => {
+  isLoading.value = true
+
+  try {
+    const { data } = await constructorStore.produceDocument()
+
+    if (data.status === 'success') {
+      notify('Document produit avec succès')
+    } else {
+      notify(data.error, 'danger')
+    }
+  } catch {
+    notify(
+      'Une erreur est survenue lors de la production du document',
+      'danger'
+    )
+  }
+
+  isLoading.value = false
+}
 </script>
 
 <template>
   <div>
-    <b-row>
-      <b-col md="9" class="pr-md-50">
-        <b-card class="mb-1 p-1" no-body>
-          <b-row>
-            <b-col cols="4">
-              <v-select
-                :options="[
-                  {
-                    label: 'Devis',
-                    value: DocumentsType.Devis
-                  },
-                  {
-                    label: 'Facture',
-                    value: DocumentsType.Facture
-                  },
-                  {
-                    label: 'Avoir',
-                    value: DocumentsType.Avoir
-                  }
-                ]"
-                :clearable="false"
-                v-model="constructorStore.forme"
-                :reduce="(option) => option.value"
-                label="label"
-                block
-              />
-            </b-col>
-            <b-col cols="4">
-              <b-form-input
-                :placeholder="`Objet ${constructorStore.formeSentence.second}`"
-                type="text"
-              />
-            </b-col>
-            <b-col cols="4">
-              <ConstructorComplementaryInfos />
-            </b-col>
-          </b-row>
-        </b-card>
-
-        <b-card no-body>
-          <div class="area">
-            <draggable
-              v-model="sections"
-              item-key="id"
-              class="sections"
-              :group="{ name: 'sections' }"
-              :scroll-sensitivity="200"
-            >
-              <template #item="{ element }">
-                <div>
-                  <component :is="element.component" :section="element" />
-                </div>
-              </template>
-
-              <template #footer>
-                <div
-                  class="area dropping-area d-flex justify-content-center align-items-center"
-                  :class="{
-                    dragging,
-                    'empty-area': sections.length === 0
-                  }"
-                >
-                  <vue-feather type="move" size="28" />
-                  <span class="ml-1 font-medium-1">
-                    Glissez et déposez des élements ici
-                  </span>
-                </div>
-              </template>
-            </draggable>
-          </div>
-        </b-card>
-      </b-col>
-      <b-col md="3" class="pl-md-50">
-        <vue-perfect-scrollbar class="actions-col" tagname="div">
-          <ConstructorClient />
-          <b-card class="mb-1 user-select-none p-1" no-body>
-            <draggable
-              :list="availableSections"
-              item-key="type"
-              div="div"
-              :group="{
-                name: 'sections',
-                pull: 'clone',
-                put: false,
-                sort: false
-              }"
-              @start="dragging = true"
-              @end="dragging = false"
-              :clone="clone"
-            >
-              <template #item="{ element }">
-                <div class="draggable article mx-75">
-                  <vue-feather
-                    type="move"
-                    size="16"
-                    class="cursor-pointer"
-                  />
-                  <span>{{ element.title }}</span>
-                </div>
-              </template>
-            </draggable>
-            <hr class="px-2" />
-            <ConstructorCatalogue />
+    <b-overlay :show="isLoading">
+      <b-row>
+        <b-col md="9" class="pr-md-50">
+          <b-card class="mb-1 p-1" no-body>
+            <b-row>
+              <b-col cols="4">
+                <v-select
+                  :options="[
+                    {
+                      label: 'Devis',
+                      value: DocumentsType.Devis
+                    },
+                    {
+                      label: 'Facture',
+                      value: DocumentsType.Facture
+                    }
+                  ]"
+                  :clearable="false"
+                  v-model="constructorStore.forme"
+                  :reduce="(option) => option.value"
+                  label="label"
+                  block
+                />
+              </b-col>
+              <b-col cols="4">
+                <b-form-input
+                  :placeholder="`Objet ${constructorStore.formeSentence.second}`"
+                  type="text"
+                  v-model="constructorStore.subject"
+                />
+              </b-col>
+              <b-col cols="4">
+                <ConstructorComplementaryInfos />
+              </b-col>
+            </b-row>
           </b-card>
 
-          <b-card class="p-1" no-body>
-            <div>
-              <div
-                class="d-flex justify-content-between font-weight-bolder"
+          <b-card no-body>
+            <div class="area">
+              <draggable
+                v-model="sections"
+                item-key="id"
+                class="sections"
+                :group="{ name: 'sections' }"
+                :scroll-sensitivity="200"
               >
-                <span>Total HT</span>
-                <span>{{ constructorStore.totalHT.format() }} €</span>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>TVA</span>
-                <span>{{ constructorStore.totalTVA.format() }} €</span>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Total TTC</span>
-                <span>{{ constructorStore.totalTTC.format() }} €</span>
-              </div>
-            </div>
+                <template #item="{ element }">
+                  <div>
+                    <component
+                      :is="element.component"
+                      :section="element"
+                    />
+                  </div>
+                </template>
 
-            <hr />
-            <b-button
-              v-ripple
-              variant="success"
-              block
-              class="btn-with-icon"
-            >
-              <vue-feather type="file-plus" class="mr-50" size="16" />
-              Produire {{ constructorStore.formeSentence.first }}
-            </b-button>
-            <b-button
-              v-ripple
-              variant="outline-primary"
-              block
-              class="btn-with-icon"
-            >
-              <vue-feather type="eye" class="mr-50" size="16" />
-              Aperçu {{ constructorStore.formeSentence.second }}
-            </b-button>
-            <b-button
-              v-ripple
-              variant="outline-secondary"
-              block
-              class="btn-with-icon"
-            >
-              <vue-feather type="save" class="mr-50" size="16" />
-              Enregistrer en brouillon
-            </b-button>
+                <template #footer>
+                  <div
+                    class="area dropping-area d-flex justify-content-center align-items-center"
+                    :class="{
+                      dragging,
+                      'empty-area': sections.length === 0
+                    }"
+                  >
+                    <vue-feather type="move" size="28" />
+                    <span class="ml-1 font-medium-1">
+                      Glissez et déposez des élements ici
+                    </span>
+                  </div>
+                </template>
+              </draggable>
+            </div>
           </b-card>
-        </vue-perfect-scrollbar>
-      </b-col>
-    </b-row>
+        </b-col>
+        <b-col md="3" class="pl-md-50">
+          <vue-perfect-scrollbar class="actions-col" tagname="div">
+            <ConstructorClient />
+            <b-card class="mb-1 user-select-none p-1" no-body>
+              <draggable
+                :list="availableSections"
+                item-key="type"
+                div="div"
+                :group="{
+                  name: 'sections',
+                  pull: 'clone',
+                  put: false,
+                  sort: false
+                }"
+                @start="dragging = true"
+                @end="dragging = false"
+                :clone="clone"
+              >
+                <template #item="{ element }">
+                  <div class="draggable article mx-75">
+                    <vue-feather
+                      type="move"
+                      size="16"
+                      class="cursor-pointer"
+                    />
+                    <span>{{ element.title }}</span>
+                  </div>
+                </template>
+              </draggable>
+              <hr class="px-2" />
+              <ConstructorCatalogue />
+            </b-card>
+
+            <b-card class="p-1" no-body>
+              <div>
+                <div
+                  class="d-flex justify-content-between font-weight-bolder"
+                >
+                  <span>Total HT</span>
+                  <span>{{ constructorStore.totalHT.format() }} €</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>TVA</span>
+                  <span>{{ constructorStore.totalTVA.format() }} €</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>Total TTC</span>
+                  <span>{{ constructorStore.totalTTC.format() }} €</span>
+                </div>
+              </div>
+
+              <hr />
+              <b-button
+                v-ripple
+                variant="success"
+                block
+                class="btn-with-icon"
+                @click="produceDocument"
+              >
+                <vue-feather type="file-plus" class="mr-50" size="16" />
+                Produire {{ constructorStore.formeSentence.first }}
+              </b-button>
+              <b-button
+                v-ripple
+                variant="outline-primary"
+                block
+                class="btn-with-icon"
+              >
+                <vue-feather type="eye" class="mr-50" size="16" />
+                Aperçu {{ constructorStore.formeSentence.second }}
+              </b-button>
+              <b-button
+                v-ripple
+                variant="outline-secondary"
+                block
+                class="btn-with-icon"
+                @click="saveDraft"
+              >
+                <vue-feather type="save" class="mr-50" size="16" />
+                Enregistrer en brouillon
+              </b-button>
+            </b-card>
+          </vue-perfect-scrollbar>
+        </b-col>
+      </b-row>
+    </b-overlay>
   </div>
 </template>
 

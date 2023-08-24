@@ -257,6 +257,11 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.5.0.tgz#591c1ce3a702c45ee15f47a42ade72c2fd78978a"
   integrity sha512-G8hZ6XJiHnuhQKR7ZmysCeJWE08o8T0AXtk5darsCaTVsYZhhgUrq53jizaR2FvsoeCwJhlmwTjkXBY5Pn/ZHw==
 
+"@types/strftime@^0.9.4":
+  version "0.9.4"
+  resolved "https://registry.yarnpkg.com/@types/strftime/-/strftime-0.9.4.tgz#a9fa386a2e8c4f344fa6e41e388081a9797ce08b"
+  integrity sha512-MlicGsqGq8pVXa0umCVrYvno0bNUH/JYGPtlAvV/oU0/0lGtAVs/EtbDi6rz3241K3MF7+l6fuXxb9Ae3nLhJQ==
+
 "@types/uuid@^9.0.2":
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.2.tgz#ede1d1b1e451548d44919dc226253e32a6952c4b"
@@ -1920,6 +1925,11 @@ source-map@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
+
+strftime@^0.10.2:
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/strftime/-/strftime-0.10.2.tgz#9cc5a63a6170455730ddf617e8b506ab06dde985"
+  integrity sha512-Y6IZaTVM80chcMe7j65Gl/0nmlNdtt+KWPle5YeCAjmsBfw+id2qdaJ5MDrxUq+OmHKab+jHe7mUjU/aNMSZZg==
 
 strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
