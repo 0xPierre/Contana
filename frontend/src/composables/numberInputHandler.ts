@@ -7,12 +7,12 @@ import { ref } from 'vue'
  * @param factor Factor to multiply the input value by (default: 100)
  */
 export const useNumberInputHandler = (
+  defaultVal: number = 0,
   callback: (value: number) => void = () => {},
   precision: number = 2,
   factor: number = 1
 ) => {
-  let value = 0
-  let formattedValue = ref(0)
+  let formattedValue = ref(defaultVal)
   const inputHandler = (event: Event) => {
     const inputValue = (event.target as HTMLInputElement).value
     const parsedValue = parseFloat(inputValue)
@@ -21,7 +21,8 @@ export const useNumberInputHandler = (
       return
     }
 
-    value = Math.abs(parseFloat(parsedValue.toFixed(precision))) * factor
+    const value =
+      Math.abs(parseFloat(parsedValue.toFixed(precision))) * factor
     formattedValue.value = value / factor
     callback(value)
   }

@@ -125,7 +125,7 @@ const selectTemporaryClient = (client: ClientConstructor[]) => {
   }
 }
 
-const selectClient = (client: ClientConstructor) => {
+const selectClient = (client: ClientConstructor | null) => {
   if (client) {
     /**
      * Used when double-clicking on a client in the listing modal

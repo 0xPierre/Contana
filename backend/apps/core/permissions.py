@@ -18,21 +18,6 @@ class IsOwnerOfEntreprise(permissions.BasePermission):
         return False
 
 
-class IsAdminOfEntreprise(permissions.BasePermission):
-    """
-    Verify that user is admin of entreprise
-    """
-
-    def has_permission(self, request, view):
-        if request.user.is_authenticated:
-            entreprise = getEntrepriseFromRequest(request)
-            if entreprise:
-                if request.user.has_perm("administrate", entreprise):
-                    return True
-
-        return False
-
-
 class IsInEntreprise(permissions.BasePermission):
     """
     Verify that user is in entreprise
@@ -47,17 +32,44 @@ class IsInEntreprise(permissions.BasePermission):
 
         return False
 
-class HasPermissionsOf(permissions.BasePermission):
-    def __init__(self, permission):
-        self.permission = permission
 
+def test_user_permission(self, request, permission):
+    if request.user.is_authenticated:
+        entreprise = getEntrepriseFromRequest(request)
+        if entreprise:
+            if request.user.has_perm(permission, entreprise) or request.user.has_perm(
+                "administrate", entreprise
+            ):
+                return True
+
+    return False
+
+
+class CanAdministrate(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_authenticated:
-            entreprise = getEntrepriseFromRequest(request)
-            if entreprise:
-                if request.user.has_perm(
-                    self.permission, entreprise
-                ) or request.user.has_perm("administrate", entreprise):
-                    return True
+        return test_user_permission(self, request, "administrate")
 
-        return False
+
+class CanAccessClients(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return test_user_permission(self, request, "access_clients")
+
+
+class CanUpdateClients(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return test_user_permission(self, request, "update_clients")
+
+
+class CanAccessDocuments(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return test_user_permission(self, request, "access_documents")
+
+
+class CanUpdateDocuments(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return test_user_permission(self, request, "update_documents")
+
+
+class CanAccessConstructor(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return test_user_permission(self, request, "access_constructor")

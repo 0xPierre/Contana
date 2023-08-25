@@ -11,5 +11,19 @@ export default [
         access_documents: true
       }
     }
+  },
+  {
+    path: '/:entrepriseSlug/documents/:documentId/:documentNumber',
+    name: 'entreprise-document-view',
+    component: () =>
+      import('@/views/apps/documents/DocumentView/DocumentView.vue'),
+    meta: {
+      title: 'Document',
+      layout: 'layout-vertical',
+      requireAuth: true,
+      permissions: {
+        access_documents: true
+      }
+    }
   }
 ]

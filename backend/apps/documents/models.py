@@ -50,6 +50,16 @@ units = [
     ("l", "l"),
 ]
 
+states = [
+    ("draft", "Brouillon"),
+    ("produced", "Produit"),
+    ("devis_accepted", "Devis accepté"),
+    ("devis_refused", "Devis refusé"),
+    ("devis_expired", "Devis expiré"),
+    ("devis_invoiced", "Devis facturé"),
+    ("paid", "Facture ou acompte payée"),
+]
+
 
 class DocumentSection(BaseModel):
     type = models.CharField(choices=sections_types)
@@ -95,7 +105,6 @@ class Document(BaseModel):
         Entreprise, on_delete=models.SET_NULL, related_name="documents", null=True
     )
 
-    # Analytics
     created_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -105,6 +114,11 @@ class Document(BaseModel):
     total_ht = models.FloatField()
     total_tva = models.FloatField()
     total_ttc = models.FloatField()
+
+    devis_accepted_or_refused_at = models.DateTimeField(null=True, blank=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    state = models.CharField(choices=states, default="draft")
 
     def __str__(self):
         return f"{self.document_number} - {self.subject}"

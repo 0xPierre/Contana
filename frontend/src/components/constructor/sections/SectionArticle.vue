@@ -24,6 +24,7 @@ const totalHT = computed(() => {
   return price.format()
 })
 const { inputHandler, formattedValue } = useNumberInputHandler(
+  props.section.values.unitPriceHT,
   (value: number) => {
     props.section.values.unitPriceHT = value
   }

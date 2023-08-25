@@ -22,6 +22,7 @@ export default [
       title: 'Modification du brouillon',
       layout: 'layout-vertical',
       requireAuth: true,
+      forceComponentReload: true,
       permissions: {
         access_constructor: true
       }

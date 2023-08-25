@@ -36,6 +36,7 @@ export const useDocumentsStore = defineStore('documents', {
       sortBy: string
       sortDesc: boolean
       forme: string
+      state: string
       startDate: string
       endDate: string
     }) {
@@ -52,7 +53,8 @@ export const useDocumentsStore = defineStore('documents', {
           sort_desc: filters.sortDesc,
           start_date: filters.startDate,
           end_date: filters.endDate,
-          forme: filters.forme
+          forme: filters.forme,
+          state: filters.state
         }
       })
 
@@ -61,11 +63,43 @@ export const useDocumentsStore = defineStore('documents', {
       this.listing.total = data.count
     },
 
-    async getDocument(documentId: string | number) {
+    async getDocument(documentId: number) {
       const entrepriseStore = useEntrepriseStore()
 
-      return await http.get<ApiResponse<DocumentModel>>(
+      return http.get<ApiResponse<DocumentModel>>(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/`
+      )
+    },
+
+    async duplicateDocument(documentId: number) {
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.post<
+        ApiResponse<{
+          document_number: string
+          id: number
+        }>
+      >(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/duplicate/`
+      )
+    },
+
+    async deleteDocument(documentId: number) {
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.delete(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/`
+      )
+    },
+
+    async changeDocumentState(documentId: number, state: string) {
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.patch(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/`,
+        {
+          state
+        }
       )
     }
   },

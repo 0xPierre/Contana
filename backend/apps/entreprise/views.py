@@ -2,7 +2,7 @@ import random
 import string
 
 from ..core.permissions import (
-    IsAdminOfEntreprise,
+    CanAdministrate,
     IsInEntreprise,
     IsOwnerOfEntreprise,
 )
@@ -36,7 +36,7 @@ def get_data(request: Request, entreprise_slug: str) -> Response:
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsAdminOfEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
 def update_entreprise_informations(request: Request, entreprise_slug: str) -> Response:
     """
     Allows to update the entreprise informations
@@ -76,7 +76,7 @@ def delete_entreprise(request: Request, entreprise_slug: str) -> Response:
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsAdminOfEntreprise])
+@permission_classes([IsAuthenticated, CanAdministrate])
 def update_entreprise_logos(request: Request, entreprise_slug: str) -> Response:
     """
     Allows to update the entreprise logos
@@ -99,7 +99,7 @@ def update_entreprise_logos(request: Request, entreprise_slug: str) -> Response:
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsAdminOfEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
 def remove_user_from_entreprise(
     request: Request, entreprise_slug: str, user_id: int
 ) -> Response:
@@ -133,7 +133,7 @@ def remove_user_from_entreprise(
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsAdminOfEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
 def update_entreprise_user_permissions(
     request: Request, entreprise_slug: str, user_id: int
 ) -> Response:
@@ -177,7 +177,7 @@ def update_entreprise_user_permissions(
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsAdminOfEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
 def create_invitation_link(request: Request, entreprise_slug: str) -> Response:
     """
     Allows to create an invitation link
@@ -214,7 +214,7 @@ def create_invitation_link(request: Request, entreprise_slug: str) -> Response:
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsAdminOfEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
 def send_invitation_link_by_email(request: Request, entreprise_slug: str) -> Response:
     """
     Allows administrators to send invitations link by email

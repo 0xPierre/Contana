@@ -13,7 +13,14 @@ const notify = (
     component: ToastificationContent,
     props: {
       title: title ? title : 'Notification',
-      icon: type === 'success' ? 'check-circle' : 'alert-triangle',
+      icon:
+        type === 'success'
+          ? 'check-circle'
+          : type === 'info'
+          ? 'info'
+          : type === 'danger'
+          ? 'x-circle'
+          : 'alert-triangle',
       variant: type,
       text: message
     }

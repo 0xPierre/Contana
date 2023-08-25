@@ -35,6 +35,7 @@ class DocumentsListingSerializer(serializers.ModelSerializer):
             "total_ht",
             "is_draft",
             "subject",
+            "state",
         ]
         extra_kwargs = {
             "document_number": {"read_only": True},
@@ -44,6 +45,7 @@ class DocumentsListingSerializer(serializers.ModelSerializer):
             "total_ht": {"read_only": True},
             "is_draft": {"read_only": True},
             "subject": {"read_only": True},
+            "state": {"read_only": True},
         }
 
 
@@ -52,24 +54,28 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
     Serializer for the Document model for detail view
     """
 
+    client = ClientsField(read_only=True)
+
     class Meta:
-        model = Client
+        model = Document
         fields = [
             "id",
             "document_number",
-            "socialreasonorname",
+            "client",
             "forme",
             "created_at",
             "total_ht",
             "is_draft",
             "subject",
+            "state",
         ]
         extra_kwargs = {
             "document_number": {"read_only": True},
-            "socialreasonorname": {"read_only": True},
+            "client": {"read_only": True},
             "forme": {"read_only": True},
             "created_at": {"read_only": True},
             "total_ht": {"read_only": True},
             "is_draft": {"read_only": True},
             "subject": {"read_only": True},
+            "state": {"read_only": True},
         }

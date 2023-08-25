@@ -1,4 +1,5 @@
 import currency from 'currency.js'
+import strftime from 'strftime'
 
 export const fullNameToText = (fullName: string) => {
   const [firstName, lastName] = fullName.split(' ')
@@ -12,3 +13,6 @@ export const euro = (value: string | number): currency =>
     separator: ' ',
     precision: 2
   })
+
+// @ts-ignore
+export const strftimeFR = strftime.localizeByIdentifier('fr_FR')

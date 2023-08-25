@@ -1,0 +1,214 @@
+<script setup lang="ts">
+import BackButton from '@/components/back-button/BackButton.vue'
+import { onMounted, reactive, ref } from 'vue'
+import { notify, swalAlert } from '@/helpers/notify.ts'
+import { useDocumentsStore } from '@/stores/apps/Documents.ts'
+import { useRoute, useRouter } from 'vue-router'
+import { DocumentModel, DocumentsState } from '@/types/documents.types.ts'
+import { DocumentStateBadgeInfo } from '@/helpers/documents.ts'
+import DocumentStateBadge from '@/components/document-stage-badge/DocumentStateBadge.vue'
+import { strftimeFR } from '@/helpers/utils.ts'
+
+const isLoading = ref(false)
+const documentStore = useDocumentsStore()
+const route = useRoute()
+const router = useRouter()
+
+const document = ref<DocumentModel | null>(null)
+
+onMounted(async () => {
+  isLoading.value = true
+
+  try {
+    const { data } = await documentStore.getDocument(
+      route.params.documentId as number
+    )
+    document.value = data.data
+  } catch {
+    notify('Une erreur est survenue', 'danger')
+  }
+
+  isLoading.value = false
+})
+
+const deleteDocument = async () => {
+  const { value } = await swalAlert(
+    'Êtes-vous sûr de vouloir supprimer ce document ?'
+  )
+  if (!value) return
+
+  isLoading.value = true
+
+  try {
+    await documentStore.deleteDocument(route.params.documentId as number)
+
+    router.push({ name: 'entreprise-documents' })
+  } catch {
+    notify('Une erreur est survenue', 'danger')
+  }
+
+  isLoading.value = false
+}
+
+const duplicateDocument = async () => {
+  isLoading.value = true
+
+  try {
+    const {
+      data: { data }
+    } = await documentStore.duplicateDocument(
+      route.params.documentId as number
+    )
+
+    router.push({
+      name: 'entreprise-constructor-draft',
+      params: { documentId: data.id, documentNumber: data.document_number }
+    })
+  } catch {
+    notify('Une erreur est survenue', 'danger')
+  }
+
+  isLoading.value = false
+}
+
+const changeDocumentState = async (state: DocumentsState) => {
+  isLoading.value = true
+
+  try {
+    await documentStore.changeDocumentState(
+      route.params.documentId as number,
+      state
+    )
+
+    document.value!.state = state
+  } catch {
+    notify('Une erreur est survenue', 'danger')
+  }
+
+  isLoading.value = false
+}
+</script>
+
+<template>
+  <b-overlay :show="isLoading">
+    <b-row v-if="document">
+      <b-col md="8"> </b-col>
+      <b-col md="4">
+        <vue-perfect-scrollbar tagname="div" class="actions-col">
+          <b-card>
+            <BackButton
+              text="Liste des documents"
+              :to="{ name: 'entreprise-documents' }"
+            />
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <h4 class="text-capitalize mt-75 mb-0">
+                  {{ document.forme }}
+                  <span
+                    class="font-weight-bolder"
+                    :class="
+                      DocumentStateBadgeInfo[document.state].textColor
+                    "
+                  >
+                    - #{{ document.document_number }}
+                  </span>
+                </h4>
+                <span class="text-small text-muted">
+                  Fait le
+                  {{
+                    strftimeFR('%d %B %Y', new Date(document.created_at))
+                  }}
+                </span>
+              </div>
+              <DocumentStateBadge :state="document.state" />
+            </div>
+            <b-row class="mt-1">
+              <b-col md="6">
+                <b-button
+                  variant="outline-primary"
+                  block
+                  v-ripple
+                  class="btn-with-icon justify-content-center"
+                >
+                  <vue-feather type="printer" size="18" class="mr-50" />
+                  Imprimer
+                </b-button>
+              </b-col>
+              <b-col md="6">
+                <b-button
+                  variant="primary"
+                  block
+                  v-ripple
+                  class="btn-with-icon justify-content-center mt-1 mt-md-0"
+                >
+                  <vue-feather type="download" size="18" class="mr-50" />
+                  Télécharger
+                </b-button>
+              </b-col>
+            </b-row>
+          </b-card>
+
+          <b-card>
+            <template v-if="document.forme === 'devis'">
+              <b-button
+                variant="success"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center"
+                @click="changeDocumentState('devis_accepted')"
+              >
+                <vue-feather type="check-circle" size="18" class="mr-50" />
+                Devis accepté
+              </b-button>
+
+              <b-button
+                variant="danger"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-1"
+                @click="changeDocumentState('devis_refused')"
+              >
+                <vue-feather type="x-circle" size="18" class="mr-50" />
+                Devis refusé
+              </b-button>
+            </template>
+            <hr />
+
+            <b-button
+              variant="outline-secondary"
+              block
+              v-ripple
+              class="btn-with-icon justify-content-center"
+              @click="duplicateDocument"
+            >
+              <vue-feather type="copy" size="18" class="mr-50" />
+              Dupliquer
+            </b-button>
+
+            <b-button
+              v-if="
+                document.forme === 'devis' && document.state === 'produced'
+              "
+              variant="outline-danger"
+              block
+              v-ripple
+              class="btn-with-icon justify-content-center mt-1"
+              @click="deleteDocument"
+            >
+              <vue-feather type="trash-2" size="18" class="mr-50" />
+              Supprimer
+            </b-button>
+          </b-card>
+        </vue-perfect-scrollbar>
+      </b-col>
+    </b-row>
+  </b-overlay>
+</template>
+
+<style lang="scss" scoped>
+.actions-col {
+  max-height: calc(100vh - 102px - 1rem);
+  overflow-y: hidden;
+}
+</style>

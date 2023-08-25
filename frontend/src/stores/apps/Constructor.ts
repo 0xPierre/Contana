@@ -27,6 +27,7 @@ interface State {
   sections: Section<
     SectionsType.Article | SectionsType.Title | SectionsType.Subtotal
   >[]
+  isDraft: boolean
 }
 
 export const useConstructorStore = defineStore('constructeur', {
@@ -45,7 +46,8 @@ export const useConstructorStore = defineStore('constructeur', {
       notes: '',
       vatPayer: false,
       otherMention: '',
-      sections: []
+      sections: [],
+      isDraft: false
     }
   },
 
@@ -215,7 +217,9 @@ export const useConstructorStore = defineStore('constructeur', {
           sections: this.sections,
           total_ht: this.totalHT,
           total_tva: this.totalTVA,
-          total_ttc: this.totalTTC
+          total_ttc: this.totalTTC,
+          is_draft: this.isDraft,
+          draft_document_number: this.documentNumber
         }
       )
     },
@@ -263,6 +267,7 @@ export const useConstructorStore = defineStore('constructeur', {
       this.notes = data.notes
       this.vatPayer = data.vat_payer
       this.otherMention = data.other_mention
+      this.isDraft = true
 
       const SectionComponent = {
         [SectionsType.Article]: SectionArticle,

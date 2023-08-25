@@ -4,14 +4,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 from django.shortcuts import get_object_or_404
-from ..core.permissions import IsInEntreprise
+from ..core.permissions import IsInEntreprise, CanAccessConstructor
 from ..documents.utils import generate_next_document_number
 from ..entreprise.models import Entreprise
 from ..documents.models import Document, DocumentSection
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
 def produce_document_overview(request: Request, entreprise_slug: str):
     entreprise = Entreprise.objects.get(slug=entreprise_slug)
     print(entreprise)
@@ -24,7 +24,7 @@ def produce_document_overview(request: Request, entreprise_slug: str):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
 def save_document_draft(request: Request, entreprise_slug: str):
     """
     Save a document as a draft to be completed later
@@ -34,7 +34,7 @@ def save_document_draft(request: Request, entreprise_slug: str):
     # If draft isn't already created, create it
     if request.data.get("document_number"):
         document = entreprise.documents.get(
-            document_number=request.data.get("document_number")
+            document_number=request.data.get("document_number"),
         )
     else:
         document = Document(
@@ -44,6 +44,7 @@ def save_document_draft(request: Request, entreprise_slug: str):
                 entreprise, request.data.get("forme"), True
             ),
             created_by=request.user,
+            state="draft",
         )
 
     document.forme = request.data.get("forme")
@@ -104,7 +105,7 @@ def save_document_draft(request: Request, entreprise_slug: str):
 
 
 @api_view(["GET"])
-@permission_classes([IsAuthenticated, IsInEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
 def get_document_draft(request: Request, entreprise_slug: str, document_number: str):
     """
     Get data from the draft to edit it in constructor
@@ -165,7 +166,7 @@ def get_document_draft(request: Request, entreprise_slug: str, document_number: 
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
 def produce_document(request: Request, entreprise_slug: str):
     """
     Used to produce a document from the constructor
@@ -197,10 +198,46 @@ def produce_document(request: Request, entreprise_slug: str):
         total_tva=request.data.get("total_tva"),
         total_ttc=request.data.get("total_ttc"),
         created_by=request.user,
+        state="produced",
     )
+
+    # Suppression of the used draft
+    if request.data.get("is_draft") and request.data.get("draft_document_number"):
+        entreprise.documents.get(
+            document_number=request.data.get("draft_document_number"), is_draft=True
+        ).delete()
+
+    document.save()
+
+    sections = []
+    for section_data in request.data.get("sections"):
+        values = section_data.get("values")
+        section = DocumentSection(
+            type=section_data.get("type"),
+            title=values["title"],
+            document=document,
+        )
+
+        if section.type == "section-article":
+            section.description = values["description"]
+            section.unit_price_ht = values["unitPriceHT"]
+            section.quantity = values["quantity"]
+            section.vat_rate = values["vatRate"]
+            section.article_type = values["articleType"]
+            section.discount = values["discount"]
+            section.discount_type = values["discountType"]
+            section.discount_description = values["discountDescription"]
+            section.unit = values["unit"]
+            section.display_price_infos = values["displayPriceInfos"]
+
+        section.save()
+        sections.append(section)
 
     return Response(
         {
             "status": "success",
+            "data": {
+                "document_number": document.document_number,
+            },
         }
     )

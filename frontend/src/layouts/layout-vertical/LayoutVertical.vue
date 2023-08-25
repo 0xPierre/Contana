@@ -73,7 +73,9 @@ onUnmounted(() => {
         <div
           class="app-content content"
           :class="[$route.meta.contentClass]"
-          :key="route.fullPath"
+          :key="
+            $route.meta.forceComponentReload ? $route.fullPath : undefined
+          "
         >
           <div class="content-overlay" />
           <div class="header-navbar-shadow" />

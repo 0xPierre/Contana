@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { onBeforeMount, reactive, ref, watch } from 'vue'
 import { useDocumentsStore } from '@/stores/apps/Documents'
-import { notify } from '@/helpers/notify'
+import { notify, swalAlert } from '@/helpers/notify'
 import router from '@/router'
 import { DocumentListingModel } from '@/types/documents.types.ts'
 import { euro } from '../../../helpers/utils.ts'
 import strftime from 'strftime'
 import { can } from '@/helpers/permissions.ts'
+import DocumentStateBadge from '@/components/document-stage-badge/DocumentStateBadge.vue'
+import { DocumentStateBadgeInfo } from '@/helpers/documents.ts'
 
 const documentsStore = useDocumentsStore()
 const isListingLoading = ref(false)
@@ -18,8 +20,8 @@ const filters = reactive({
   sortBy: 'created_at',
   sortDesc: true,
   forme: '',
+  state: '',
   startDate: '',
-
   endDate: ''
 })
 
@@ -48,6 +50,7 @@ const saveFiltersInQuery = () => {
       sortBy: filters.sortBy,
       sortDesc: filters.sortDesc.toString(),
       forme: filters.forme,
+      state: filters.state,
       startDate: filters.startDate,
       endDate: filters.endDate
     }
@@ -61,6 +64,7 @@ watch(
     () => filters.sortBy,
     () => filters.sortDesc,
     () => filters.forme,
+    () => filters.state,
     () => filters.startDate,
     () => filters.endDate
   ],
@@ -113,6 +117,7 @@ onBeforeMount(() => {
     filters.sortBy = searchParams.get('sortBy') as string
     filters.sortDesc = searchParams.get('sortDesc') === 'true'
     filters.forme = searchParams.get('forme') as string
+    filters.state = searchParams.get('state') as string
     filters.startDate = searchParams.get('startDate') as string
     filters.endDate = searchParams.get('endDate') as string
 
@@ -120,6 +125,23 @@ onBeforeMount(() => {
   }
   getDocuments()
 })
+
+const deleteDocument = async (documentId: number) => {
+  const { value } = await swalAlert(
+    'Êtes-vous sûr de vouloir supprimer ce document ?'
+  )
+  if (!value) return
+
+  try {
+    await documentsStore.deleteDocument(documentId)
+    getDocuments()
+  } catch {
+    notify(
+      'Une erreur est survenue lors de la suppression du document',
+      'danger'
+    )
+  }
+}
 </script>
 
 <template>
@@ -190,12 +212,15 @@ onBeforeMount(() => {
             <v-select
               :options="[
                 { label: 'Tous', value: '' },
-                { label: 'Facture', value: 'facture' },
-                { label: 'Devis', value: 'devis' },
-                { label: 'Acompte', value: 'acompte' },
-                { label: 'Avoir', value: 'avoir' }
+                { label: 'Brouillon', value: 'draft' },
+                { label: 'Produit', value: 'produced' },
+                { label: 'Devis accepté', value: 'devis_accepted' },
+                { label: 'Devis refusé', value: 'devis_refused' },
+                { label: 'Devis expiré', value: 'devis_expired' },
+                { label: 'Devis facturé', value: 'devis_invoiced' },
+                { label: 'Payé', value: 'paid' }
               ]"
-              v-model="filters.forme"
+              v-model="filters.state"
               :reduce="(option) => option.value"
               :clearable="false"
             />
@@ -261,7 +286,7 @@ onBeforeMount(() => {
                     }
               "
               class="font-weight-bolder"
-              :class="{ 'text-secondary': row.item.is_draft }"
+              :class="DocumentStateBadgeInfo[row.item.state].textColor"
             >
               #{{ row.value }}
             </router-link>
@@ -286,9 +311,7 @@ onBeforeMount(() => {
           </template>
 
           <template #cell(state)="row">
-            <span v-if="row.item.is_draft">
-              <b-badge variant="light-secondary">Brouillon</b-badge>
-            </span>
+            <document-state-badge :state="row.value" />
           </template>
 
           <template #cell(subject)="row">
@@ -298,7 +321,7 @@ onBeforeMount(() => {
           </template>
 
           <template #cell(total_ht)="row">
-            <span class="text-capitalize">
+            <span class="text-capitalize text-nowrap">
               {{ euro(row.value).format() }} €
             </span>
           </template>
@@ -310,20 +333,26 @@ onBeforeMount(() => {
           </template>
 
           <template #cell(actions)="row">
-            <b-button
-              class="btn-icon"
-              variant="flat-secondary"
-              :disabled="row.item.is_draft"
+            <div
+              v-if="row.item.is_draft"
+              class="d-flex justify-content-center"
             >
-              <vue-feather type="printer" size="18" />
-            </b-button>
-            <b-button
-              class="btn-icon"
-              variant="flat-secondary"
-              :disabled="row.item.is_draft"
-            >
-              <vue-feather type="download" size="18" />
-            </b-button>
+              <b-button
+                class="btn-icon"
+                variant="flat-danger"
+                @click="deleteDocument(row.item.id)"
+              >
+                <vue-feather type="trash" size="18" />
+              </b-button>
+            </div>
+            <div v-else>
+              <b-button class="btn-icon" variant="flat-secondary">
+                <vue-feather type="printer" size="18" />
+              </b-button>
+              <b-button class="btn-icon" variant="flat-secondary">
+                <vue-feather type="download" size="18" />
+              </b-button>
+            </div>
           </template>
         </b-table>
       </b-overlay>

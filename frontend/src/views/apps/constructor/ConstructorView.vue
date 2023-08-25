@@ -12,15 +12,17 @@ import SectionTitle from '@/components/constructor/sections/SectionTitle.vue'
 import SectionSubtotal from '@/components/constructor/sections/SectionSubtotal.vue'
 import SectionArticle from '@/components/constructor/sections/SectionArticle.vue'
 import { storeToRefs } from 'pinia'
-import { notify } from '@/helpers/notify.ts'
+import { notify, swalAlert } from '@/helpers/notify.ts'
 import strftime from 'strftime'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useDocumentsStore } from '@/stores/apps/Documents.ts'
 
 draggable.compatConfig = { MODE: 3 }
 const constructorStore = useConstructorStore()
 const { sections } = storeToRefs(constructorStore)
 const isLoading = ref(false)
 const route = useRoute()
+const router = useRouter()
 /**
  * Sections available in the constructor
  */
@@ -83,6 +85,7 @@ onBeforeMount(async () => {
   constructorStore.sections = []
   constructorStore.subject = ''
   constructorStore.documentNumber = ''
+  constructorStore.isDraft = false
 
   if (route.name === 'entreprise-constructor-draft') {
     isLoading.value = true
@@ -156,6 +159,26 @@ const produceDocument = async () => {
       'Une erreur est survenue lors de la production du document',
       'danger'
     )
+  }
+
+  isLoading.value = false
+}
+
+const deleteDraft = async () => {
+  const { value } = await swalAlert(
+    'Êtes-vous sûr de vouloir supprimer ce brouillon ?'
+  )
+  if (!value) return
+
+  isLoading.value = true
+
+  try {
+    const documentStore = useDocumentsStore()
+    await documentStore.deleteDocument(route.params.documentId as number)
+
+    router.push({ name: 'entreprise-documents' })
+  } catch {
+    notify('Une erreur est survenue', 'danger')
   }
 
   isLoading.value = false
@@ -316,7 +339,23 @@ const produceDocument = async () => {
                 @click="saveDraft"
               >
                 <vue-feather type="save" class="mr-50" size="16" />
-                Enregistrer en brouillon
+                Enregistrer
+                {{ constructorStore.documentNumber ? 'le' : 'en' }}
+                brouillon
+              </b-button>
+              <b-button
+                v-if="
+                  constructorStore.documentNumber &&
+                  constructorStore.isDraft
+                "
+                v-ripple
+                variant="outline-danger"
+                block
+                class="btn-with-icon"
+                @click="deleteDraft"
+              >
+                <vue-feather type="trash" class="mr-50" size="16" />
+                Supprimer le brouillon
               </b-button>
             </b-card>
           </vue-perfect-scrollbar>

@@ -2,6 +2,17 @@ import {
   DocumentsType
   // PaymentsMethod
 } from '@/types/core.types.ts'
+
+export enum DocumentsState {
+  Draft = 'draft',
+  Produced = 'produced',
+  DevisAccepted = 'devis_accepted',
+  DevisRefused = 'devis_refused',
+  DevisExpired = 'devis_expired',
+  DevisInvoiced = 'devis_invoiced',
+  Paid = 'paid'
+}
+
 export interface DocumentListingModel {
   id: number
   document_number: string
@@ -11,9 +22,10 @@ export interface DocumentListingModel {
     client_number: string
     socialreasonorname: string
   }
-  created_at: Date
+  created_at: string
   total_ht: number
   is_draft: boolean
+  state: DocumentsState
 }
 
 export interface DocumentModel extends DocumentListingModel {
