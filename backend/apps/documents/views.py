@@ -152,4 +152,62 @@ class DocumentsViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response({"status": "success", "data": serializer.data})
 
+    def destroy(self, request, *args, **kwargs):
+        """
+        Allows to delete a document
+        Only draft documents can be deleted and devis in produced state
+        """
+        instance: Document = self.get_object()
 
+        can_be_deleted = False
+
+        if instance.is_draft:
+            can_be_deleted = True
+
+        elif instance.forme == "devis" and instance.state == "produced":
+            can_be_deleted = True
+
+        if not can_be_deleted:
+            raise PermissionDenied()
+
+        instance.delete()
+        return Response({"status": "success"})
+
+    @action(detail=True, methods=["post"], url_path="state")
+    @permission_classes_decorator([IsAuthenticated, IsInEntreprise])
+    def change_state(self, *args, **kwargs):
+        """
+        Allows to change the state of a document
+        """
+        instance: Document = self.get_object()
+
+        state = self.request.data.get("state")
+
+        if state == "devis_accepted" or state == "devis_refused":
+            """
+            Devis can be accepted or refused only if they are in produced state
+            """
+            if instance.forme != "devis" and instance.state != "produced":
+                raise PermissionDenied()
+
+            instance.state = state
+            instance.devis_accepted_or_refused_at = timezone.now()
+
+        elif state == "paid":
+            """
+            Facture or avoir can be paid only if they are in produced state
+            """
+            if (
+                instance.forme != "facture" or instance.forme != "avoir"
+            ) and instance.state != "produced":
+                raise PermissionDenied()
+
+            instance.state = state
+            instance.paid_at = timezone.now()
+
+            # if instance.forme == "facture" and instance.linked_devis:
+            #     instance.linked_devis.state = "devis_invoiced"
+            #     instance.linked_devis.save()
+
+        instance.save()
+        return Response({"status": "success"})

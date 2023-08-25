@@ -202,7 +202,12 @@ export const useConstructorStore = defineStore('constructeur', {
     async produceDocument() {
       const entrepriseStore = useEntrepriseStore()
 
-      return http.post<ApiResponse<void>>(
+      return http.post<
+        ApiResponse<{
+          document_number: string
+          document_id: number
+        }>
+      >(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/produce/`,
         {
           client: this.client,

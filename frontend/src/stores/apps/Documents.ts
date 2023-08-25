@@ -95,8 +95,8 @@ export const useDocumentsStore = defineStore('documents', {
     async changeDocumentState(documentId: number, state: string) {
       const entrepriseStore = useEntrepriseStore()
 
-      return http.patch(
-        `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/`,
+      return http.post(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/state/`,
         {
           state
         }

@@ -34,6 +34,6 @@ export const DocumentStateBadgeInfo = {
   [DocumentsState.Paid]: {
     color: 'light-dark',
     textColor: 'text-dark',
-    text: 'Facture ou acompte payée'
+    text: 'Payé'
   }
 }

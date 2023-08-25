@@ -95,7 +95,10 @@ onBeforeMount(async () => {
         route.params.documentNumber as string
       )
     } catch {
-      this.notify('Impossible de charger le brouillon', 'danger')
+      notify('Impossible de charger le brouillon', 'danger')
+      router.push({
+        name: 'entreprise-documents'
+      })
     }
     isLoading.value = false
   }
@@ -151,10 +154,18 @@ const produceDocument = async () => {
 
     if (data.status === 'success') {
       notify('Document produit avec succès')
+      router.push({
+        name: 'entreprise-document-view',
+        params: {
+          documentId: data.data.document_id,
+          documentNumber: data.data.document_number
+        }
+      })
     } else {
       notify(data.error, 'danger')
     }
-  } catch {
+  } catch (e) {
+    console.log(e)
     notify(
       'Une erreur est survenue lors de la production du document',
       'danger'

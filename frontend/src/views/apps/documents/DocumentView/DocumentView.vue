@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import BackButton from '@/components/back-button/BackButton.vue'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { notify, swalAlert } from '@/helpers/notify.ts'
 import { useDocumentsStore } from '@/stores/apps/Documents.ts'
 import { useRoute, useRouter } from 'vue-router'
@@ -8,6 +8,8 @@ import { DocumentModel, DocumentsState } from '@/types/documents.types.ts'
 import { DocumentStateBadgeInfo } from '@/helpers/documents.ts'
 import DocumentStateBadge from '@/components/document-stage-badge/DocumentStateBadge.vue'
 import { strftimeFR } from '@/helpers/utils.ts'
+import { DocumentsType } from '@/types/core.types.ts'
+import ProduceAcompte from '@/views/apps/documents/DocumentView/ProduceAcompte.vue'
 
 const isLoading = ref(false)
 const documentStore = useDocumentsStore()
@@ -26,6 +28,7 @@ onMounted(async () => {
     document.value = data.data
   } catch {
     notify('Une erreur est survenue', 'danger')
+    router.push({ name: 'entreprise-documents' })
   }
 
   isLoading.value = false
@@ -150,13 +153,18 @@ const changeDocumentState = async (state: DocumentsState) => {
           </b-card>
 
           <b-card>
-            <template v-if="document.forme === 'devis'">
+            <template
+              v-if="
+                document.forme === DocumentsType.Devis &&
+                document.state === DocumentsState.Produced
+              "
+            >
               <b-button
                 variant="success"
                 block
                 v-ripple
                 class="btn-with-icon justify-content-center"
-                @click="changeDocumentState('devis_accepted')"
+                @click="changeDocumentState(DocumentsState.DevisAccepted)"
               >
                 <vue-feather type="check-circle" size="18" class="mr-50" />
                 Devis accepté
@@ -167,13 +175,76 @@ const changeDocumentState = async (state: DocumentsState) => {
                 block
                 v-ripple
                 class="btn-with-icon justify-content-center mt-1"
-                @click="changeDocumentState('devis_refused')"
+                @click="changeDocumentState(DocumentsState.DevisRefused)"
               >
                 <vue-feather type="x-circle" size="18" class="mr-50" />
                 Devis refusé
               </b-button>
+              <hr />
             </template>
-            <hr />
+
+            <template
+              v-if="
+                document.forme === DocumentsType.Devis &&
+                document.state === DocumentsState.DevisAccepted
+              "
+            >
+              <b-button
+                variant="primary"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center"
+              >
+                <vue-feather type="file-text" size="18" class="mr-50" />
+                Produire la facture
+              </b-button>
+
+              <hr />
+            </template>
+
+            <template
+              v-if="
+                (document.forme === DocumentsType.Facture ||
+                  document.forme == DocumentsType.Acompte) &&
+                document.state === DocumentsState.Produced
+              "
+            >
+              <b-button
+                variant="dark"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-1"
+                @click="changeDocumentState(DocumentsState.Paid)"
+              >
+                <vue-feather type="check-circle" size="18" class="mr-50" />
+                {{
+                  document.forme === DocumentsType.Facture
+                    ? 'Facture payée'
+                    : 'Acompte payé'
+                }}
+              </b-button>
+            </template>
+
+            <template
+              v-if="
+                document.forme === DocumentsType.Facture &&
+                document.state === DocumentsState.Paid
+              "
+            >
+              <b-button
+                variant="warning"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-1"
+              >
+                <vue-feather
+                  type="corner-up-left"
+                  size="18"
+                  class="mr-50"
+                />
+                Créer un avoir
+              </b-button>
+            </template>
 
             <b-button
               variant="outline-secondary"
@@ -188,7 +259,8 @@ const changeDocumentState = async (state: DocumentsState) => {
 
             <b-button
               v-if="
-                document.forme === 'devis' && document.state === 'produced'
+                document.forme === DocumentsType.Devis &&
+                document.state === DocumentsState.Produced
               "
               variant="outline-danger"
               block

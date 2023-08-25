@@ -111,7 +111,9 @@ def get_document_draft(request: Request, entreprise_slug: str, document_number: 
     Get data from the draft to edit it in constructor
     """
     entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
-    document = entreprise.documents.get(document_number=document_number, is_draft=True)
+    document = get_object_or_404(
+        entreprise.documents, document_number=document_number, is_draft=True
+    )
 
     sections = []
     for section in document.sections.all():
@@ -238,6 +240,7 @@ def produce_document(request: Request, entreprise_slug: str):
             "status": "success",
             "data": {
                 "document_number": document.document_number,
+                "document_id": document.id,
             },
         }
     )
