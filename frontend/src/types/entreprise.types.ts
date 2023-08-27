@@ -23,7 +23,7 @@ export interface EntrepriseSettingsInformations {
   bank: string
   ape: string
   forme: string
-  siret: string
+  siren: string
   capital: string
 }
 

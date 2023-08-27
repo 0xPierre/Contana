@@ -41,6 +41,7 @@ class ClientsDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for the Client model for detail view
     """
+
     files = ClientsFilesField(many=True, read_only=True)
 
     class Meta:
@@ -55,7 +56,7 @@ class ClientsDetailSerializer(serializers.ModelSerializer):
             "zip_code",
             "address",
             "vat_number",
-            "siret",
+            "siren",
             "type",
             "note",
             "website",

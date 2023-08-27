@@ -27,7 +27,7 @@ const clientInitialData: ClientCreationForm = {
   zip_code: '',
   address: '',
   vat_number: '',
-  siret: '',
+  siren: '',
   note: '',
   type: 'professionnel',
   website: ''
@@ -81,7 +81,7 @@ const openModal = () => {
 
 const selectEntreprise = (entreprise: any) => {
   client.socialreasonorname = entreprise.nom_complet
-  client.siret = entreprise.siren
+  client.siren = entreprise.siren
   client.address = entreprise.siege.libelle_voie
   client.zip_code = entreprise.siege.code_postal
   client.city = entreprise.siege.libelle_commune
@@ -140,12 +140,12 @@ const createClient = async () => {
       <div v-if="!showClientFields">
         <b-overlay :show="isEntrepriseSearchLoading">
           <b-form-group
-            label="Recherche automatique de l'entreprise par nom,siret,adresse..."
+            label="Recherche automatique de l'entreprise par nom,siren,adresse..."
           >
             <b-input
               v-model="entrepriseSearchString"
               debounce="300"
-              placeholder="Rechercher une entreprise par nom, siret ou adresse"
+              placeholder="Rechercher une entreprise par nom, siren ou adresse"
             />
           </b-form-group>
 
@@ -231,10 +231,10 @@ const createClient = async () => {
 
             <b-form-group
               v-show="client.type === 'professionnel'"
-              label="Siret"
+              label="Siren"
             >
               <b-input
-                v-model="client.siret"
+                v-model="client.siren"
                 placeholder="97245934"
                 type="text"
               />

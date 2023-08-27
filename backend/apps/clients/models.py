@@ -25,7 +25,7 @@ class Client(BaseModel):
     zip_code = models.CharField(max_length=255, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     vat_number = models.CharField(max_length=255, null=True, blank=True)
-    siret = models.CharField(max_length=255, null=True, blank=True)
+    siren = models.CharField(max_length=255, null=True, blank=True)
     note = models.TextField(null=True, blank=True)
     website = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(

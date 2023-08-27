@@ -65,7 +65,7 @@ class Entreprise(BaseModel):
     bank = models.CharField(max_length=255, null=True, blank=True)
     ape = models.CharField(max_length=255, null=True, blank=True)
     forme = models.CharField(max_length=255, null=True, blank=True)
-    siret = models.CharField(max_length=255, null=True, blank=True)
+    siren = models.CharField(max_length=255, null=True, blank=True)
     capital = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):

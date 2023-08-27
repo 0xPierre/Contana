@@ -9,7 +9,7 @@ export interface ClientCreationForm {
   zip_code: string
   address: string
   vat_number: string
-  siret: string
+  siren: string
   note: string
   type: ClientType
   website: string

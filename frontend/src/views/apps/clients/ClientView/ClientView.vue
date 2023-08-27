@@ -19,7 +19,7 @@ const client = ref<ClientModel>({
   zip_code: '',
   address: '',
   vat_number: '',
-  siret: '',
+  siren: '',
   note: '',
   type: 'professionnel',
   website: '',
@@ -204,10 +204,10 @@ const unarchiveClient = async () => {
 
               <b-form-group
                 v-show="client.type === 'professionnel'"
-                label="Siret"
+                label="Siren"
               >
                 <b-input
-                  v-model="client.siret"
+                  v-model="client.siren"
                   placeholder="97245934"
                   type="text"
                 />
@@ -341,17 +341,6 @@ const unarchiveClient = async () => {
             >
               <vue-feather type="file-plus" size="18" class="mr-50" />
               Créer un devis
-            </b-button>
-
-            <b-button
-              variant="flat-dark"
-              class="btn-with-icon"
-              block
-              v-ripple
-              :disabled="client.archived"
-            >
-              <vue-feather type="file-plus" size="18" class="mr-50" />
-              Créer un avoir
             </b-button>
           </div>
         </b-card>

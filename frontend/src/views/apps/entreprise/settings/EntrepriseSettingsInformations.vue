@@ -20,7 +20,7 @@ const { formState, v$ } = useFormValidation(
     city: entrepriseStore.entreprise?.city || '',
     zip_code: entrepriseStore.entreprise?.zip_code || '',
     country: entrepriseStore.entreprise?.country || '',
-    siret: entrepriseStore.entreprise?.siret || '',
+    siren: entrepriseStore.entreprise?.siren || '',
     num_rcs: entrepriseStore.entreprise?.num_rcs || '',
     vat_number: entrepriseStore.entreprise?.vat_number || '',
     iban: entrepriseStore.entreprise?.iban || '',
@@ -42,9 +42,8 @@ const updateInformations = async () => {
 
   isLoading.value = true
   try {
-    const { data } = await entrepriseStore.updateEntrepriseInformations(
-      formState
-    )
+    const { data } =
+      await entrepriseStore.updateEntrepriseInformations(formState)
 
     if (data.status === 'success') {
       console.log(entrepriseStore.entreprise?.slug, data.data.slug)
@@ -187,10 +186,10 @@ const updateInformations = async () => {
             </b-form-group>
           </b-col>
           <b-col md="6">
-            <b-form-group label="Siret">
+            <b-form-group label="Siren">
               <b-form-input
                 placeholder="951234567"
-                v-model="formState.siret"
+                v-model="formState.siren"
               />
             </b-form-group>
           </b-col>

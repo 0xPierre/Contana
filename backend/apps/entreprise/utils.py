@@ -32,7 +32,7 @@ def get_entreprise_data(entreprise: Entreprise, user: User) -> dict:
         "bank": entreprise.bank,
         "ape": entreprise.ape,
         "forme": entreprise.forme,
-        "siret": entreprise.siret,
+        "siren": entreprise.siren,
         "capital": entreprise.capital,
         "logos": [],
         "user_permissions": {},

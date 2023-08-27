@@ -20,7 +20,7 @@ class EntrepriseUpdateInformationsModelSerializer(serializers.ModelSerializer):
             "bank",
             "ape",
             "forme",
-            "siret",
+            "siren",
             "capital",
         ]
         extra_kwargs = {

@@ -45,7 +45,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
                 | Q(zip_code__icontains=search)
                 | Q(address__icontains=search)
                 | Q(vat_number__icontains=search)
-                | Q(siret__icontains=search)
+                | Q(siren__icontains=search)
                 | Q(note__icontains=search)
                 | Q(website__icontains=search)
                 | Q(type__icontains=search)
