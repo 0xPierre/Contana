@@ -339,6 +339,35 @@ const produceFacture = async () => {
               </b-button>
             </template>
           </b-card>
+
+          <b-card>
+            <div class="d-flex justify-content-between">
+              <h4 class="mb-25">Client</h4>
+              <h4 class="mb-25 ml-1 text-primary">
+                {{ document.client.client_number }}
+              </h4>
+            </div>
+            <p>
+              {{ document.client.socialreasonorname }}
+            </p>
+
+            <b-button
+              variant="primary"
+              v-ripple
+              block
+              class="btn-with-icon"
+              :to="{
+                name: 'entreprise-client-view',
+                params: {
+                  clientId: document.client.id,
+                  clientNumber: document.client.client_number
+                }
+              }"
+            >
+              <vue-feather type="user" size="18" class="mr-50" />
+              Voir la fiche client
+            </b-button>
+          </b-card>
         </vue-perfect-scrollbar>
       </b-col>
     </b-row>
