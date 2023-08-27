@@ -101,6 +101,14 @@ export const useDocumentsStore = defineStore('documents', {
           state
         }
       )
+    },
+
+    async produceFactureFromDevis(documentId: number) {
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.post(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/produce-facture-from-devis/`
+      )
     }
   },
 

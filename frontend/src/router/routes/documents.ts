@@ -21,6 +21,7 @@ export default [
       title: 'Document',
       layout: 'layout-vertical',
       requireAuth: true,
+      forceComponentReload: true,
       permissions: {
         access_documents: true
       }

@@ -90,6 +90,36 @@ const changeDocumentState = async (state: DocumentsState) => {
 
   isLoading.value = false
 }
+
+const produceFacture = async () => {
+  const { value } = await swalAlert(
+    'Êtes-vous sûr de vouloir produire une facture à partir de ce devis ?'
+  )
+  if (!value) return
+  isLoading.value = true
+
+  try {
+    const { data } = await documentStore.produceFactureFromDevis(
+      route.params.documentId as number
+    )
+    console.log(data)
+    if (data.status === 'success') {
+      router.push({
+        name: 'entreprise-document-view',
+        params: {
+          documentId: data.data.document_id,
+          documentNumber: data.data.document_number
+        }
+      })
+    } else {
+      notify(data.error, 'danger')
+    }
+  } catch {
+    notify('Une erreur est survenue', 'danger')
+  }
+
+  isLoading.value = false
+}
 </script>
 
 <template>
@@ -186,7 +216,8 @@ const changeDocumentState = async (state: DocumentsState) => {
             <template
               v-if="
                 document.forme === DocumentsType.Devis &&
-                document.state === DocumentsState.DevisAccepted
+                document.state === DocumentsState.DevisAccepted &&
+                !document.linked_facture
               "
             >
               <b-button
@@ -194,57 +225,49 @@ const changeDocumentState = async (state: DocumentsState) => {
                 block
                 v-ripple
                 class="btn-with-icon justify-content-center"
+                @click="produceFacture"
               >
                 <vue-feather type="file-text" size="18" class="mr-50" />
                 Produire la facture
               </b-button>
 
+              <ProduceAcompte :document="document" />
               <hr />
             </template>
 
-            <template
+            <b-button
               v-if="
                 (document.forme === DocumentsType.Facture ||
                   document.forme == DocumentsType.Acompte) &&
                 document.state === DocumentsState.Produced
               "
+              variant="dark"
+              block
+              v-ripple
+              class="btn-with-icon justify-content-center"
+              @click="changeDocumentState(DocumentsState.Paid)"
             >
-              <b-button
-                variant="dark"
-                block
-                v-ripple
-                class="btn-with-icon justify-content-center mt-1"
-                @click="changeDocumentState(DocumentsState.Paid)"
-              >
-                <vue-feather type="check-circle" size="18" class="mr-50" />
-                {{
-                  document.forme === DocumentsType.Facture
-                    ? 'Facture payée'
-                    : 'Acompte payé'
-                }}
-              </b-button>
-            </template>
+              <vue-feather type="check-circle" size="18" class="mr-50" />
+              {{
+                document.forme === DocumentsType.Facture
+                  ? 'Facture payée'
+                  : 'Acompte payé'
+              }}
+            </b-button>
 
-            <template
+            <b-button
               v-if="
                 document.forme === DocumentsType.Facture &&
                 document.state === DocumentsState.Paid
               "
+              variant="warning"
+              block
+              v-ripple
+              class="btn-with-icon justify-content-center"
             >
-              <b-button
-                variant="warning"
-                block
-                v-ripple
-                class="btn-with-icon justify-content-center mt-1"
-              >
-                <vue-feather
-                  type="corner-up-left"
-                  size="18"
-                  class="mr-50"
-                />
-                Créer un avoir
-              </b-button>
-            </template>
+              <vue-feather type="corner-up-left" size="18" class="mr-50" />
+              Créer un avoir
+            </b-button>
 
             <b-button
               variant="outline-secondary"
@@ -265,12 +288,56 @@ const changeDocumentState = async (state: DocumentsState) => {
               variant="outline-danger"
               block
               v-ripple
-              class="btn-with-icon justify-content-center mt-1"
+              class="btn-with-icon justify-content-center"
               @click="deleteDocument"
             >
               <vue-feather type="trash-2" size="18" class="mr-50" />
               Supprimer
             </b-button>
+
+            <template v-if="document.linked_facture">
+              <hr />
+
+              <p class="text-center mb-0">Facture liée :</p>
+              <b-button
+                variant="flat-warning"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-25"
+                :to="{
+                  name: 'entreprise-document-view',
+                  params: {
+                    documentId: document.linked_facture.id,
+                    documentNumber: document.linked_facture.document_number
+                  }
+                }"
+              >
+                <vue-feather type="file-text" size="18" class="mr-50" />
+                Facture {{ document.linked_facture.document_number }}
+              </b-button>
+            </template>
+
+            <template v-if="document.linked_devis">
+              <hr />
+
+              <p class="text-center mb-0">Devis liée :</p>
+              <b-button
+                variant="flat-success"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-25"
+                :to="{
+                  name: 'entreprise-document-view',
+                  params: {
+                    documentId: document.linked_devis.id,
+                    documentNumber: document.linked_devis.document_number
+                  }
+                }"
+              >
+                <vue-feather type="file-text" size="18" class="mr-50" />
+                Devis {{ document.linked_devis.document_number }}
+              </b-button>
+            </template>
           </b-card>
         </vue-perfect-scrollbar>
       </b-col>

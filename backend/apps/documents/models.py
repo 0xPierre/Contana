@@ -120,5 +120,13 @@ class Document(BaseModel):
 
     state = models.CharField(choices=states, default="draft")
 
+    linked_devis = models.OneToOneField(
+        "Document",
+        on_delete=models.SET_NULL,
+        related_name="linked_facture",
+        null=True,
+        blank=True,
+    )
+
     def __str__(self):
         return f"{self.document_number} - {self.subject}"

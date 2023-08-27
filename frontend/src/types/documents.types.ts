@@ -29,6 +29,14 @@ export interface DocumentListingModel {
 }
 
 export interface DocumentModel extends DocumentListingModel {
+  linked_facture?: {
+    id: number
+    document_number: string
+  }
+  linked_devis?: {
+    id: number
+    document_number: string
+  }
   // subject: string
   // validity_date: Date
   // payment_method: PaymentsMethod

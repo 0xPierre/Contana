@@ -17,6 +17,18 @@ class ClientsField(serializers.RelatedField):
         }
 
 
+class LinkedDocument(serializers.RelatedField):
+    """
+    Serializer for the linked document model
+    """
+
+    def to_representation(self, value):
+        return {
+            "id": value.id,
+            "document_number": value.document_number,
+        }
+
+
 class DocumentsListingSerializer(serializers.ModelSerializer):
     """
     Serializer for the Document model for listing
@@ -55,6 +67,8 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
     """
 
     client = ClientsField(read_only=True)
+    linked_facture = LinkedDocument(read_only=True)
+    linked_devis = LinkedDocument(read_only=True)
 
     class Meta:
         model = Document
@@ -68,6 +82,8 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
             "is_draft",
             "subject",
             "state",
+            "linked_facture",
+            "linked_devis",
         ]
         extra_kwargs = {
             "document_number": {"read_only": True},
@@ -78,4 +94,5 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
             "is_draft": {"read_only": True},
             "subject": {"read_only": True},
             "state": {"read_only": True},
+            "linked_facture": {"read_only": True},
         }

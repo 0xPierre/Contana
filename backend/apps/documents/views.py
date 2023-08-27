@@ -174,7 +174,6 @@ class DocumentsViewSet(viewsets.ModelViewSet):
         return Response({"status": "success"})
 
     @action(detail=True, methods=["post"], url_path="state")
-    @permission_classes_decorator([IsAuthenticated, IsInEntreprise])
     def change_state(self, *args, **kwargs):
         """
         Allows to change the state of a document
@@ -211,3 +210,54 @@ class DocumentsViewSet(viewsets.ModelViewSet):
 
         instance.save()
         return Response({"status": "success"})
+
+    @action(detail=True, methods=["post"], url_path="produce-facture-from-devis")
+    def produce_facture_from_devis(self, *args, **kwargs):
+        instance: Document = self.get_object()
+
+        if (
+            instance.forme != "devis"
+            or instance.state != "devis_accepted"
+            or hasattr(instance, "linked_facture")
+        ):
+            raise PermissionDenied()
+
+        new_document = Document(
+            document_number=generate_next_document_number(
+                instance.entreprise, "facture", False
+            ),
+            forme="facture",
+            client=instance.client,
+            subject=instance.subject,
+            payment_method=instance.payment_method,
+            validity_date=instance.validity_date,
+            payment_mention=instance.payment_mention,
+            other_mention=instance.other_mention,
+            notes=instance.notes,
+            vat_payer=instance.vat_payer,
+            entreprise=instance.entreprise,
+            created_by=self.request.user,
+            total_ht=instance.total_ht,
+            total_tva=instance.total_tva,
+            total_ttc=instance.total_ttc,
+            state="produced",
+            linked_devis=instance,
+        )
+
+        new_document.save()
+
+        for section in instance.sections.all():
+            new_section = section
+            new_section.pk = None
+            new_section.document = new_document
+            new_section.save()
+
+        return Response(
+            {
+                "status": "success",
+                "data": {
+                    "document_id": new_document.id,
+                    "document_number": new_document.document_number,
+                },
+            }
+        )
