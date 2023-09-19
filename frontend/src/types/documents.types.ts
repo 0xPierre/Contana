@@ -37,6 +37,14 @@ export interface DocumentModel extends DocumentListingModel {
     id: number
     document_number: string
   }
+  linked_acomptes: {
+    id: number
+    document_number: string
+  }[]
+  linked_parent_devis?: {
+    id: number
+    document_number: string
+  }
   // subject: string
   // validity_date: Date
   // payment_method: PaymentsMethod

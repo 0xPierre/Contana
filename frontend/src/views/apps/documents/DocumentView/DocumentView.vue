@@ -300,7 +300,7 @@ const produceFacture = async () => {
 
               <p class="text-center mb-0">Facture liée :</p>
               <b-button
-                variant="flat-warning"
+                variant="flat-primary"
                 block
                 v-ripple
                 class="btn-with-icon justify-content-center mt-25"
@@ -314,6 +314,53 @@ const produceFacture = async () => {
               >
                 <vue-feather type="file-text" size="18" class="mr-50" />
                 Facture {{ document.linked_facture.document_number }}
+              </b-button>
+            </template>
+
+            <template v-if="document.linked_parent_devis">
+              <hr />
+
+              <p class="text-center mb-0">Devis lié:</p>
+              <b-button
+                variant="flat-success"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-25"
+                :to="{
+                  name: 'entreprise-document-view',
+                  params: {
+                    documentId: document.linked_parent_devis.id,
+                    documentNumber:
+                      document.linked_parent_devis.document_number
+                  }
+                }"
+              >
+                <vue-feather type="file-text" size="18" class="mr-50" />
+                Devis {{ document.linked_parent_devis.document_number }}
+              </b-button>
+            </template>
+
+            <template v-if="document.linked_acomptes.length > 0">
+              <hr />
+
+              <p class="text-center mb-0">Acomptes liés :</p>
+              <b-button
+                v-for="acompte in document.linked_acomptes"
+                :key="`acompte-${acompte.id}`"
+                variant="flat-primary"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-25"
+                :to="{
+                  name: 'entreprise-document-view',
+                  params: {
+                    documentId: acompte.id,
+                    documentNumber: acompte.document_number
+                  }
+                }"
+              >
+                <vue-feather type="file-text" size="18" class="mr-50" />
+                Acompte {{ acompte.document_number }}
               </b-button>
             </template>
 
@@ -371,6 +418,8 @@ const produceFacture = async () => {
         </vue-perfect-scrollbar>
       </b-col>
     </b-row>
+    <!-- height is used to avoid a UI bug for loader being positioned on the top of the page-->
+    <div v-else style="height: 50vh" />
   </b-overlay>
 </template>
 

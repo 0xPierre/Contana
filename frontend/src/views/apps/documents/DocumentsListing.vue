@@ -285,7 +285,7 @@ const deleteDocument = async (documentId: number) => {
                       }
                     }
               "
-              class="font-weight-bolder"
+              class="font-weight-bolder text-nowrap"
               :class="DocumentStateBadgeInfo[row.item.state].textColor"
             >
               #{{ row.value }}
@@ -294,7 +294,10 @@ const deleteDocument = async (documentId: number) => {
 
           <template #cell(client)="row">
             <template v-if="row.value">
-              <span class="font-weight-bold text-nowrap d-block">
+              <span
+                class="font-weight-bold text-nowrap d-block text-truncate"
+                style="max-width: 120px"
+              >
                 {{ row.value.socialreasonorname }}
               </span>
               <small class="text-muted">{{
@@ -315,7 +318,7 @@ const deleteDocument = async (documentId: number) => {
           </template>
 
           <template #cell(subject)="row">
-            <span style="max-width: 120px" class="truncate-text-ellipsis">
+            <span style="max-width: 120px" class="text-truncate">
               {{ row.value }}
             </span>
           </template>
@@ -345,7 +348,7 @@ const deleteDocument = async (documentId: number) => {
                 <vue-feather type="trash" size="18" />
               </b-button>
             </div>
-            <div v-else>
+            <div v-else class="text-nowrap">
               <b-button class="btn-icon" variant="flat-secondary">
                 <vue-feather type="printer" size="18" />
               </b-button>

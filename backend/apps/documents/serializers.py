@@ -69,6 +69,8 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
     client = ClientsField(read_only=True)
     linked_facture = LinkedDocument(read_only=True)
     linked_devis = LinkedDocument(read_only=True)
+    linked_acomptes = LinkedDocument(read_only=True, many=True)
+    linked_parent_devis = LinkedDocument(read_only=True)
 
     class Meta:
         model = Document
@@ -84,6 +86,8 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
             "state",
             "linked_facture",
             "linked_devis",
+            "linked_acomptes",
+            "linked_parent_devis",
         ]
         extra_kwargs = {
             "document_number": {"read_only": True},
@@ -95,4 +99,7 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
             "subject": {"read_only": True},
             "state": {"read_only": True},
             "linked_facture": {"read_only": True},
+            "linked_devis": {"read_only": True},
+            "linked_acomptes": {"read_only": True},
+            "linked_parent_devis": {"read_only": True},
         }

@@ -127,6 +127,14 @@ class Document(BaseModel):
         null=True,
         blank=True,
     )
+    # used for acomptes
+    linked_parent_devis = models.ForeignKey(
+        "Document",
+        on_delete=models.SET_NULL,
+        related_name="linked_acomptes",
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return f"{self.document_number} - {self.subject}"

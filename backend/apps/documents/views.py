@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.db.models import QuerySet
 
-from .models import Document
+from .models import Document, DocumentSection
 from ..core.permissions import CanAccessDocuments, IsInEntreprise, CanAccessConstructor
 from ..core.utils import getEntrepriseFromRequest
 from .utils import generate_next_document_number
@@ -222,6 +222,15 @@ class DocumentsViewSet(viewsets.ModelViewSet):
         ):
             raise PermissionDenied()
 
+        total_ht = instance.total_ht
+        total_tva = instance.total_tva
+        total_ttc = instance.total_ttc
+
+        for acompte in instance.linked_acomptes.all():
+            total_ht -= acompte.total_ht
+            total_tva -= acompte.total_tva
+            total_ttc -= acompte.total_ttc
+
         new_document = Document(
             document_number=generate_next_document_number(
                 instance.entreprise, "facture", False
@@ -237,9 +246,9 @@ class DocumentsViewSet(viewsets.ModelViewSet):
             vat_payer=instance.vat_payer,
             entreprise=instance.entreprise,
             created_by=self.request.user,
-            total_ht=instance.total_ht,
-            total_tva=instance.total_tva,
-            total_ttc=instance.total_ttc,
+            total_ht=total_ht,
+            total_tva=total_tva,
+            total_ttc=total_ttc,
             state="produced",
             linked_devis=instance,
         )
@@ -258,6 +267,96 @@ class DocumentsViewSet(viewsets.ModelViewSet):
                 "data": {
                     "document_id": new_document.id,
                     "document_number": new_document.document_number,
+                },
+            }
+        )
+
+    @action(detail=True, methods=["post"], url_path="produce-acompte-from-devis")
+    def produce_acompte(self, *args, **kwargs):
+        instance: Document = self.get_object()
+        acompte_data = self.request.data.get("acompte", None)
+
+        if (
+            instance.forme != "devis"
+            or instance.state != "devis_accepted"
+            or not acompte_data
+        ):
+            raise PermissionDenied()
+
+        if acompte_data["type"] != "percentage" and acompte_data["type"] != "amount":
+            raise PermissionDenied()
+
+        if instance.vat_payer and not acompte_data["vat_rate"] > 0:
+            return Response(
+                {
+                    "status": "failed",
+                    "error": "Veuillez renseigner un taux de TVA supérieur à 0%",
+                }
+            )
+
+        # Verify if the total amount of the acomptes is not greater than the total amount of the devis
+        total_ttc_acomptes = 0
+        for acompte in instance.linked_acomptes.all():
+            total_ttc_acomptes += acompte.total_ttc
+
+        if acompte_data["type"] == "percentage":
+            amount = round(instance.total_ttc * (float(acompte_data["value"]) / 100), 2)
+        else:
+            amount = round(float(acompte_data["value"]), 2)
+
+        if total_ttc_acomptes + amount > instance.total_ttc:
+            return Response(
+                {
+                    "status": "failed",
+                    "error": "Le montant total des acomptes ne peut pas être supérieur au montant total du devis",
+                }
+            )
+
+        amount_ttc = amount
+        amount_ht = round(amount_ttc / (1 + (acompte_data["vat_rate"] / 100)), 2)
+        amount_tva = round(amount_ttc - amount_ht, 2)
+
+        acompte = Document(
+            document_number=generate_next_document_number(
+                instance.entreprise, "acompte", False
+            ),
+            forme="acompte",
+            client=instance.client,
+            subject=instance.subject,
+            payment_method=instance.payment_method,
+            validity_date=instance.validity_date,
+            payment_mention=instance.payment_mention,
+            other_mention=instance.other_mention,
+            notes=instance.notes,
+            vat_payer=instance.vat_payer,
+            entreprise=instance.entreprise,
+            created_by=self.request.user,
+            total_ht=amount_ht,
+            total_tva=amount_tva,
+            total_ttc=amount_ttc,
+            state="produced",
+            linked_parent_devis=instance,
+        )
+
+        section = DocumentSection(
+            type="section-article",
+            title=f"Acompte sur devis n°{instance.document_number}",
+            description="",
+            unit_price_ht=instance.total_ht,
+            quantity=1,
+            vat_rate=acompte_data["vat_rate"],
+            article_type="service",
+            document=acompte,
+        )
+
+        acompte.save()
+
+        return Response(
+            {
+                "status": "success",
+                "data": {
+                    "document_id": acompte.id,
+                    "document_number": acompte.document_number,
                 },
             }
         )

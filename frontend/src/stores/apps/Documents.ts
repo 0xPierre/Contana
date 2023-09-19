@@ -109,6 +109,24 @@ export const useDocumentsStore = defineStore('documents', {
       return http.post(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/produce-facture-from-devis/`
       )
+    },
+
+    async produceAcompteFromDevis(
+      documentId: number,
+      data: {
+        value: number
+        type: string
+        vat_rate: number
+      }
+    ) {
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.post(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/documents/${documentId}/produce-acompte-from-devis/`,
+        {
+          acompte: data
+        }
+      )
     }
   },
 

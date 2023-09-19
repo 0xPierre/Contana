@@ -15,7 +15,7 @@ const router = useRouter()
 const backRoute = ref<HistoryState | string>('')
 
 onMounted(() => {
-  backRoute.value = router.options.history.state.back as HistoryState
+  // backRoute.value = router.options.history.state.back as HistoryState
 })
 </script>
 
