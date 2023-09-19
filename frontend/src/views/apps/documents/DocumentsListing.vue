@@ -318,7 +318,7 @@ const deleteDocument = async (documentId: number) => {
           </template>
 
           <template #cell(subject)="row">
-            <span style="max-width: 120px" class="text-truncate">
+            <span style="max-width: 100px" class="truncate-text-ellipsis">
               {{ row.value }}
             </span>
           </template>
