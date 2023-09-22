@@ -264,12 +264,19 @@ const produceFacture = async () => {
               block
               v-ripple
               class="btn-with-icon justify-content-center"
+              :to="{
+                name: 'entreprise-constructor-avoir',
+                params: {
+                  documentNumber: document.document_number
+                }
+              }"
             >
               <vue-feather type="corner-up-left" size="18" class="mr-50" />
               Créer un avoir
             </b-button>
 
             <b-button
+              v-if="document.forme !== DocumentsType.Avoir"
               variant="outline-secondary"
               block
               v-ripple
@@ -314,6 +321,52 @@ const produceFacture = async () => {
               >
                 <vue-feather type="file-text" size="18" class="mr-50" />
                 Facture {{ document.linked_facture.document_number }}
+              </b-button>
+            </template>
+
+            <template v-if="document.linked_parent_facture">
+              <p class="text-center mb-0">Facture liée :</p>
+              <b-button
+                variant="flat-primary"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-25"
+                :to="{
+                  name: 'entreprise-document-view',
+                  params: {
+                    documentId: document.linked_parent_facture.id,
+                    documentNumber:
+                      document.linked_parent_facture.document_number
+                  }
+                }"
+              >
+                <vue-feather type="file-text" size="18" class="mr-50" />
+                Facture
+                {{ document.linked_parent_facture.document_number }}
+              </b-button>
+            </template>
+
+            <template v-if="document.linked_avoirs.length > 0">
+              <hr />
+
+              <p class="text-center mb-0">Avoirs liés :</p>
+              <b-button
+                v-for="avoir in document.linked_avoirs"
+                :key="`acompte-${avoir.id}`"
+                variant="flat-dark"
+                block
+                v-ripple
+                class="btn-with-icon justify-content-center mt-25"
+                :to="{
+                  name: 'entreprise-document-view',
+                  params: {
+                    documentId: avoir.id,
+                    documentNumber: avoir.document_number
+                  }
+                }"
+              >
+                <vue-feather type="file-text" size="18" class="mr-50" />
+                Avoir {{ avoir.document_number }}
               </b-button>
             </template>
 

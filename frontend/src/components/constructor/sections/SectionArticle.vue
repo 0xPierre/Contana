@@ -141,7 +141,7 @@ const modal = ref<HTMLElement | null>(null)
         </template>
         Total HT :
         <span class="font-weight-bolder text-primary"
-          >&nbsp;{{ totalHT }} €
+          >&nbsp;{{ constructorStore.isAvoir ? '-' : '' }}{{ totalHT }} €
         </span>
       </div>
     </div>

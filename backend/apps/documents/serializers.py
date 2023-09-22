@@ -71,6 +71,8 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
     linked_devis = LinkedDocument(read_only=True)
     linked_acomptes = LinkedDocument(read_only=True, many=True)
     linked_parent_devis = LinkedDocument(read_only=True)
+    linked_parent_facture = LinkedDocument(read_only=True)
+    linked_avoirs = LinkedDocument(read_only=True, many=True)
 
     class Meta:
         model = Document
@@ -88,6 +90,8 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
             "linked_devis",
             "linked_acomptes",
             "linked_parent_devis",
+            "linked_parent_facture",
+            "linked_avoirs",
         ]
         extra_kwargs = {
             "document_number": {"read_only": True},
@@ -102,4 +106,6 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
             "linked_devis": {"read_only": True},
             "linked_acomptes": {"read_only": True},
             "linked_parent_devis": {"read_only": True},
+            "linked_parent_facture": {"read_only": True},
+            "linked_avoirs": {"read_only": True},
         }

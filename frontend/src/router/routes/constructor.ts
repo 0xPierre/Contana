@@ -27,5 +27,20 @@ export default [
         access_constructor: true
       }
     }
+  },
+  {
+    path: '/:entrepriseSlug/constructeur/avoir/:documentNumber',
+    name: 'entreprise-constructor-avoir',
+    component: () =>
+      import('@/views/apps/constructor/ConstructorView.vue'),
+    meta: {
+      title: 'Créer un avoir - Constructeur',
+      layout: 'layout-vertical',
+      requireAuth: true,
+      forceComponentReload: true,
+      permissions: {
+        access_constructor: true
+      }
+    }
   }
 ]

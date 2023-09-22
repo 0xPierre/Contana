@@ -127,11 +127,21 @@ class Document(BaseModel):
         null=True,
         blank=True,
     )
+
     # used for acomptes
     linked_parent_devis = models.ForeignKey(
         "Document",
         on_delete=models.SET_NULL,
         related_name="linked_acomptes",
+        null=True,
+        blank=True,
+    )
+
+    # used for avoirs
+    linked_parent_facture = models.ForeignKey(
+        "Document",
+        on_delete=models.SET_NULL,
+        related_name="linked_avoirs",
         null=True,
         blank=True,
     )

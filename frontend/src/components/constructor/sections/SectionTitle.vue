@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import SectionArticle from '@/components/constructor/sections/SectionArticle.vue'
+
+SectionArticle
 import { Section, SectionsType } from '@/types/constructor.types.ts'
 import { useConstructorStore } from '@/stores/apps/Constructor.ts'
 

@@ -175,10 +175,17 @@ def produce_document(request: Request, entreprise_slug: str):
     """
     entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
 
-    if not request.data.get("client"):
-        return Response({"status": "failed", "error": "Merci de choisir un client"})
+    parent_facture = None
+    if request.data.get("forme") == "avoir":
+        parent_facture = entreprise.documents.get(
+            document_number=request.data.get("parent_document_number")
+        )
+        client = parent_facture.client
+    else:
+        if not request.data.get("client"):
+            return Response({"status": "failed", "error": "Merci de choisir un client"})
 
-    client = entreprise.clients.get(id=request.data.get("client")["id"])
+        client = entreprise.clients.get(id=request.data.get("client")["id"])
 
     document = Document(
         entreprise=entreprise,
@@ -202,6 +209,10 @@ def produce_document(request: Request, entreprise_slug: str):
         created_by=request.user,
         state="produced",
     )
+
+    # Link the avoir to the parent facture
+    if document.forme == "avoir":
+        document.linked_parent_facture = parent_facture
 
     # Suppression of the used draft
     if request.data.get("is_draft") and request.data.get("draft_document_number"):

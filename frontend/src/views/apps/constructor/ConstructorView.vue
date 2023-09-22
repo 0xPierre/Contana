@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onBeforeMount, ref, watch } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import ConstructorClient from './ConstructorClient.vue'
 import ConstructorComplementaryInfos from './ConstructorComplementaryInfos.vue'
 import ConstructorCatalogue from './Catalogue/ConstructorCatalogue.vue'
@@ -86,6 +86,7 @@ onBeforeMount(async () => {
   constructorStore.subject = ''
   constructorStore.documentNumber = ''
   constructorStore.isDraft = false
+  constructorStore.isAvoir = false
 
   if (route.name === 'entreprise-constructor-draft') {
     isLoading.value = true
@@ -100,7 +101,23 @@ onBeforeMount(async () => {
         name: 'entreprise-documents'
       })
     }
+
     isLoading.value = false
+  } else if (route.name === 'entreprise-constructor-avoir') {
+    constructorStore.isAvoir = true
+    constructorStore.forme = DocumentsType.Avoir
+    constructorStore.documentNumber = route.params.documentNumber as string
+    console.log(route.params)
+    constructorStore.sections = [
+      {
+        id: uuidv4(),
+        type: 'section-article',
+        values: availableSections.find(
+          (section) => section.type === 'section-article'
+        )?.values,
+        component: SectionArticle
+      } as Section<SectionArticle>
+    ]
   }
 })
 
@@ -205,16 +222,20 @@ const deleteDraft = async () => {
             <b-row>
               <b-col cols="4">
                 <v-select
-                  :options="[
-                    {
-                      label: 'Devis',
-                      value: DocumentsType.Devis
-                    },
-                    {
-                      label: 'Facture',
-                      value: DocumentsType.Facture
-                    }
-                  ]"
+                  :options="
+                    constructorStore.isAvoir
+                      ? [{ label: 'Avoir', value: DocumentsType.Avoir }]
+                      : [
+                          {
+                            label: 'Devis',
+                            value: DocumentsType.Devis
+                          },
+                          {
+                            label: 'Facture',
+                            value: DocumentsType.Facture
+                          }
+                        ]
+                  "
                   :clearable="false"
                   v-model="constructorStore.forme"
                   :reduce="(option) => option.value"
@@ -273,7 +294,7 @@ const deleteDraft = async () => {
         </b-col>
         <b-col md="3" class="pl-md-50">
           <vue-perfect-scrollbar class="actions-col" tagname="div">
-            <ConstructorClient />
+            <ConstructorClient v-if="!constructorStore.isAvoir" />
             <b-card class="mb-1 user-select-none p-1" no-body>
               <draggable
                 :list="availableSections"
@@ -310,15 +331,24 @@ const deleteDraft = async () => {
                   class="d-flex justify-content-between font-weight-bolder"
                 >
                   <span>Total HT</span>
-                  <span>{{ constructorStore.totalHT.format() }} €</span>
+                  <span
+                    >{{ constructorStore.isAvoir ? '-' : ''
+                    }}{{ constructorStore.totalHT.format() }} €</span
+                  >
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>TVA</span>
-                  <span>{{ constructorStore.totalTVA.format() }} €</span>
+                  <span
+                    >{{ constructorStore.isAvoir ? '-' : ''
+                    }}{{ constructorStore.totalTVA.format() }} €</span
+                  >
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>Total TTC</span>
-                  <span>{{ constructorStore.totalTTC.format() }} €</span>
+                  <span
+                    >{{ constructorStore.isAvoir ? '-' : ''
+                    }}{{ constructorStore.totalTTC.format() }} €</span
+                  >
                 </div>
               </div>
 
@@ -343,6 +373,7 @@ const deleteDraft = async () => {
                 Aperçu {{ constructorStore.formeSentence.second }}
               </b-button>
               <b-button
+                v-if="!constructorStore.isAvoir"
                 v-ripple
                 variant="outline-secondary"
                 block

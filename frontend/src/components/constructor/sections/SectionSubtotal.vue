@@ -36,7 +36,9 @@ const constructoreStore = useConstructorStore()
           <b-form-input
             placeholder="Prix du sous total"
             class="no-drag"
-            :value="constructoreStore.subtotals[section.id].format()"
+            :value="`${
+              constructoreStore.isAvoir ? '-' : ''
+            }${constructoreStore.subtotals[section.id].format()}`"
             :disabled="true"
           />
         </b-input-group>

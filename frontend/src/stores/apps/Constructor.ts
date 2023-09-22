@@ -28,6 +28,7 @@ interface State {
     SectionsType.Article | SectionsType.Title | SectionsType.Subtotal
   >[]
   isDraft: boolean
+  isAvoir: boolean
 }
 
 export const useConstructorStore = defineStore('constructeur', {
@@ -47,7 +48,8 @@ export const useConstructorStore = defineStore('constructeur', {
       vatPayer: false,
       otherMention: '',
       sections: [],
-      isDraft: false
+      isDraft: false,
+      isAvoir: false
     }
   },
 
@@ -224,7 +226,11 @@ export const useConstructorStore = defineStore('constructeur', {
           total_tva: this.totalTVA,
           total_ttc: this.totalTTC,
           is_draft: this.isDraft,
-          draft_document_number: this.documentNumber
+          draft_document_number: this.isDraft ? this.documentNumber : null,
+          parent_document_number: this.isAvoir
+            ? this.documentNumber
+            : null,
+          is_avoir: this.isAvoir
         }
       )
     },
