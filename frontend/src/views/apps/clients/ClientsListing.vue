@@ -197,6 +197,12 @@ onBeforeMount(() => {
             </router-link>
           </template>
 
+          <template #cell(socialreasonorname)="row">
+            <span class="truncate-text-ellipsis" style="max-width: 250px">
+              {{ row.value }}
+            </span>
+          </template>
+
           <template #cell(status)="row">
             <b-badge v-if="row.item.archived" variant="light-secondary">
               Archivé
@@ -205,7 +211,11 @@ onBeforeMount(() => {
           </template>
 
           <template #cell(address)="row">
-            <span v-if="row.item.address">
+            <span
+              v-if="row.item.address"
+              class="truncate-text-ellipsis"
+              style="max-width: 200px"
+            >
               {{ row.item.address }} {{ row.item.zip_code }}
               {{ row.item.city }}
             </span>
