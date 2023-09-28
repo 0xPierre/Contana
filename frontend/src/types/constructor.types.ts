@@ -50,6 +50,7 @@ export type Section<T> = {
     : T extends 'section-subtotal'
     ? {
         title: string
+        subtotal: number
       }
     : never
   component: T extends 'section-title'
@@ -59,4 +60,16 @@ export type Section<T> = {
     : T extends 'section-subtotal'
     ? InstanceType<typeof SectionSubtotal>
     : never
+}
+
+export interface CatalogTemplate {
+  id: number | null
+  name: string
+  values: Section<SectionsType.Article>['values']
+  category_id: number | null
+}
+export interface CatalogCategory {
+  id: number | null
+  name: string
+  templates: CatalogTemplate[]
 }

@@ -1,7 +1,12 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 // import http from '@/helpers/http'
 import { DocumentsType, PaymentsMethod } from '@/types/core.types'
-import { Section, SectionsType } from '@/types/constructor.types.ts'
+import {
+  CatalogCategory,
+  CatalogTemplate,
+  Section,
+  SectionsType
+} from '@/types/constructor.types.ts'
 import { v4 as uuidv4 } from 'uuid'
 import { euro } from '@/helpers/utils.ts'
 import http from '@/helpers/http.ts'
@@ -29,6 +34,11 @@ interface State {
   >[]
   isDraft: boolean
   isAvoir: boolean
+  catalog: {
+    categories: CatalogCategory[]
+    templates_without_category: CatalogTemplate[]
+    categories_labels: string[]
+  }
 }
 
 export const useConstructorStore = defineStore('constructeur', {
@@ -49,7 +59,12 @@ export const useConstructorStore = defineStore('constructeur', {
       otherMention: '',
       sections: [],
       isDraft: false,
-      isAvoir: false
+      isAvoir: false,
+      catalog: {
+        categories: [],
+        templates_without_category: [],
+        categories_labels: []
+      }
     }
   },
 
@@ -180,6 +195,17 @@ export const useConstructorStore = defineStore('constructeur', {
     async saveDraft() {
       const entrepriseStore = useEntrepriseStore()
 
+      const sections = this.sections.map((section) => {
+        const newSection = { ...section }
+        if (newSection.type === 'section-subtotal') {
+          newSection.values = {
+            ...section.values,
+            subtotal: this.subtotals[section.id].value
+          }
+        }
+        return newSection
+      })
+
       return http.post<ApiResponse<void>>(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/draft/`,
         {
@@ -193,7 +219,7 @@ export const useConstructorStore = defineStore('constructeur', {
           notes: this.notes,
           vat_payer: this.vatPayer,
           other_mention: this.otherMention,
-          sections: this.sections,
+          sections: sections,
           total_ht: this.totalHT,
           total_tva: this.totalTVA,
           total_ttc: this.totalTTC
@@ -203,6 +229,17 @@ export const useConstructorStore = defineStore('constructeur', {
 
     async produceDocument() {
       const entrepriseStore = useEntrepriseStore()
+
+      const sections = this.sections.map((section) => {
+        const newSection = { ...section }
+        if (newSection.type === 'section-subtotal') {
+          newSection.values = {
+            ...section.values,
+            subtotal: this.subtotals[section.id].value
+          }
+        }
+        return newSection
+      })
 
       return http.post<
         ApiResponse<{
@@ -221,7 +258,7 @@ export const useConstructorStore = defineStore('constructeur', {
           notes: this.notes,
           vat_payer: this.vatPayer,
           other_mention: this.otherMention,
-          sections: this.sections,
+          sections: sections,
           total_ht: this.totalHT,
           total_tva: this.totalTVA,
           total_ttc: this.totalTTC,
@@ -293,6 +330,111 @@ export const useConstructorStore = defineStore('constructeur', {
           component: SectionComponent[section.type]
         })
       })
+    },
+
+    async getCatalog() {
+      const entrepriseStore = useEntrepriseStore()
+
+      const {
+        data: { data }
+      } = await http.get<
+        ApiResponse<{
+          categories: CatalogCategory[]
+          templates_without_category: CatalogTemplate[]
+          categories_labels: string[]
+        }>
+      >(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/`
+      )
+
+      this.catalog = data
+    },
+
+    async createCatalogCategory(
+      category: Omit<CatalogCategory, 'templates'>
+    ) {
+      const entrepriseStore = useEntrepriseStore()
+
+      const {
+        data: { data }
+      } = await http.post<ApiResponse<CatalogCategory>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/template-categories/`,
+        category
+      )
+
+      this.catalog.categories.push(data)
+
+      return data
+    },
+
+    async updateCatalogCategory(
+      category: Omit<CatalogCategory, 'templates'>
+    ) {
+      const entrepriseStore = useEntrepriseStore()
+
+      await http.put<
+        ApiResponse<{
+          category: CatalogCategory
+        }>
+      >(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/template-categories/${category.id}/`,
+        category
+      )
+
+      await this.getCatalog()
+    },
+
+    async deleteCatalogCategory(category: CatalogCategory) {
+      const entrepriseStore = useEntrepriseStore()
+
+      await http.delete<ApiResponse<void>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/template-categories/${category.id}/`
+      )
+
+      this.catalog.categories = this.catalog.categories.filter(
+        (c) => c.id !== category.id
+      )
+    },
+
+    async createCatalogTemplate(template: CatalogTemplate) {
+      const entrepriseStore = useEntrepriseStore()
+
+      const {
+        data: { data }
+      } = await http.post<ApiResponse<CatalogTemplate>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/template/`,
+        template
+      )
+
+      if (template.category_id) {
+        const index = this.catalog.categories.findIndex(
+          (c) => c.id === template.category_id
+        )
+        this.catalog.categories[index].templates.push(data)
+      } else {
+        this.catalog.templates_without_category.push(data)
+      }
+    },
+
+    async updateCatalogTemplate(template: CatalogTemplate) {
+      const entrepriseStore = useEntrepriseStore()
+
+      await http.put<ApiResponse<CatalogTemplate>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/template/${template.id}/`,
+        template
+      )
+
+      await this.getCatalog()
+    },
+
+    async deleteCatalogTemplate(template: CatalogTemplate) {
+      const entrepriseStore = useEntrepriseStore()
+
+      await http.post<ApiResponse<void>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/template/${template.id}/delete`
+      )
+
+      await this.getCatalog()
     }
   },
 

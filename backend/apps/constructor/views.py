@@ -4,10 +4,15 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
+
+from .utils import get_section_values
 from ..core.permissions import IsInEntreprise, CanAccessConstructor
+from ..core.utils import getEntrepriseFromRequest
 from ..documents.utils import generate_next_document_number
 from ..entreprise.models import Entreprise
-from ..documents.models import Document, DocumentSection
+from ..documents.models import Document, DocumentSection, TemplateCategory, Template
+from .serializers import TemplateCategoriesDetailSerializer
 
 
 @api_view(["POST"])
@@ -96,6 +101,9 @@ def save_document_draft(request: Request, entreprise_slug: str):
             section.discount_description = values["discountDescription"]
             section.unit = values["unit"]
             section.display_price_infos = values["displayPriceInfos"]
+
+        elif section.type == "section-subtotal":
+            section.subtotal = values["subtotal"]
 
         section.save()
 
@@ -243,6 +251,9 @@ def produce_document(request: Request, entreprise_slug: str):
             section.unit = values["unit"]
             section.display_price_infos = values["displayPriceInfos"]
 
+        elif section.type == "section-subtotal":
+            section.subtotal = values["subtotal"]
+
         section.save()
         sections.append(section)
 
@@ -255,3 +266,222 @@ def produce_document(request: Request, entreprise_slug: str):
             },
         }
     )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
+def get_catalog(request: Request, entreprise_slug: str):
+    """
+    Get the catalog of the entreprise, for sections with and without categories
+    """
+    entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
+
+    data = {
+        "templates_without_category": [],
+        "categories": [],
+        "categories_labels": [],
+    }
+
+    for category in entreprise.template_categories.all():
+        data["categories_labels"].append(category.name)
+
+        category_data = {
+            "id": category.id,
+            "name": category.name,
+            "templates": [],
+        }
+
+        for template in category.templates.all():
+            template_data = {
+                "id": template.id,
+                "name": template.name,
+                "values": get_section_values(template.article),
+                "category_id": category.id,
+            }
+
+            category_data["templates"].append(template_data)
+
+        data["categories"].append(category_data)
+
+    for template in entreprise.templates.exclude(category__isnull=False):
+        template_data = {
+            "id": template.id,
+            "name": template.name,
+            "values": get_section_values(template.article),
+            "category_id": None,
+        }
+
+        data["templates_without_category"].append(template_data)
+
+    return Response({"status": "success", "data": data})
+
+
+class TemplateCategoriesViewSet(viewsets.ModelViewSet):
+    """
+    Viewset for the TemplateCategory model, creation, edition and deletion
+    """
+
+    serializer_class = TemplateCategoriesDetailSerializer
+    permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessConstructor]
+
+    def get_queryset(self):
+        return getEntrepriseFromRequest(self.request).template_categories.all()
+
+    def create(self, request: Request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        entreprise = getEntrepriseFromRequest(request)
+
+        category = serializer.save(
+            entreprise=entreprise,
+        )
+
+        return Response(
+            {
+                "status": "success",
+                "data": {
+                    "id": category.id,
+                    "name": category.name,
+                    "templates": [],
+                },
+            }
+        )
+
+    def update(self, request: Request, *args, **kwargs):
+        instance: TemplateCategory = self.get_object()
+
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"status": "success"})
+
+
+"""
+Implementation of template create/update/delete without using viewsets
+"""
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
+def create_template(request: Request, entreprise_slug: str):
+    """
+    Used to create a template and assign it to a category/or not
+    """
+    entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
+    data = request.data
+
+    values = data.get("values")
+
+    if not data.get("name"):
+        return Response(
+            {"status": "failed", "error": "Merci de donner un nom à l'article"}
+        )
+
+    category = None
+    if data.get("category_id"):
+        category = entreprise.template_categories.get(id=data.get("category_id"))
+
+    article = DocumentSection(
+        type="section-article",
+        title=values["title"],
+        description=values["description"],
+        unit_price_ht=values["unitPriceHT"],
+        quantity=values["quantity"],
+        vat_rate=values["vatRate"],
+        article_type=values["articleType"],
+        discount=values["discount"],
+        discount_type=values["discountType"],
+        discount_description=values["discountDescription"],
+        unit=values["unit"],
+        display_price_infos=values["displayPriceInfos"],
+    )
+    article.save()
+
+    template = Template(
+        name=data.get("name"),
+        category=category,
+        article=article,
+        entreprise=entreprise,
+    )
+    template.save()
+
+    return Response(
+        {
+            "status": "success",
+            "data": {
+                "id": template.id,
+                "name": template.name,
+                "values": get_section_values(template.article),
+                "category_id": template.category.id if template.category else None,
+            },
+        }
+    )
+
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
+def update_template(request: Request, entreprise_slug: str, template_id: int):
+    """
+    Used to update a template
+    """
+    entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
+    data = request.data
+
+    template = entreprise.templates.get(id=template_id)
+
+    category = None
+    if data.get("category_id"):
+        category = entreprise.template_categories.get(id=data.get("category_id"))
+    template.category = category
+
+    values = data.get("values")
+
+    if not data.get("name"):
+        return Response(
+            {"status": "failed", "error": "Merci de donner un nom à l'article"}
+        )
+
+    template.name = data.get("name")
+    template.article.title = values["title"]
+    template.article.description = values["description"]
+    template.article.unit_price_ht = values["unitPriceHT"]
+    template.article.quantity = values["quantity"]
+    template.article.vat_rate = values["vatRate"]
+    template.article.article_type = values["articleType"]
+    template.article.discount = values["discount"]
+    template.article.discount_type = values["discountType"]
+    template.article.discount_description = values["discountDescription"]
+    template.article.unit = values["unit"]
+    template.article.display_price_infos = values["displayPriceInfos"]
+
+    template.article.save()
+    template.save()
+
+    return Response(
+        {
+            "status": "success",
+            "data": {
+                "id": template.id,
+                "name": template.name,
+                "values": get_section_values(template.article),
+                "category_id": template.category.id if template.category else None,
+            },
+        }
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
+def delete_template(request: Request, entreprise_slug: str, template_id: int):
+    """
+    Used to delete a template
+    """
+    entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
+
+    template = entreprise.templates.get(id=template_id)
+    template.article.delete()
+    template.delete()
+
+    return Response({"status": "success"})

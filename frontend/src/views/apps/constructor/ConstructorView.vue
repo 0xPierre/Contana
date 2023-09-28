@@ -2,7 +2,7 @@
 import { onBeforeMount, ref } from 'vue'
 import ConstructorClient from './ConstructorClient.vue'
 import ConstructorComplementaryInfos from './ConstructorComplementaryInfos.vue'
-import ConstructorCatalogue from './Catalogue/ConstructorCatalogue.vue'
+import ConstructorCatalogue from '@/views/apps/constructor/Catalog/ConstructorCatalog.vue'
 import { useConstructorStore } from '@/stores/apps/Constructor'
 import { DocumentsType, PaymentsMethod } from '@/types/core.types'
 import draggable from 'vuedraggable'
@@ -107,7 +107,6 @@ onBeforeMount(async () => {
     constructorStore.isAvoir = true
     constructorStore.forme = DocumentsType.Avoir
     constructorStore.documentNumber = route.params.documentNumber as string
-    console.log(route.params)
     constructorStore.sections = [
       {
         id: uuidv4(),
@@ -322,7 +321,10 @@ const deleteDraft = async () => {
                 </template>
               </draggable>
               <hr class="px-2" />
-              <ConstructorCatalogue />
+              <ConstructorCatalogue
+                :clone="clone"
+                @update-dragging="dragging = $event"
+              />
             </b-card>
 
             <b-card class="p-1" no-body>

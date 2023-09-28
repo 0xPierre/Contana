@@ -27,22 +27,3 @@ onMounted(() => {
     </span>
   </RouterLink>
 </template>
-
-<style lang="scss" scoped>
-.back-button {
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  color: #6e6b7b;
-
-  span {
-    margin-left: 5px;
-  }
-}
-
-body.dark-layout {
-  .back-button {
-    color: #b4b7bd;
-  }
-}
-</style>

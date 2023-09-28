@@ -1,12 +1,17 @@
 <script lang="ts" setup>
 import { useConstructorStore } from '@/stores/apps/Constructor.ts'
-import { Section, SectionsType } from '@/types/constructor.types.ts'
+import {
+  CatalogTemplate,
+  Section,
+  SectionsType
+} from '@/types/constructor.types.ts'
 import { computed, ref, watch } from 'vue'
 import { useNumberInputHandler } from '@/composables/numberInputHandler.ts'
 import { euro } from '@/helpers/utils.ts'
 
 const props = defineProps<{
-  section: Section<SectionsType.Article>
+  section?: Section<SectionsType.Article> | CatalogTemplate
+  isTemplate?: boolean
 }>()
 
 const totalHT = computed(() => {
@@ -119,7 +124,7 @@ const modal = ref<HTMLElement | null>(null)
       v-model="props.section.values.description"
     />
     <div class="d-flex justify-content-between mt-25">
-      <div class="d-flex" style="gap: 1.2rem">
+      <div v-if="!isTemplate" class="d-flex" style="gap: 1.2rem">
         <span @click="constructorStore.removeSection(props.section.id)">
           <vue-feather type="trash-2" size="22" class="cursor-pointer" />
         </span>
@@ -127,6 +132,7 @@ const modal = ref<HTMLElement | null>(null)
           <vue-feather type="copy" size="22" class="cursor-pointer" />
         </span>
       </div>
+      <div v-else />
       <div class="font-medium-1">
         <template v-if="props.section.values.discountType !== null">
           Remise de :
@@ -310,7 +316,7 @@ const modal = ref<HTMLElement | null>(null)
           <b-form-checkbox
             v-model="props.section.values.displayPriceInfos"
           >
-            Afficher les informations de l'article"</b-form-checkbox
+            Afficher les informations de l'article</b-form-checkbox
           >
         </b-form-group>
       </b-col>

@@ -77,12 +77,47 @@ class DocumentSection(BaseModel):
     unit = models.CharField(choices=units, default="")
     display_price_infos = models.BooleanField(default=True)
 
+    # Only for section-subtotal
+    subtotal = models.FloatField(default=0)
+
+    # null == True only when section is from a template
     document = models.ForeignKey(
-        "Document", on_delete=models.CASCADE, related_name="sections"
+        "Document",
+        on_delete=models.CASCADE,
+        related_name="sections",
+        null=True,
     )
 
     def __str__(self):
         return f"{self.type} - {self.title}"
+
+
+class TemplateCategory(BaseModel):
+    name = models.CharField(max_length=255)
+
+    entreprise = models.ForeignKey(
+        Entreprise,
+        on_delete=models.CASCADE,
+        related_name="template_categories",
+        null=True,
+    )
+
+
+class Template(BaseModel):
+    name = models.CharField(max_length=255)
+    category = models.ForeignKey(
+        TemplateCategory, on_delete=models.CASCADE, related_name="templates", null=True
+    )
+
+    article = models.ForeignKey(
+        DocumentSection,
+        on_delete=models.CASCADE,
+        related_name="templates",
+        null=True,
+    )
+    entreprise = models.ForeignKey(
+        Entreprise, on_delete=models.CASCADE, related_name="templates", null=True
+    )
 
 
 class Document(BaseModel):
