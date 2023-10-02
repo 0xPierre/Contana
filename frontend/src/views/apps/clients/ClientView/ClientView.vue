@@ -365,7 +365,7 @@ const unarchiveClient = async () => {
           </div>
         </b-card>
 
-        <b-card>
+        <b-card class="d-none">
           <div class="d-flex">
             <vue-feather type="file" size="22" class="mr-1" />
             <h3 class="mb-50">Fichiers</h3>
