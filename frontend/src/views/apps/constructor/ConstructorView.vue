@@ -16,11 +16,13 @@ import { notify, swalAlert } from '@/helpers/notify.ts'
 import strftime from 'strftime'
 import { useRoute, useRouter } from 'vue-router'
 import { useDocumentsStore } from '@/stores/apps/Documents.ts'
+import { useClientsStore } from '@/stores/apps/Clients.ts'
 
 draggable.compatConfig = { MODE: 3 }
 const constructorStore = useConstructorStore()
 const { sections } = storeToRefs(constructorStore)
 const isLoading = ref(false)
+const isClientLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
 /**
@@ -73,6 +75,32 @@ onBeforeMount(async () => {
   constructorStore.client = null
   constructorStore.paymentMethod = PaymentsMethod.BankTransfer
   constructorStore.forme = DocumentsType.Devis
+
+  if (route.query.hasOwnProperty('forme')) {
+    constructorStore.forme = route.query.forme as DocumentsType
+  }
+
+  if (route.query.hasOwnProperty('client')) {
+    isClientLoading.value = true
+    try {
+      const clientStore = useClientsStore()
+      const {
+        data: { data }
+      } = await clientStore.getClient(route.query.client as string)
+      constructorStore.client = {
+        id: data.id,
+        client_number: data.client_number,
+        socialreasonorname: data.socialreasonorname,
+        country: data.country,
+        city: data.city,
+        zip_code: data.zip_code,
+        address: data.address
+      }
+    } catch {
+      notify('Impossible de charger le client', 'danger')
+    }
+    isClientLoading.value = false
+  }
   constructorStore.validityDate = strftime(
     '%d/%m/%Y',
     new Date(new Date().setDate(new Date().getDate() + 90))
@@ -293,7 +321,9 @@ const deleteDraft = async () => {
         </b-col>
         <b-col md="3" class="pl-md-50">
           <vue-perfect-scrollbar class="actions-col" tagname="div">
-            <ConstructorClient v-if="!constructorStore.isAvoir" />
+            <b-overlay :show="isClientLoading">
+              <ConstructorClient v-if="!constructorStore.isAvoir" />
+            </b-overlay>
             <b-card class="mb-1 user-select-none p-1" no-body>
               <draggable
                 :list="availableSections"

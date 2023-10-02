@@ -27,6 +27,7 @@ const client = ref<ClientModel>({
   created_at: '',
   updated_at: '',
   client_number: '',
+  document_count: 0,
   files: []
 })
 const route = useRoute()
@@ -332,6 +333,13 @@ const unarchiveClient = async () => {
               block
               v-ripple
               :disabled="client.archived"
+              :to="{
+                name: 'entreprise-constructor',
+                query: {
+                  forme: 'facture',
+                  client: client.id
+                }
+              }"
             >
               <vue-feather type="file-plus" size="18" class="mr-50" />
               Créer une facture
@@ -343,6 +351,13 @@ const unarchiveClient = async () => {
               block
               v-ripple
               :disabled="client.archived"
+              :to="{
+                name: 'entreprise-constructor',
+                query: {
+                  forme: 'devis',
+                  client: client.id
+                }
+              }"
             >
               <vue-feather type="file-plus" size="18" class="mr-50" />
               Créer un devis

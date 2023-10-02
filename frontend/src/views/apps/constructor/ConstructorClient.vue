@@ -140,7 +140,7 @@ const selectClient = (client: ClientConstructor | null) => {
 }
 
 onMounted(() => {
-  if (route.name === 'entreprise-constructor') {
+  if (route.name === 'entreprise-constructor' && !route.query.client) {
     openClientListingModal()
   }
 })
