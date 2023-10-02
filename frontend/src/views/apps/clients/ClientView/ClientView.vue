@@ -318,7 +318,12 @@ const unarchiveClient = async () => {
             <vue-feather type="file-text" size="22" class="mr-1" />
             <h3 class="m-0">Documents</h3>
           </div>
-          <span class="text-muted"> 0 document(s) enregistré(s) </span>
+          <span class="text-muted">
+            {{ client.document_count }} document{{
+              client.document_count > 1 ? 's' : ''
+            }}
+            enregistré{{ client.document_count > 1 ? 's' : '' }}
+          </span>
 
           <div v-if="true" class="mt-1">
             <b-button

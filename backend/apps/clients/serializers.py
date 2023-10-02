@@ -43,6 +43,11 @@ class ClientsDetailSerializer(serializers.ModelSerializer):
     """
 
     files = ClientsFilesField(many=True, read_only=True)
+    document_count = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_document_count(obj):
+        return obj.documents.exclude(is_draft=True).count()
 
     class Meta:
         model = Client
@@ -65,6 +70,7 @@ class ClientsDetailSerializer(serializers.ModelSerializer):
             "updated_at",
             "archived",
             "files",
+            "document_count",
         ]
         extra_kwargs = {
             "socialreasonorname": {
