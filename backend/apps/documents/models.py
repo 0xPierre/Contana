@@ -5,7 +5,12 @@ from ..user.models import User
 from ..entreprise.models import Entreprise
 
 
-documents_type = [("facture", "Facture"), ("devis", "Devis"), ("avoir", "Avoir")]
+documents_type = [
+    ("facture", "Facture"),
+    ("devis", "Devis"),
+    ("avoir", "Avoir"),
+    ("acompte", "Acompte"),
+]
 
 payments_method = [
     ("bank_transfer", "Virement bancaire"),
@@ -187,9 +192,15 @@ class Document(BaseModel):
         blank=True,
     )
 
+    file = models.FileField(upload_to="documents", null=True, blank=True)
+
     @property
     def get_payment_method(self):
         return dict(payments_method)[self.payment_method]
+
+    @property
+    def get_forme(self):
+        return dict(documents_type)[self.forme]
 
     def __str__(self):
         return f"{self.document_number} - {self.subject}"

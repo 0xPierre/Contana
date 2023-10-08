@@ -53,6 +53,7 @@ export interface DocumentModel extends DocumentListingModel {
     id: number
     document_number: string
   }[]
+  file: string
   // subject: string
   // validity_date: Date
   // payment_method: PaymentsMethod

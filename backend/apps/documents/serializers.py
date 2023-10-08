@@ -92,6 +92,7 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
             "linked_parent_devis",
             "linked_parent_facture",
             "linked_avoirs",
+            "file",
         ]
         extra_kwargs = {
             "document_number": {"read_only": True},
@@ -108,4 +109,5 @@ class DocumentsDetailSerializer(serializers.ModelSerializer):
             "linked_parent_devis": {"read_only": True},
             "linked_parent_facture": {"read_only": True},
             "linked_avoirs": {"read_only": True},
+            "file": {"read_only": True},
         }

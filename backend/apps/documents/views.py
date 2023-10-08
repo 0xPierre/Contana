@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db.models import QuerySet
 
+from services.constructor.generate import construct_pdf
 from .models import Document, DocumentSection
 from ..core.permissions import CanAccessDocuments, IsInEntreprise, CanAccessConstructor
 from ..core.utils import getEntrepriseFromRequest
@@ -261,6 +262,24 @@ class DocumentsViewSet(viewsets.ModelViewSet):
             new_section.document = new_document
             new_section.save()
 
+        for acompte in instance.linked_acomptes.all():
+            section = DocumentSection(
+                type="section-article",
+                title=f"Acompte sur devis n°{instance.document_number}",
+                description="",
+                unit_price_ht=-acompte.total_ht,
+                total_ht=-acompte.total_ht,
+                total_ht_without_discount=-acompte.total_ht,
+                quantity=1,
+                vat_rate=acompte.sections.first().vat_rate,
+                article_type="service",
+                document=new_document,
+            )
+            section.save()
+
+        new_document.file = construct_pdf(new_document, new_document.sections.all())
+        new_document.save()
+
         return Response(
             {
                 "status": "success",
@@ -312,9 +331,14 @@ class DocumentsViewSet(viewsets.ModelViewSet):
                 }
             )
 
-        amount_ttc = amount
-        amount_ht = round(amount_ttc / (1 + (acompte_data["vat_rate"] / 100)), 2)
-        amount_tva = round(amount_ttc - amount_ht, 2)
+        if instance.vat_payer:
+            amount_ttc = amount
+            amount_ht = round(amount_ttc / (1 + (acompte_data["vat_rate"] / 100)), 2)
+            amount_tva = round(amount_ttc - amount_ht, 2)
+        else:
+            amount_ttc = amount
+            amount_ht = amount
+            amount_tva = 0
 
         acompte = Document(
             document_number=generate_next_document_number(
@@ -337,18 +361,23 @@ class DocumentsViewSet(viewsets.ModelViewSet):
             state="produced",
             linked_parent_devis=instance,
         )
+        acompte.save()
 
         section = DocumentSection(
             type="section-article",
             title=f"Acompte sur devis n°{instance.document_number}",
             description="",
-            unit_price_ht=instance.total_ht,
+            unit_price_ht=amount_ht,
+            total_ht=amount_ht,
+            total_ht_without_discount=amount_ht,
             quantity=1,
             vat_rate=acompte_data["vat_rate"],
             article_type="service",
             document=acompte,
         )
+        section.save()
 
+        acompte.file = construct_pdf(acompte, [section])
         acompte.save()
 
         return Response(

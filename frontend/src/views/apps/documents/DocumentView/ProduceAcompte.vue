@@ -76,70 +76,72 @@ const produceAcompte = async () => {
     :title="`Nouvel acompte sur devis ${document.document_number}`"
     size="md"
   >
-    <b-row>
-      <b-col md="6">
-        <b-form-group label="Type d'acompte">
-          <v-select
-            :options="[
-              {
-                label: '% du total TTC',
-                value: 'percentage'
-              },
-              {
-                label: 'Montant TTC',
-                value: 'amount'
-              }
-            ]"
-            v-model="acompte.type"
-            :reduce="(option) => option.value"
-            :clearable="false"
-          />
-        </b-form-group>
-      </b-col>
-      <b-col md="6">
-        <b-form-group label="Taux de TVA">
-          <v-select
-            :options="[
-              {
-                label: '20%',
-                value: 20
-              },
-              {
-                label: '10%',
-                value: 10
-              },
-              {
-                label: '5.5%',
-                value: 5.5
-              },
-              {
-                label: '2.1%',
-                value: 2.1
-              },
-              {
-                label: '0%',
-                value: 0
-              }
-            ]"
-            v-model="acompte.vat_rate"
-            :reduce="(option) => option.value"
-            :clearable="false"
-          />
-        </b-form-group>
-      </b-col>
-    </b-row>
+    <b-overlay :show="isLoading">
+      <b-row>
+        <b-col md="6">
+          <b-form-group label="Type d'acompte">
+            <v-select
+              :options="[
+                {
+                  label: '% du total TTC',
+                  value: 'percentage'
+                },
+                {
+                  label: 'Montant TTC',
+                  value: 'amount'
+                }
+              ]"
+              v-model="acompte.type"
+              :reduce="(option) => option.value"
+              :clearable="false"
+            />
+          </b-form-group>
+        </b-col>
+        <b-col md="6">
+          <b-form-group label="Taux de TVA">
+            <v-select
+              :options="[
+                {
+                  label: '20%',
+                  value: 20
+                },
+                {
+                  label: '10%',
+                  value: 10
+                },
+                {
+                  label: '5.5%',
+                  value: 5.5
+                },
+                {
+                  label: '2.1%',
+                  value: 2.1
+                },
+                {
+                  label: '0%',
+                  value: 0
+                }
+              ]"
+              v-model="acompte.vat_rate"
+              :reduce="(option) => option.value"
+              :clearable="false"
+            />
+          </b-form-group>
+        </b-col>
+      </b-row>
 
-    <b-form-group v-if="acompte.type === 'amount'" label="Montant TTC">
-      <b-input-group append="€">
-        <b-form-input v-model="acompte.value" type="number" />
-      </b-input-group>
-    </b-form-group>
+      <b-form-group v-if="acompte.type === 'amount'" label="Montant TTC">
+        <b-input-group append="€">
+          <b-form-input v-model="acompte.value" type="number" />
+        </b-input-group>
+      </b-form-group>
 
-    <b-form-group v-else label="Montant de l'acompte">
-      <b-input-group append="%">
-        <b-form-input v-model="acompte.value" type="number" />
-      </b-input-group>
-    </b-form-group>
+      <b-form-group v-else label="Montant de l'acompte">
+        <b-input-group append="%">
+          <b-form-input v-model="acompte.value" type="number" />
+        </b-input-group>
+      </b-form-group>
+    </b-overlay>
 
     <template #modal-footer="{ cancel }">
       <b-button

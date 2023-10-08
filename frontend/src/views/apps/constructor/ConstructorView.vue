@@ -136,6 +136,7 @@ onBeforeMount(async () => {
     constructorStore.isAvoir = true
     constructorStore.forme = DocumentsType.Avoir
     constructorStore.documentNumber = route.params.documentNumber as string
+    constructorStore.subject = `Avoir sur facture ${route.params.documentNumber}`
     constructorStore.sections = [
       {
         id: uuidv4(),

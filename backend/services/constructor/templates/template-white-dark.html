@@ -929,7 +929,10 @@
 						<span style="text-transform: capitalize;">
 							{{ document.forme }}
 						</span>
-						{{ document.document_number }} du {{  document.created_at | date:"d/m/Y" }}
+						{{ document.document_number }} du {{ document.created_at | date:"d/m/Y" }}
+            {% if document.forme == 'avoir' %}
+              <br><i>(Facture d'origine : {{ document.linked_parent_facture.document_number }})</i>
+            {% endif %}
 					</div>
 					<div class="bloc-document-label">
 						{{ document.subject }}
@@ -1034,13 +1037,18 @@
               {% endif %}
             {% empty %}
               <tr class="component-item">
-                <td></td>
-                <td></td>
-                <td></td>
+                <td class="cell-label strong">
+                </td>
+                <td class="cell-money">
+                </td>
+                <td class="cell-qty">
+                </td>
                 {% if document.vat_payer %}
-                  <td></td>
+                  <td class="cell-percent">
+                  </td>
                 {% endif %}
-                <td></td>
+                <td class="cell-money">
+                </td>
               </tr>
             {% endfor %}
 						</tbody>

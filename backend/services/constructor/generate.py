@@ -1,6 +1,6 @@
 import sys
 import os
-from typing import List
+from typing import List, Union
 
 import pdfkit
 
@@ -12,23 +12,24 @@ import django
 
 django.setup()
 from django.template import Template, Context
+from django.utils.text import slugify
 from apps.documents.models import Document, DocumentSection
 from apps.entreprise.models import Entreprise
+from django.core.files.base import ContentFile
 
 
 def construct_pdf(
     document: Document,
     sections: List[DocumentSection],
-    entreprise: Entreprise,
     preview: bool = False,
-) -> bytes:
+) -> ContentFile:
     """
     Construct a pdf file from a document
     :param document: Document model
     :param sections: List of sections
     :param entreprise: Entreprise model
     :param preview: If the pdf is a preview or not and need to by
-    :return: Bytes of the pdf file
+    :return: ContentFile
     """
     # Change the working directory. This is needed because this service is called from differents places
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -43,16 +44,21 @@ def construct_pdf(
             "document": document,
             "client": document.client,
             "sections": sections,
-            "entreprise": entreprise,
+            "entreprise": document.entreprise,
             "preview": preview,
         }
     )
     rendered_template = template.render(context)
 
-    pdf_filename = "documents_ouput/out.pdf"
+    pdf_filename = "documents_ouput/{} {} {} {}.pdf".format(
+        document.get_forme,
+        slugify(document.entreprise.name),
+        document.document_number,
+        document.created_at.strftime("%d-%m-%Y"),
+    )
     pdfkit.from_string(
         rendered_template,
-        "documents_ouput/out.pdf",
+        pdf_filename,
         options={
             "--page-size": "A4",
             "--margin-top": "0",
@@ -73,7 +79,15 @@ def construct_pdf(
     # delete pdf file
     os.remove(pdf_filename)
 
-    return pdf_bytes
+    return ContentFile(
+        pdf_bytes,
+        name="{} {} {} {}.pdf".format(
+            document.get_forme,
+            slugify(document.entreprise.name),
+            document.document_number,
+            document.created_at.strftime("%d-%m-%Y"),
+        ),
+    )
 
 
 if __name__ == "__main__":

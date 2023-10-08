@@ -5,7 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from django.http import FileResponse, HttpResponse
+from django.http import HttpResponse
+from django.core.files.base import ContentFile
+from django.utils.text import slugify
 
 from .utils import get_section_values
 from apps.core.permissions import IsInEntreprise, CanAccessConstructor
@@ -174,9 +176,16 @@ def produce_document_preview(request: Request, entreprise_slug: str):
     """
     entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
 
+    parent_facture = None
     client = None
-    if request.data.get("client"):
-        client = entreprise.clients.get(id=request.data.get("client")["id"])
+    if request.data.get("forme") == "avoir":
+        parent_facture = entreprise.documents.get(
+            document_number=request.data.get("parent_document_number")
+        )
+        client = parent_facture.client
+    else:
+        if request.data.get("client"):
+            client = entreprise.clients.get(id=request.data.get("client")["id"])
 
     document = Document(
         entreprise=entreprise,
@@ -200,6 +209,15 @@ def produce_document_preview(request: Request, entreprise_slug: str):
         created_by=request.user,
     )
 
+    # Invert the sign of the total if the document is an avoir
+    if document.forme == "avoir":
+        document.total_ht = -document.total_ht
+        document.total_tva = -document.total_tva
+        document.total_ttc = -document.total_ttc
+
+        # Link the avoir to the parent facture
+        document.linked_parent_facture = parent_facture
+
     sections = []
     for section_data in request.data.get("sections"):
         values = section_data.get("values")
@@ -222,15 +240,23 @@ def produce_document_preview(request: Request, entreprise_slug: str):
             section.total_ht = values["totalHT"]
             section.total_ht_without_discount = values["totalHTWithoutDiscount"]
 
+            if document.forme == "avoir":
+                section.unit_price_ht = -section.unit_price_ht
+                section.total_ht = -section.total_ht
+                section.total_ht_without_discount = -section.total_ht_without_discount
+
         elif section.type == "section-subtotal":
             section.subtotal = values["subtotal"]
+
+            if document.forme == "avoir":
+                section.subtotal = -section.subtotal
 
         section.save()
         sections.append(section)
 
-    pdf = construct_pdf(document, sections, entreprise, True)
+    pdf = construct_pdf(document, sections, True)
 
-    response = HttpResponse(pdf, content_type="application/pdf")
+    response = HttpResponse(pdf.read(), content_type="application/pdf")
     response["Content-Disposition"] = 'inline; filename="preview.pdf"'
     return response
 
@@ -280,8 +306,13 @@ def produce_document(request: Request, entreprise_slug: str):
         state="produced",
     )
 
-    # Link the avoir to the parent facture
+    # Invert the sign of the total if the document is an avoir
     if document.forme == "avoir":
+        document.total_ht = -document.total_ht
+        document.total_tva = -document.total_tva
+        document.total_ttc = -document.total_ttc
+
+        # Link the avoir to the parent facture
         document.linked_parent_facture = parent_facture
 
     # Suppression of the used draft
@@ -315,11 +346,22 @@ def produce_document(request: Request, entreprise_slug: str):
             section.total_ht = values["totalHT"]
             section.total_ht_without_discount = values["totalHTWithoutDiscount"]
 
+            if document.forme == "avoir":
+                section.unit_price_ht = -section.unit_price_ht
+                section.total_ht = -section.total_ht
+                section.total_ht_without_discount = -section.total_ht_without_discount
+
         elif section.type == "section-subtotal":
             section.subtotal = values["subtotal"]
 
+            if document.forme == "avoir":
+                section.subtotal = -section.subtotal
+
         section.save()
         sections.append(section)
+
+    document.file = construct_pdf(document, sections)
+    document.save()
 
     return Response(
         {

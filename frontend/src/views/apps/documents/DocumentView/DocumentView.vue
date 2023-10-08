@@ -120,12 +120,27 @@ const produceFacture = async () => {
 
   isLoading.value = false
 }
+
+// Not working for now
+// const printDocument = () => {
+//   window.frames['documentPdfView'].focus()
+//   window.frames['documentPdfView'].print()
+// }
 </script>
 
 <template>
   <b-overlay :show="isLoading">
     <b-row v-if="document">
-      <b-col md="8"> </b-col>
+      <b-col md="8">
+        <!--          :src="`${document.file}#toolbar=0&navpanes=0&scrollbar=1`"-->
+        <iframe
+          v-if="document.file"
+          :src="`${document.file}`"
+          width="100%"
+          height="600px"
+          name="documentPdfView"
+        />
+      </b-col>
       <b-col md="4">
         <vue-perfect-scrollbar tagname="div" class="actions-col">
           <b-card>
@@ -163,21 +178,24 @@ const produceFacture = async () => {
                   block
                   v-ripple
                   class="btn-with-icon justify-content-center"
+                  @click="printDocument"
+                  disabled
                 >
                   <vue-feather type="printer" size="18" class="mr-50" />
                   Imprimer
                 </b-button>
               </b-col>
               <b-col md="6">
-                <b-button
-                  variant="primary"
-                  block
+                <a
+                  download
                   v-ripple
-                  class="btn-with-icon justify-content-center mt-1 mt-md-0"
+                  class="btn btn-outline-primary btn-with-icon justify-content-center mt-1 mt-md-0"
+                  target="_blank"
+                  :href="document.file"
                 >
                   <vue-feather type="download" size="18" class="mr-50" />
                   Télécharger
-                </b-button>
+                </a>
               </b-col>
             </b-row>
           </b-card>
@@ -276,7 +294,10 @@ const produceFacture = async () => {
             </b-button>
 
             <b-button
-              v-if="document.forme !== DocumentsType.Avoir"
+              v-if="
+                document.forme !== DocumentsType.Avoir &&
+                document.forme !== DocumentsType.Acompte
+              "
               variant="outline-secondary"
               block
               v-ripple
@@ -371,7 +392,7 @@ const produceFacture = async () => {
             </template>
 
             <template v-if="document.linked_parent_devis">
-              <hr />
+              <hr v-if="document.forme !== DocumentsType.Acompte" />
 
               <p class="text-center mb-0">Devis lié:</p>
               <b-button
