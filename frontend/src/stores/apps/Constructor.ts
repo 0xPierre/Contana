@@ -136,6 +136,8 @@ export const useConstructorStore = defineStore('constructeur', {
     },
 
     totalTVA(state) {
+      if (!this.vatPayer) return euro(0)
+
       let total = euro(0)
 
       state.sections.forEach((section) => {

@@ -369,7 +369,10 @@ const deleteDraft = async () => {
                     }}{{ constructorStore.totalHT.format() }} €</span
                   >
                 </div>
-                <div class="d-flex justify-content-between">
+                <div
+                  v-if="constructorStore.vatPayer"
+                  class="d-flex justify-content-between"
+                >
                   <span>TVA</span>
                   <span
                     >{{ constructorStore.isAvoir ? '-' : ''

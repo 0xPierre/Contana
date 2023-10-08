@@ -39,7 +39,7 @@ const modal = ref<HTMLElement | null>(null)
     </div>
 
     <b-row class="mt-50">
-      <b-col md="4">
+      <b-col :md="constructorStore.vatPayer ? 4 : 7">
         <b-form-group label="Titre">
           <b-form-input
             type="text"
@@ -63,7 +63,7 @@ const modal = ref<HTMLElement | null>(null)
           </b-input-group>
         </b-form-group>
       </b-col>
-      <b-col md="3">
+      <b-col v-if="constructorStore.vatPayer" md="3">
         <b-form-group label="TVA">
           <v-select
             :options="[

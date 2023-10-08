@@ -942,9 +942,9 @@
 								<th>Désignation</th>
 								<th>P.U HT</th>
 								<th>Qté</th>
-{#                {% if document.vat_payer %}#}
+                {% if document.vat_payer %}
                 <th>TVA</th>
-{#                {%  endif  %}#}
+                {%  endif  %}
 								<th>Montant HT</th>
 							</tr>
 						</thead>
@@ -961,9 +961,11 @@
                   <td class="cell-qty">
                     {{ section.quantity }} {{ section.get_unit }}
                   </td>
+                {% if document.vat_payer %}
                   <td class="cell-percent">
                       {{ section.vat_rate|floatformat:2 }}%
                   </td>
+                {% endif %}
                   <td class="cell-money">
                     {% if section.discount > 0 %}
                       <span style="text-decoration: line-through">{{ section.total_ht_without_discount|floatformat:2 }} €</span>
@@ -977,7 +979,9 @@
                   <td>{{ section.discount_description }}</td>
                   <td></td>
                   <td></td>
-                  <td></td>
+                  {% if document.vat_payer %}
+                   <td></td>
+                  {% endif %}
                   <td class="cell-money">
                     {{ section.total_ht|floatformat:2 }} €
                   </td>
@@ -990,14 +994,20 @@
                     </td>
                     <td class="cell-money"></td>
                     <td class="cell-qty"></td>
-                    <td class="cell-percent"></td>
+                    {% if document.vat_payer %}
+                      <td class="cell-percent"></td>
+                    {% endif %}
                     <td class="cell-money"></td>
                   </tr>
                 {% endif %}
               {% elif section.type == "section-title" %}
                 <tr class="component-title">
                   <td
+                    {% if document.vat_payer %}
                       colspan="5"
+                    {% else %}
+                      colspan="4"
+                    {% endif %}
                     class="label"
                   >
                     {{ section.title }}
@@ -1006,7 +1016,11 @@
               {% elif section.type == "section-subtotal" %}
                 <tr class="component-subtotal">
                   <td class="label"
-                      colspan="4"
+                      {% if document.vat_payer %}
+                        colspan="4"
+                      {% else %}
+                        colspan="3"
+                      {% endif %}
                     style="display: -webkit-box;-webkit-box-pack: justify;"
                   >
                     <div>
@@ -1023,7 +1037,9 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
+                {% if document.vat_payer %}
+                  <td></td>
+                {% endif %}
                 <td></td>
               </tr>
             {% endfor %}
@@ -1073,14 +1089,16 @@
 														<td class="label strong">Total HT</td>
 														<td class="cell-money strong">{{ document.total_ht|floatformat:2 }} €</td>
 													</tr>
-													<tr>
-														<td class="label">TVA</td>
-														<td class="cell-money">{{  document.total_tva|floatformat:2 }} €</td>
-													</tr>
-												<tr>
-													<td class="label">
-														Net à payer
-													</td>
+                          {% if document.vat_payer %}
+                            <tr>
+                              <td class="label">TVA</td>
+                              <td class="cell-money">{{  document.total_tva|floatformat:2 }} €</td>
+                            </tr>
+                          {% endif %}
+												  <tr>
+                            <td class="label">
+                              Net à payer
+                            </td>
 													<td class="cell-money">{{ document.total_ttc|floatformat:2 }} €</td>
 												</tr>
 											</tbody>
