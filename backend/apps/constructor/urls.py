@@ -16,6 +16,7 @@ urlpatterns = [
         name="get_document_draft",
     ),
     path("produce/", views.produce_document, name="produce_document"),
+    path("preview/", views.produce_document_preview, name="produce_document_preview"),
     path("catalog/", views.get_catalog, name="get_catalog"),
     path("catalog/template/", views.create_template, name="create_template"),
     path(

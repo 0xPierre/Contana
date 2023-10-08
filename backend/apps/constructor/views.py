@@ -5,27 +5,16 @@ from rest_framework.permissions import IsAuthenticated
 from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
+from django.http import FileResponse, HttpResponse
 
 from .utils import get_section_values
-from ..core.permissions import IsInEntreprise, CanAccessConstructor
-from ..core.utils import getEntrepriseFromRequest
-from ..documents.utils import generate_next_document_number
-from ..entreprise.models import Entreprise
-from ..documents.models import Document, DocumentSection, TemplateCategory, Template
+from apps.core.permissions import IsInEntreprise, CanAccessConstructor
+from apps.core.utils import getEntrepriseFromRequest
+from apps.documents.utils import generate_next_document_number
+from apps.entreprise.models import Entreprise
+from apps.documents.models import Document, DocumentSection, TemplateCategory, Template
 from .serializers import TemplateCategoriesDetailSerializer
-
-
-@api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
-def produce_document_overview(request: Request, entreprise_slug: str):
-    entreprise = Entreprise.objects.get(slug=entreprise_slug)
-    print(entreprise)
-
-    return Response(
-        {
-            "status": "success",
-        }
-    )
+from services.constructor.generate import construct_pdf
 
 
 @api_view(["POST"])
@@ -101,6 +90,8 @@ def save_document_draft(request: Request, entreprise_slug: str):
             section.discount_description = values["discountDescription"]
             section.unit = values["unit"]
             section.display_price_infos = values["displayPriceInfos"]
+            section.total_ht = values["totalHT"]
+            section.total_ht_without_discount = values["totalHTWithoutDiscount"]
 
         elif section.type == "section-subtotal":
             section.subtotal = values["subtotal"]
@@ -177,6 +168,75 @@ def get_document_draft(request: Request, entreprise_slug: str, document_number: 
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
+def produce_document_preview(request: Request, entreprise_slug: str):
+    """
+    Used to produce the preview of a document from the constructor. Return the pdf file directly
+    """
+    entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
+
+    client = None
+    if request.data.get("client"):
+        client = entreprise.clients.get(id=request.data.get("client")["id"])
+
+    document = Document(
+        entreprise=entreprise,
+        document_number=generate_next_document_number(
+            entreprise, request.data.get("forme"), False
+        ),
+        client=client,
+        forme=request.data.get("forme"),
+        subject=request.data.get("subject"),
+        payment_method=request.data.get("payment_method"),
+        validity_date=datetime.strptime(
+            request.data.get("validity_date")[0:10], "%d/%m/%Y"
+        ).date(),
+        payment_mention=request.data.get("payment_mention"),
+        other_mention=request.data.get("other_mention"),
+        notes=request.data.get("notes"),
+        vat_payer=request.data.get("vat_payer"),
+        total_ht=request.data.get("total_ht"),
+        total_tva=request.data.get("total_tva"),
+        total_ttc=request.data.get("total_ttc"),
+        created_by=request.user,
+    )
+
+    sections = []
+    for section_data in request.data.get("sections"):
+        values = section_data.get("values")
+        section = DocumentSection(
+            type=section_data.get("type"),
+            title=values["title"],
+        )
+
+        if section.type == "section-article":
+            section.description = values["description"]
+            section.unit_price_ht = values["unitPriceHT"]
+            section.quantity = values["quantity"]
+            section.vat_rate = values["vatRate"]
+            section.article_type = values["articleType"]
+            section.discount = values["discount"]
+            section.discount_type = values["discountType"]
+            section.discount_description = values["discountDescription"]
+            section.unit = values["unit"]
+            section.display_price_infos = values["displayPriceInfos"]
+            section.total_ht = values["totalHT"]
+            section.total_ht_without_discount = values["totalHTWithoutDiscount"]
+
+        elif section.type == "section-subtotal":
+            section.subtotal = values["subtotal"]
+
+        section.save()
+        sections.append(section)
+
+    pdf = construct_pdf(document, sections, entreprise, True)
+
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = 'inline; filename="preview.pdf"'
+    return response
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
 def produce_document(request: Request, entreprise_slug: str):
     """
     Used to produce a document from the constructor
@@ -191,7 +251,9 @@ def produce_document(request: Request, entreprise_slug: str):
         client = parent_facture.client
     else:
         if not request.data.get("client"):
-            return Response({"status": "failed", "error": "Merci de choisir un client"})
+            return Response(
+                {"status": "failed", "error": "Merci de sélectionner un client"}
+            )
 
         client = entreprise.clients.get(id=request.data.get("client")["id"])
 
@@ -250,6 +312,8 @@ def produce_document(request: Request, entreprise_slug: str):
             section.discount_description = values["discountDescription"]
             section.unit = values["unit"]
             section.display_price_infos = values["displayPriceInfos"]
+            section.total_ht = values["totalHT"]
+            section.total_ht_without_discount = values["totalHTWithoutDiscount"]
 
         elif section.type == "section-subtotal":
             section.subtotal = values["subtotal"]

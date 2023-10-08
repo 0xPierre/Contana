@@ -7,26 +7,17 @@ import {
 } from '@/types/constructor.types.ts'
 import { computed, ref, watch } from 'vue'
 import { useNumberInputHandler } from '@/composables/numberInputHandler.ts'
-import { euro } from '@/helpers/utils.ts'
+import { euro, getSectionArticleTotalHT } from '@/helpers/utils.ts'
 
 const props = defineProps<{
-  section?: Section<SectionsType.Article> | CatalogTemplate
+  section: Section<SectionsType.Article> | CatalogTemplate
   isTemplate?: boolean
 }>()
 
 const totalHT = computed(() => {
-  const { unitPriceHT, quantity, discountType, discount } =
-    props.section.values
-
-  let price = euro(unitPriceHT).multiply(quantity)
-
-  if (discountType === 'percentage') {
-    price = price.multiply(1 - discount / 100)
-  } else if (discountType === 'amount') {
-    price = price.subtract(discount)
-  }
-
-  return price.format()
+  return getSectionArticleTotalHT(
+    props.section as Section<SectionsType.Article>
+  ).format()
 })
 const { inputHandler, formattedValue } = useNumberInputHandler(
   props.section.values.unitPriceHT,
@@ -125,10 +116,18 @@ const modal = ref<HTMLElement | null>(null)
     />
     <div class="d-flex justify-content-between mt-25">
       <div v-if="!isTemplate" class="d-flex" style="gap: 1.2rem">
-        <span @click="constructorStore.removeSection(props.section.id)">
+        <span
+          @click="
+            constructorStore.removeSection(props.section.id as string)
+          "
+        >
           <vue-feather type="trash-2" size="22" class="cursor-pointer" />
         </span>
-        <span @click="constructorStore.duplicateSection(props.section.id)">
+        <span
+          @click="
+            constructorStore.duplicateSection(props.section.id as string)
+          "
+        >
           <vue-feather type="copy" size="22" class="cursor-pointer" />
         </span>
       </div>

@@ -34,7 +34,7 @@ discount_types = [
 
 
 units = [
-    ("", "Aucune"),
+    ("", ""),
     ("mm", "mm"),
     ("cm", "cm"),
     ("m", "m"),
@@ -42,10 +42,10 @@ units = [
     ("m²", "m²"),
     ("m³", "m³"),
     ("kg", "kg"),
-    ("hour", "hour"),
-    ("day", "day"),
-    ("month", "month"),
-    ("year", "year"),
+    ("hour", "heure(s)"),
+    ("day", "jour(s)"),
+    ("month", "mois"),
+    ("year", "année(s)"),
     ("ml", "ml"),
     ("l", "l"),
 ]
@@ -76,6 +76,8 @@ class DocumentSection(BaseModel):
     discount_description = models.TextField(blank=True)
     unit = models.CharField(choices=units, default="")
     display_price_infos = models.BooleanField(default=True)
+    total_ht = models.FloatField(default=0)
+    total_ht_without_discount = models.FloatField(default=0)
 
     # Only for section-subtotal
     subtotal = models.FloatField(default=0)
@@ -87,6 +89,10 @@ class DocumentSection(BaseModel):
         related_name="sections",
         null=True,
     )
+
+    @property
+    def get_unit(self):
+        return dict(units)[self.unit]
 
     def __str__(self):
         return f"{self.type} - {self.title}"
@@ -180,6 +186,10 @@ class Document(BaseModel):
         null=True,
         blank=True,
     )
+
+    @property
+    def get_payment_method(self):
+        return dict(payments_method)[self.payment_method]
 
     def __str__(self):
         return f"{self.document_number} - {self.subject}"

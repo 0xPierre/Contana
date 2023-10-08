@@ -8,7 +8,11 @@ import {
   SectionsType
 } from '@/types/constructor.types.ts'
 import { v4 as uuidv4 } from 'uuid'
-import { euro } from '@/helpers/utils.ts'
+import {
+  euro,
+  getSectionArticleTotalHT,
+  getSectionsForDocumentProducing
+} from '@/helpers/utils.ts'
 import http from '@/helpers/http.ts'
 import { ApiResponse } from '@/types/api.types.ts'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
@@ -17,6 +21,7 @@ import strftime from 'strftime'
 import SectionArticle from '@/components/constructor/sections/SectionArticle.vue'
 import SectionTitle from '@/components/constructor/sections/SectionTitle.vue'
 import SectionSubtotal from '@/components/constructor/sections/SectionSubtotal.vue'
+import currency from 'currency.js'
 
 interface State {
   documentNumber: string
@@ -105,7 +110,7 @@ export const useConstructorStore = defineStore('constructeur', {
         if (section.type === SectionsType.Article) {
           subtotal = subtotal.add(
             // @ts-ignore
-            this.getArticleTotalHT(
+            getSectionArticleTotalHT(
               section as Section<SectionsType.Article>
             )
           )
@@ -114,30 +119,13 @@ export const useConstructorStore = defineStore('constructeur', {
       return subtotals
     },
 
-    getArticleTotalHT: () => {
-      return (article: Section<SectionsType.Article>) => {
-        const { unitPriceHT, quantity, discountType, discount } =
-          article.values
-
-        let price = euro(unitPriceHT).multiply(quantity)
-
-        if (discountType === 'percentage') {
-          price = price.multiply(1 - discount / 100)
-        } else if (discountType === 'amount') {
-          price = price.subtract(discount)
-        }
-
-        return price
-      }
-    },
-
     totalHT(state) {
       let total = euro(0)
       state.sections.forEach((section) => {
         if (section.type === SectionsType.Article) {
           total = total.add(
             // @ts-ignore
-            this.getArticleTotalHT(
+            getSectionArticleTotalHT(
               section as Section<SectionsType.Article>
             )
           )
@@ -153,7 +141,7 @@ export const useConstructorStore = defineStore('constructeur', {
       state.sections.forEach((section) => {
         if (section.type === SectionsType.Article) {
           // @ts-ignore
-          const totalArticle = this.getArticleTotalHT(
+          const totalArticle = getSectionArticleTotalHT(
             section as Section<SectionsType.Article>
           )
           const { vatRate } = (section as Section<SectionsType.Article>)
@@ -166,8 +154,7 @@ export const useConstructorStore = defineStore('constructeur', {
       return total
     },
 
-    totalTTC() {
-      // @ts-ignore
+    totalTTC(): currency {
       return this.totalHT.add(this.totalTVA)
     }
   },
@@ -195,16 +182,7 @@ export const useConstructorStore = defineStore('constructeur', {
     async saveDraft() {
       const entrepriseStore = useEntrepriseStore()
 
-      const sections = this.sections.map((section) => {
-        const newSection = { ...section }
-        if (newSection.type === 'section-subtotal') {
-          newSection.values = {
-            ...section.values,
-            subtotal: this.subtotals[section.id].value
-          }
-        }
-        return newSection
-      })
+      const sections = getSectionsForDocumentProducing(this.sections)
 
       return http.post<ApiResponse<void>>(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/draft/`,
@@ -230,16 +208,7 @@ export const useConstructorStore = defineStore('constructeur', {
     async produceDocument() {
       const entrepriseStore = useEntrepriseStore()
 
-      const sections = this.sections.map((section) => {
-        const newSection = { ...section }
-        if (newSection.type === 'section-subtotal') {
-          newSection.values = {
-            ...section.values,
-            subtotal: this.subtotals[section.id].value
-          }
-        }
-        return newSection
-      })
+      const sections = getSectionsForDocumentProducing(this.sections)
 
       return http.post<
         ApiResponse<{
@@ -268,6 +237,44 @@ export const useConstructorStore = defineStore('constructeur', {
             ? this.documentNumber
             : null,
           is_avoir: this.isAvoir
+        }
+      )
+    },
+
+    /**
+     * Generate a preview of the document
+     * Use the same code as the production of the document. The only difference is that we don't save the document in the database and the PDF isn't saved
+     */
+    async generatePreview() {
+      const entrepriseStore = useEntrepriseStore()
+
+      const sections = getSectionsForDocumentProducing(this.sections)
+
+      return http.post<Blob>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/preview/`,
+        {
+          client: this.client,
+          subject: this.subject,
+          forme: this.forme,
+          payment_method: this.paymentMethod,
+          validity_date: this.validityDate,
+          payment_mention: this.paymentMention,
+          notes: this.notes,
+          vat_payer: this.vatPayer,
+          other_mention: this.otherMention,
+          sections: sections,
+          total_ht: this.totalHT,
+          total_tva: this.totalTVA,
+          total_ttc: this.totalTTC,
+          is_draft: this.isDraft,
+          draft_document_number: this.isDraft ? this.documentNumber : null,
+          parent_document_number: this.isAvoir
+            ? this.documentNumber
+            : null,
+          is_avoir: this.isAvoir
+        },
+        {
+          responseType: 'blob'
         }
       )
     },

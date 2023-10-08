@@ -22,6 +22,8 @@ export type Section<T> = {
         unitPriceHT: number
         vatRate: 20 | 10 | 5.5 | 2.1 | 0
         quantity: number
+        totalHT: number
+        totalHTWithoutDiscount: number
 
         articleType: 'service' | 'product'
 

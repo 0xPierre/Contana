@@ -17,6 +17,7 @@ import strftime from 'strftime'
 import { useRoute, useRouter } from 'vue-router'
 import { useDocumentsStore } from '@/stores/apps/Documents.ts'
 import { useClientsStore } from '@/stores/apps/Clients.ts'
+import ConstructorPreview from '@/views/apps/constructor/ConstructorPreview.vue'
 
 draggable.compatConfig = { MODE: 3 }
 const constructorStore = useConstructorStore()
@@ -389,27 +390,19 @@ const deleteDraft = async () => {
                 v-ripple
                 variant="success"
                 block
-                class="btn-with-icon"
+                class="btn-with-icon mb-50"
                 @click="produceDocument"
               >
                 <vue-feather type="file-plus" class="mr-50" size="16" />
                 Produire {{ constructorStore.formeSentence.first }}
               </b-button>
-              <b-button
-                v-ripple
-                variant="outline-primary"
-                block
-                class="btn-with-icon"
-              >
-                <vue-feather type="eye" class="mr-50" size="16" />
-                Aperçu {{ constructorStore.formeSentence.second }}
-              </b-button>
+              <ConstructorPreview />
               <b-button
                 v-if="!constructorStore.isAvoir"
                 v-ripple
                 variant="outline-secondary"
                 block
-                class="btn-with-icon"
+                class="btn-with-icon mt-50"
                 @click="saveDraft"
               >
                 <vue-feather type="save" class="mr-50" size="16" />
