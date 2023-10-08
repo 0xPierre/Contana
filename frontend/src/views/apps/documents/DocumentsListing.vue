@@ -352,9 +352,16 @@ const deleteDocument = async (documentId: number) => {
               <b-button class="btn-icon" variant="flat-secondary">
                 <vue-feather type="printer" size="18" />
               </b-button>
-              <b-button class="btn-icon" variant="flat-secondary">
+
+              <a
+                download
+                v-ripple
+                class="btn btn-flat-secondary btn-icon"
+                target="_blank"
+                :href="row.item.file"
+              >
                 <vue-feather type="download" size="18" />
-              </b-button>
+              </a>
             </div>
           </template>
         </b-table>

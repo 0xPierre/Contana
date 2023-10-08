@@ -48,6 +48,7 @@ class DocumentsListingSerializer(serializers.ModelSerializer):
             "is_draft",
             "subject",
             "state",
+            "file",
         ]
         extra_kwargs = {
             "document_number": {"read_only": True},
@@ -58,6 +59,7 @@ class DocumentsListingSerializer(serializers.ModelSerializer):
             "is_draft": {"read_only": True},
             "subject": {"read_only": True},
             "state": {"read_only": True},
+            "file": {"read_only": True},
         }
 
 
