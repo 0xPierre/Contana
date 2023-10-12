@@ -18,7 +18,6 @@ class IsOwnerOfEntreprise(permissions.BasePermission):
         return False
 
 
-# TODO: test
 class IsInEntreprise(permissions.BasePermission):
     """
     Verify that user is in entreprise
