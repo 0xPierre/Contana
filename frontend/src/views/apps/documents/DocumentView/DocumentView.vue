@@ -262,7 +262,7 @@ const produceFacture = async () => {
               variant="dark"
               block
               v-ripple
-              class="btn-with-icon justify-content-center"
+              class="btn-with-icon justify-content-center mb-50"
               @click="changeDocumentState(DocumentsState.Paid)"
             >
               <vue-feather type="check-circle" size="18" class="mr-50" />
