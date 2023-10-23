@@ -36,6 +36,16 @@ def get_entreprise_data(entreprise: Entreprise, user: User) -> dict:
         "capital": entreprise.capital,
         "logos": [],
         "user_permissions": {},
+        "document_logo_size": entreprise.document_logo_size,
+        "document_logo_margin_right": entreprise.document_logo_margin_right,
+        "document_logo_margin_top": entreprise.document_logo_margin_top,
+        "document_logo_margin_bottom": entreprise.document_logo_margin_bottom,
+        "document_logo_used": None,
+        "document_default_payment_method": entreprise.document_default_payment_method,
+        "document_payment_mention": entreprise.document_payment_mention,
+        "document_other_mention": entreprise.document_other_mention,
+        "document_notes": entreprise.document_notes,
+        "vat_payer": entreprise.vat_payer,
     }
 
     entreprise_permissions = entreprise._meta.permissions
@@ -76,6 +86,17 @@ def get_entreprise_data(entreprise: Entreprise, user: User) -> dict:
 
     logo: EntrepriseLogo
     for logo in entreprise.entreprise_logos.all():
-        data["logos"].append({"id": logo.id, "url": logo.file.url})
+        data["logos"].append(
+            {
+                "id": logo.id,
+                "url": logo.file.url,
+                "name": logo.file.name.split(
+                    "/",
+                )[-1],
+            }
+        )
+
+        if logo == entreprise.document_logo_used:
+            data["document_logo_used"] = logo.id
 
     return data

@@ -367,3 +367,49 @@ def join_entreprise(request: Request, entreprise_slug: str) -> Response:
             "status": "success",
         }
     )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
+def update_entreprise_document_personalisation(
+    request: Request, entreprise_slug: str
+) -> Response:
+    """
+    This method allows to update the entreprise document personalisation
+    For instance the logo displayed on the document, his size, margin...
+    And complementary information on the document
+    """
+    entreprise = Entreprise.objects.get(slug=entreprise_slug)
+
+    entreprise.document_logo_size = request.data.get("document_logo_size", 300)
+    entreprise.document_logo_margin_right = request.data.get(
+        "document_logo_margin_right", 0
+    )
+    entreprise.document_logo_margin_top = request.data.get(
+        "document_logo_margin_top", 0
+    )
+    entreprise.document_logo_margin_bottom = request.data.get(
+        "document_logo_margin_bottom", 0
+    )
+    entreprise.document_default_payment_method = request.data.get(
+        "document_default_payment_method", "bank_transfer"
+    )
+    entreprise.document_payment_mention = request.data.get(
+        "document_payment_mention", None
+    )
+    entreprise.document_other_mention = request.data.get("document_other_mention", None)
+    entreprise.document_notes = request.data.get("document_notes", None)
+    entreprise.vat_payer = request.data.get("vat_payer", True)
+
+    logo_used = request.data.get("document_logo_used", None)
+    if logo_used:
+        entreprise.document_logo_used = entreprise.entreprise_logos.get(id=logo_used)
+    else:
+        entreprise.document_logo_used = None
+
+    entreprise.save()
+
+    return Response(
+        {"status": "success", "data": get_entreprise_data(entreprise, request.user)}
+    )

@@ -1,4 +1,4 @@
-from ..core.models import BaseModel
+from ..core.models import BaseModel, payments_method
 from ..user.models import User
 from autoslug import AutoSlugField
 from django.db import models
@@ -51,22 +51,41 @@ class Entreprise(BaseModel):
     users = models.ManyToManyField(User, related_name="entreprises")
 
     email = models.EmailField(null=True, blank=True)
-    phone = models.CharField(max_length=255, null=True, blank=True)
+    phone = models.CharField(null=True, blank=True)
 
-    country = models.CharField(max_length=255, null=True, blank=True)
-    city = models.CharField(max_length=255, null=True, blank=True)
-    zip_code = models.CharField(max_length=255, null=True, blank=True)
-    address = models.CharField(max_length=255, null=True, blank=True)
+    country = models.CharField(null=True, blank=True)
+    city = models.CharField(null=True, blank=True)
+    zip_code = models.CharField(null=True, blank=True)
+    address = models.CharField(null=True, blank=True)
 
-    num_rcs = models.CharField(max_length=255, null=True, blank=True)
-    vat_number = models.CharField(max_length=255, null=True, blank=True)
-    iban = models.CharField(max_length=255, null=True, blank=True)
-    bic = models.CharField(max_length=255, null=True, blank=True)
-    bank = models.CharField(max_length=255, null=True, blank=True)
-    ape = models.CharField(max_length=255, null=True, blank=True)
-    forme = models.CharField(max_length=255, null=True, blank=True)
-    siren = models.CharField(max_length=255, null=True, blank=True)
-    capital = models.CharField(max_length=255, null=True, blank=True)
+    num_rcs = models.CharField(null=True, blank=True)
+    vat_number = models.CharField(null=True, blank=True)
+    iban = models.CharField(null=True, blank=True)
+    bic = models.CharField(null=True, blank=True)
+    bank = models.CharField(null=True, blank=True)
+    ape = models.CharField(null=True, blank=True)
+    forme = models.CharField(null=True, blank=True)
+    siren = models.CharField(null=True, blank=True)
+    capital = models.CharField(null=True, blank=True)
+
+    # Document personnalization
+    document_logo_size = models.IntegerField(default=300)
+    document_logo_margin_right = models.IntegerField(default=0)
+    document_logo_margin_top = models.IntegerField(default=0)
+    document_logo_margin_bottom = models.IntegerField(default=0)
+    document_logo_used = models.ForeignKey(
+        EntrepriseLogo,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="used_by",
+    )
+    document_default_payment_method = models.CharField(
+        choices=payments_method, default="bank_transfer"
+    )
+    document_payment_mention = models.CharField(blank=True, default="")
+    document_other_mention = models.CharField(blank=True, default="")
+    document_notes = models.CharField(blank=True, default="")
+    vat_payer = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

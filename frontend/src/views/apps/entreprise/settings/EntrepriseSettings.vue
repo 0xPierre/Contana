@@ -6,6 +6,8 @@ import EntrepriseSettingsUsers from './EntrepriseSettingsUsers.vue'
 import EntrepriseSettingsVisualIdentity from './EntrepriseSettingsVisualIdentity.vue'
 import EntrepriseSettingsSecurity from './EntrepriseSettingsSecurity.vue'
 import { can } from '@/helpers/permissions'
+import Personalization from '@/views/apps/entreprise/settings/EntrepriseSettingsPersonalization/EntrepriseSettingsPersonalization.vue'
+import EntrepriseSettingsPersonalization from '@/views/apps/entreprise/settings/EntrepriseSettingsPersonalization/EntrepriseSettingsPersonalization.vue'
 
 const isLoading = ref(false)
 const entrepriseStore = useEntrepriseStore()
@@ -35,6 +37,15 @@ onMounted(async () => {
         </template>
 
         <EntrepriseSettingsInformations />
+      </b-tab>
+
+      <b-tab>
+        <template #title>
+          <vue-feather type="layout" size="18" class="mr-50" />
+          <span class="font-weight-bold">Personnalisation</span>
+        </template>
+
+        <EntrepriseSettingsPersonalization />
       </b-tab>
 
       <b-tab>

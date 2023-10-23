@@ -1,5 +1,5 @@
 from django.db import models
-from ..core.models import BaseModel
+from ..core.models import BaseModel, payments_method
 from ..clients.models import Client
 from ..user.models import User
 from ..entreprise.models import Entreprise
@@ -10,15 +10,6 @@ documents_type = [
     ("devis", "Devis"),
     ("avoir", "Avoir"),
     ("acompte", "Acompte"),
-]
-
-payments_method = [
-    ("bank_transfer", "Virement bancaire"),
-    ("check", "Chèque"),
-    ("cash", "Espèce"),
-    ("credit_card", "Carte bancaire"),
-    ("direct_debit", "Prélèvement automatique"),
-    ("other", "Autre"),
 ]
 
 sections_types = [

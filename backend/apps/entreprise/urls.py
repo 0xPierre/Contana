@@ -14,6 +14,11 @@ urlpatterns = [
         name="update_entreprise_informations",
     ),
     path(
+        "settings/informations/personnalization/documents",
+        views.update_entreprise_document_personalisation,
+        name="update_entreprise_document_personalisation",
+    ),
+    path(
         "settings/delete",
         views.delete_entreprise,
         name="delete_entreprise",

@@ -6,6 +6,7 @@ import type {
   EntrepriseUser
 } from '@/types/entreprise.types'
 import type { ApiResponse } from '@/types/api.types'
+import { PaymentsMethod } from '@/types/core.types.ts'
 
 interface State {
   selectedEntrepriseSlug: string | null
@@ -47,6 +48,23 @@ export const useEntrepriseStore = defineStore('entreprise', {
         data
       )
     },
+    async updateEntrepriseDocumentsPersonnalization(data: {
+      document_logo_size: number
+      document_logo_margin_right: number
+      document_logo_margin_top: number
+      document_logo_margin_bottom: number
+      document_logo_used: null | number
+      document_default_payment_method: PaymentsMethod
+      document_payment_mention: string
+      document_other_mention: string
+      document_notes: string
+      vat_payer: boolean
+    }) {
+      return http.post<ApiResponse<EntrepriseModel>>(
+        `/api/entreprise/${this.entreprise?.slug}/settings/informations/personnalization/documents`,
+        data
+      )
+    },
 
     async updateEntrepriseLogos(
       logos: (File | { id: number; url: string })[]
@@ -62,7 +80,12 @@ export const useEntrepriseStore = defineStore('entreprise', {
 
       return http.post<ApiResponse<EntrepriseModel>>(
         `/api/entreprise/${this.entreprise?.slug}/settings/logos`,
-        formData
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
       )
     },
 
