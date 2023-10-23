@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import FileItem from './FileItem.vue'
+import { notify } from '@/helpers/notify.ts'
 
 const props = defineProps<{
   files: (
@@ -39,6 +40,21 @@ const onDrop = (event: DragEvent) => {
   event.preventDefault()
   if (!dragContainer.value) return
   dragContainer.value.classList.remove('dragging')
+
+  if (props.accept) {
+    const types = props.accept.split(',').map((type) => type.split('/')[0])
+    const files = event.dataTransfer?.files
+    if (!files) return
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      if (!types.includes(file.type.split('/')[0])) {
+        notify(`Le fichier ${file.name} n'est pas du bon type`, 'danger')
+        return
+      }
+    }
+  }
+
   const files = event.dataTransfer?.files
   if (!files) return
 
