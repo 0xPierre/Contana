@@ -102,7 +102,12 @@ export const useClientsStore = defineStore('clients', {
 
       return http.post<ApiResponse<null>>(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/clients/${clientId}/files/`,
-        formData
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
       )
     },
 
