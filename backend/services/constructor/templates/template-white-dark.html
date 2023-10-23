@@ -887,7 +887,22 @@
 									</div>
 								</td>
 								<td class="right company-logo">
-
+                  {% if logo_url %}
+										<div class="company-logo">
+											<div class="bloc-company-logo">
+												<img
+													style="
+														height: auto;
+														width: {{ entreprise.document_logo_size }}px;
+														margin-top: {{ entreprise.document_logo_margin_top}}px;
+														margin-right: {{ entreprise.document_logo_margin_right }}px;
+                            margin-bottom: {{ entreprise.document_logo_margin_bottom }}px;
+													"
+													src="{{ logo_url }}"
+												>
+											</div>
+										</div>
+									{% endif %}
 								</td>
 							</tr>
 							<tr>

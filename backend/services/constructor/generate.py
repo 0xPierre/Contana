@@ -38,6 +38,11 @@ def construct_pdf(
     with open("templates/template-white-dark.html", "r", encoding="utf8") as f:
         template_string = f.read()
 
+    logo_url = ""
+
+    if document.entreprise.document_logo_used:
+        logo_url = document.entreprise.document_logo_used.file.url
+
     template = Template(template_string)
     context = Context(
         {
@@ -46,6 +51,7 @@ def construct_pdf(
             "sections": sections,
             "entreprise": document.entreprise,
             "preview": preview,
+            "logo_url": logo_url,
         }
     )
     rendered_template = template.render(context)

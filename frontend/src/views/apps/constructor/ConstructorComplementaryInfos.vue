@@ -1,10 +1,33 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useConstructorStore } from '@/stores/apps/Constructor'
 import { PaymentsMethod, DocumentsType } from '@/types/core.types'
+import strftime from 'strftime'
+import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
 
 const constructorStore = useConstructorStore()
+const entrepriseStore = useEntrepriseStore()
 const modalInfos = ref<HTMLElement | null>(null)
+
+onBeforeMount(async () => {
+  if (!entrepriseStore.entreprise) {
+    await entrepriseStore.getEntrepriseData()
+  }
+
+  constructorStore.paymentMethod =
+    entrepriseStore.entreprise?.document_default_payment_method ||
+    PaymentsMethod.BankTransfer
+  constructorStore.paymentMention =
+    entrepriseStore.entreprise?.document_payment_mention || ''
+  constructorStore.vatPayer = entrepriseStore.entreprise?.vat_payer
+  constructorStore.notes = entrepriseStore.entreprise?.document_notes || ''
+  constructorStore.otherMention =
+    entrepriseStore.entreprise?.document_other_mention || ''
+  constructorStore.validityDate = strftime(
+    '%d/%m/%Y',
+    new Date(new Date().setDate(new Date().getDate() + 90))
+  )
+})
 </script>
 <template>
   <div>
@@ -99,7 +122,7 @@ const modalInfos = ref<HTMLElement | null>(null)
           <b-form-group label="Mention autre">
             <b-form-input
               v-model="constructorStore.otherMention"
-              placeholder="TVA non applicable, article 293 B du CGI"
+              placeholder="Texte libre ( ex : TVA non applicable, article 293 B du CGI )"
             />
           </b-form-group>
         </b-col>

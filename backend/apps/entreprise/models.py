@@ -82,9 +82,14 @@ class Entreprise(BaseModel):
     document_default_payment_method = models.CharField(
         choices=payments_method, default="bank_transfer"
     )
-    document_payment_mention = models.CharField(blank=True, default="")
+    document_payment_mention = models.CharField(
+        blank=True, default="À réception de la facture"
+    )
     document_other_mention = models.CharField(blank=True, default="")
-    document_notes = models.CharField(blank=True, default="")
+    document_notes = models.TextField(
+        blank=True,
+        default="En cas de retard de paiement, il sera appliqué des pénalités et intérêts de retard suivant le taux minimum légal en vigueur, par mois de retard. En outre, une indemnité forfaitaire pour frais de recouvrement de 40€ sera due.",
+    )
     vat_payer = models.BooleanField(default=True)
 
     def __str__(self):

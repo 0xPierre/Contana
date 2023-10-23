@@ -2,6 +2,7 @@
 import { PaymentsMethod } from '@/types/core.types.ts'
 import { computed, onBeforeMount, reactive, ref } from 'vue'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
+import { notify } from '@/helpers/notify.ts'
 
 const isLoading = ref(false)
 const entrepriseStore = useEntrepriseStore()
@@ -52,6 +53,7 @@ const savePersonnalization = async () => {
       )
     if (data.status === 'success') {
       entrepriseStore.entreprise = data.data
+      notify('Informations mises à jour avec succès', 'success')
     }
   } catch (e) {
     console.log(e)

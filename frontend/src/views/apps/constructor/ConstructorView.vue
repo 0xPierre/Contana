@@ -74,7 +74,6 @@ const dragging = ref(false)
 
 onBeforeMount(async () => {
   constructorStore.client = null
-  constructorStore.paymentMethod = PaymentsMethod.BankTransfer
   constructorStore.forme = DocumentsType.Devis
 
   if (route.query.hasOwnProperty('forme')) {
@@ -102,15 +101,6 @@ onBeforeMount(async () => {
     }
     isClientLoading.value = false
   }
-  constructorStore.validityDate = strftime(
-    '%d/%m/%Y',
-    new Date(new Date().setDate(new Date().getDate() + 90))
-  )
-  constructorStore.paymentMention = 'À réception de la facture'
-  constructorStore.vatPayer = true
-  constructorStore.notes =
-    'En cas de retard de paiement, il sera appliqué des pénalités et intérêts de retard suivant le taux minimum légal en vigueur, par mois de retard. En outre, une indemnité forfaitaire pour frais de recouvrement de 40€ sera due.'
-  constructorStore.otherMention = ''
   constructorStore.sections = []
   constructorStore.subject = ''
   constructorStore.documentNumber = ''
