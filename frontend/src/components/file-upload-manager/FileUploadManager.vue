@@ -96,14 +96,15 @@ const deleteFile = (index: number) => {
         @change="onChange"
       />
       <div v-if="props.files.length > 0" class="preview-list px-50 pt-50">
-        <FileItem
-          v-for="(file, index) in props.files"
-          :key="index"
-          :file="file"
-          :preview-file="props.preview"
-          @delete-file="deleteFile(index)"
-        />
-
+        <div class="d-flex flex-wrap">
+          <FileItem
+            v-for="(file, index) in props.files"
+            :key="index"
+            :file="file"
+            :preview-file="props.preview"
+            @delete-file="deleteFile(index)"
+          />
+        </div>
         <b-button
           variant="outline-primary"
           size="sm"
@@ -143,8 +144,6 @@ const deleteFile = (index: number) => {
 }
 
 .preview-list {
-  display: flex;
-  flex-wrap: wrap;
   margin-top: 10px;
 }
 </style>
