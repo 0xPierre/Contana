@@ -66,6 +66,27 @@ export const useEntrepriseStore = defineStore('entreprise', {
       )
     },
 
+    async getPersonnalizationDocumentPreview(data: {
+      document_logo_size: number
+      document_logo_margin_right: number
+      document_logo_margin_top: number
+      document_logo_margin_bottom: number
+      document_logo_used: null | number
+      document_default_payment_method: PaymentsMethod
+      document_payment_mention: string
+      document_other_mention: string
+      document_notes: string
+      vat_payer: boolean
+    }) {
+      return http.post<Blob>(
+        `/api/entreprise/${this.entreprise?.slug}/settings/informations/personnalization/documents/preview`,
+        data,
+        {
+          responseType: 'blob'
+        }
+      )
+    },
+
     async updateEntrepriseLogos(
       logos: (File | { id: number; url: string })[]
     ) {

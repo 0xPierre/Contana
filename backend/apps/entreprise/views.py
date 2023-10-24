@@ -1,6 +1,9 @@
 import random
 import string
 
+from django.http import HttpResponse
+
+from services.constructor.generate import construct_pdf
 from ..core.permissions import (
     CanAdministrate,
     IsInEntreprise,
@@ -20,6 +23,8 @@ from rest_framework.response import Response
 
 from .serializers import EntrepriseUpdateInformationsModelSerializer
 from .utils import build_invitation_link, get_entreprise_data
+from apps.documents.models import Document, DocumentSection
+from apps.clients.models import Client
 
 
 @api_view(["POST"])
@@ -413,3 +418,71 @@ def update_entreprise_document_personalisation(
     return Response(
         {"status": "success", "data": get_entreprise_data(entreprise, request.user)}
     )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
+def get_document_personnalization_preview(
+    request: Request, entreprise_slug: str
+) -> HttpResponse:
+    """
+    Used to produce a preview of a document using the new personalisation
+    """
+    entreprise = Entreprise.objects.get(slug=entreprise_slug)
+    entreprise.document_logo_size = request.data.get("document_logo_size", 300)
+    entreprise.document_logo_margin_right = request.data.get(
+        "document_logo_margin_right", 0
+    )
+    entreprise.document_logo_margin_top = request.data.get(
+        "document_logo_margin_top", 0
+    )
+    entreprise.document_logo_margin_bottom = request.data.get(
+        "document_logo_margin_bottom", 0
+    )
+
+    client = Client(
+        client_number="C-000001",
+        socialreasonorname="Société Dupond",
+        city="Paris",
+        zip_code="75000",
+        address="1 rue de la paix",
+        country="France",
+        vat_number="FR123456789",
+        siren="123456789",
+    )
+
+    section = DocumentSection(
+        title="Création d'un site internet",
+        type="section-article",
+        article_type="article",
+        description="Développement du site internet de de la stratégie SEO",
+        vat_rate=20,
+        unit_price_ht=100,
+        quantity=1,
+        total_ht=100,
+        total_ht_without_discount=100,
+    )
+
+    document = Document(
+        entreprise=entreprise,
+        document_number="F-000001",
+        forme="facture",
+        subject="Création d'un site internet",
+        payment_method=request.data.get("document_default_payment_method"),
+        validity_date=timezone.now(),
+        payment_mention=request.data.get("document_payment_mention"),
+        other_mention=request.data.get("document_other_mention"),
+        notes=request.data.get("document_notes"),
+        vat_payer=request.data.get("vat_payer"),
+        total_ht=100,
+        total_tva=20,
+        total_ttc=120,
+        client=client,
+    )
+
+    pdf = construct_pdf(document, [section], True)
+
+    response = HttpResponse(pdf.read(), content_type="application/pdf")
+    response["Content-Disposition"] = 'inline; filename="preview.pdf"'
+    return response

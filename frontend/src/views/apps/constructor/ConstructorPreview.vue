@@ -14,7 +14,6 @@ const generatePreview = async () => {
   isLoading.value = true
   try {
     const { data } = await constructorStore.generatePreview()
-    console.log(data)
 
     blobUrl.value = URL.createObjectURL(
       new Blob([data], { type: 'application/pdf' })

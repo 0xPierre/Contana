@@ -45,7 +45,6 @@ onBeforeMount(() => {
 
 const savePersonnalization = async () => {
   isLoading.value = true
-  console.log(localData)
   try {
     const { data } =
       await entrepriseStore.updateEntrepriseDocumentsPersonnalization(
@@ -56,7 +55,27 @@ const savePersonnalization = async () => {
       notify('Informations mises à jour avec succès', 'success')
     }
   } catch (e) {
-    console.log(e)
+    notify("Une erreur est survenue lors de l'enregistrement", 'danger')
+  }
+  isLoading.value = false
+}
+
+const documentPreview = async () => {
+  isLoading.value = true
+  try {
+    const { data } =
+      await entrepriseStore.getPersonnalizationDocumentPreview(localData)
+
+    const blobUrl = URL.createObjectURL(
+      new Blob([data], { type: 'application/pdf' })
+    )
+    console.log(blobUrl)
+    window.open(blobUrl, '_blank')
+  } catch (e) {
+    notify(
+      "Une erreur est survenue lors de la génération de l'aperçu",
+      'danger'
+    )
   }
   isLoading.value = false
 }
@@ -255,6 +274,7 @@ const logoUsedUrl = computed(() => {
             variant="outline-primary"
             v-ripple
             class="btn-with-icon ml-1"
+            @click="documentPreview"
           >
             <vue-feather type="eye" size="16" class="mr-50" />
             <span> Aperçu d'un document </span>

@@ -19,6 +19,7 @@ onBeforeMount(async () => {
     PaymentsMethod.BankTransfer
   constructorStore.paymentMention =
     entrepriseStore.entreprise?.document_payment_mention || ''
+  // @ts-ignore
   constructorStore.vatPayer = entrepriseStore.entreprise?.vat_payer
   constructorStore.notes = entrepriseStore.entreprise?.document_notes || ''
   constructorStore.otherMention =
