@@ -60,6 +60,7 @@ const createAccount = async () => {
           isLoggedIn: true
         }
       })
+      await userStore.getData()
 
       if (route.query.redirect) router.push(route.query.redirect as string)
       else router.push({ name: 'home' })
