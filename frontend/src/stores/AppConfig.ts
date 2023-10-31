@@ -3,7 +3,7 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 export const useAppConfigStore = defineStore('app-config', {
   state: () => {
     return {
-      theme: 'dark',
+      theme: 'light',
       navbar: {
         type: 'floating', // static , sticky , floating, hidden
         backgroundColor: ''
