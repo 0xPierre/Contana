@@ -8,7 +8,7 @@ export default [
       layout: 'layout-vertical',
       requireAuth: true,
       permissions: {
-        administrate: true
+        access_dashboard: true
       }
     }
   }

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from django.db.models import Sum
-from apps.core.permissions import IsInEntreprise, CanAdministrate
+from apps.core.permissions import IsInEntreprise, CanAccessDashboard
 from apps.dashboard.utils import get_start_date_and_end_date_from_period
 
 from apps.entreprise.models import Entreprise
@@ -14,7 +14,7 @@ from apps.documents.models import Document
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessDashboard])
 def get_cards_data(request: Request, entreprise_slug: str):
     """
     Get the data for the cards in the dashboard.
@@ -91,7 +91,7 @@ def get_cards_data(request: Request, entreprise_slug: str):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessDashboard])
 def get_turnover_chart(request: Request, entreprise_slug: str):
     """
     Get the data for the turnover chart.
@@ -167,7 +167,7 @@ def get_turnover_chart(request: Request, entreprise_slug: str):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessDashboard])
 def get_best_articles_chart(request: Request, entreprise_slug: str):
     """
     Get the data for the best articles chart
@@ -214,7 +214,7 @@ def get_best_articles_chart(request: Request, entreprise_slug: str):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessDashboard])
 def get_best_clients_chart(request: Request, entreprise_slug: str):
     """
     Get the data for the best clients chart

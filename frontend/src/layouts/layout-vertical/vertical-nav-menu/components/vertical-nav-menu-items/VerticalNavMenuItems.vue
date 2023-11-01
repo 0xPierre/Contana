@@ -17,7 +17,7 @@ const entrepriseStore = useEntrepriseStore()
     <template v-if="entrepriseStore.entreprise">
       <VerticalNavMenuHeader :item="{ header: 'Entreprise' }" />
       <VerticalNavMenuLink
-        v-if="can('administrate')"
+        v-if="can('access_dashboard')"
         :item="{
           title: 'Tableau de bord',
           route: {

@@ -103,4 +103,5 @@ class Entreprise(BaseModel):
             ("access_clients", "Allows to access the clients"),
             ("update_clients", "Allows to update the clients"),
             ("access_constructor", "Allows to access the constructeur"),
+            ("access_dashboard", "Allows to access the dashboard"),
         )

@@ -50,6 +50,11 @@ class CanAdministrate(permissions.BasePermission):
         return test_user_permission(self, request, "administrate")
 
 
+class CanAccessDashboard(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return test_user_permission(self, request, "access_dashboard")
+
+
 class CanAccessClients(permissions.BasePermission):
     def has_permission(self, request, view):
         return test_user_permission(self, request, "access_clients")

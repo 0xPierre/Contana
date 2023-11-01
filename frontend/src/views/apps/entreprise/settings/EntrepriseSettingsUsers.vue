@@ -197,6 +197,15 @@ const removeUser = async (user: EntrepriseUser) => {
               Modification des clients
             </b-form-checkbox>
           </b-form-group>
+          <h5>Tableau de bord</h5>
+          <b-form-group>
+            <b-form-checkbox
+              v-model="selectedUser.permissions.access_dashboard"
+              class="m-0"
+            >
+              Accès aux tableau de bord
+            </b-form-checkbox>
+          </b-form-group>
         </b-col>
       </b-row>
     </b-overlay>
