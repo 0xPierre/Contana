@@ -134,7 +134,7 @@ const produceFacture = async () => {
         <!--          :src="`${document.file}#toolbar=0&navpanes=0&scrollbar=1`"-->
         <iframe
           v-if="document.file"
-          :src="`${document.file}`"
+          :src="`${document.file}#navpanes=0&scrollbar=1`"
           width="100%"
           height="600px"
           name="documentPdfView"
