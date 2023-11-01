@@ -32,4 +32,8 @@ urlpatterns = [
         "api/entreprise/<str:entreprise_slug>/documents/",
         include("apps.documents.urls"),
     ),
+    path(
+        "api/entreprise/<str:entreprise_slug>/dashboard/",
+        include("apps.dashboard.urls"),
+    ),
 ]

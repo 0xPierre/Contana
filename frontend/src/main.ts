@@ -33,6 +33,9 @@ import '@/assets/scss/template/vue/libs/vue-flatpicker.scss'
 import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 app.component(VuePerfectScrollbar.name, VuePerfectScrollbar)
 
+import VueApexCharts from 'vue3-apexcharts'
+app.use(VueApexCharts)
+
 // config flat pickr
 flatpickr.defaultConfig = {
   ...flatpickr.defaultConfig,

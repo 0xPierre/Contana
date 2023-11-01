@@ -5,8 +5,10 @@ import userRoutes from './routes/user'
 import legalRoutes from './routes/legals'
 import entrepriseRoutes from './routes/entreprise'
 import clientsRoutes from './routes/clients'
-import constructorRoute from './routes/constructor'
-import documentsRoute from './routes/documents'
+import constructorRoutes from './routes/constructor'
+import documentsRoutes from './routes/documents'
+import dashboardRoutes from './routes/dashboard'
+
 import { useUserStore } from '@/stores/apps/User'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise'
 
@@ -27,8 +29,9 @@ const router = createRouter({
     ...userRoutes,
     ...entrepriseRoutes,
     ...clientsRoutes,
-    ...constructorRoute,
-    ...documentsRoute
+    ...constructorRoutes,
+    ...documentsRoutes,
+    ...dashboardRoutes
   ]
 })
 

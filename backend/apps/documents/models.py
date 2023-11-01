@@ -85,6 +85,12 @@ class DocumentSection(BaseModel):
         related_name="sections",
         null=True,
     )
+    entreprise = models.ForeignKey(
+        Entreprise,
+        on_delete=models.CASCADE,
+        related_name="document_sections",
+        null=True,
+    )
 
     @property
     def get_unit(self):

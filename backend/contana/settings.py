@@ -125,11 +125,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "fr-FR"
 
-TIME_ZONE = "Europe/Paris"
-
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 AUTH_USER_MODEL = "user.User"
 

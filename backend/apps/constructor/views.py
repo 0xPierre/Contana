@@ -26,7 +26,6 @@ def save_document_draft(request: Request, entreprise_slug: str):
     Save a document as a draft to be completed later
     """
     entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
-    print(request.data.get("document_number"))
     # If draft isn't already created, create it
     if request.data.get("document_number"):
         document = entreprise.documents.get(

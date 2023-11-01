@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { computed, onBeforeMount, ref } from 'vue'
 import { useConstructorStore } from '@/stores/apps/Constructor.ts'
-import CatalogCategories from '@/views/apps/constructor/Catalog/CatalogCategories.vue'
 import { notify, swalAlert } from '@/helpers/notify.ts'
 import { v4 as uuidv4 } from 'uuid'
 import draggable from 'vuedraggable'
