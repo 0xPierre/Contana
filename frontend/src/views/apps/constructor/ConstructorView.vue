@@ -201,7 +201,6 @@ const produceDocument = async () => {
       notify(data.error, 'danger')
     }
   } catch (e) {
-    console.log(e)
     notify(
       'Une erreur est survenue lors de la production du document',
       'danger'

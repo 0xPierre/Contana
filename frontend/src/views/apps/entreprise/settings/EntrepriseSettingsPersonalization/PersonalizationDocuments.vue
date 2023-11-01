@@ -69,7 +69,6 @@ const documentPreview = async () => {
     const blobUrl = URL.createObjectURL(
       new Blob([data], { type: 'application/pdf' })
     )
-    console.log(blobUrl)
     window.open(blobUrl, '_blank')
   } catch (e) {
     notify(

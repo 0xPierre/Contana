@@ -47,8 +47,7 @@ const produceAcompte = async () => {
         }
       })
     }
-  } catch (e) {
-    console.log(e)
+  } catch {
     notify(
       "Une erreur est survenue lors de la production de l'acompte",
       'danger'

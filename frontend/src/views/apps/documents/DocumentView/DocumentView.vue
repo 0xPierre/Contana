@@ -102,7 +102,6 @@ const produceFacture = async () => {
     const { data } = await documentStore.produceFactureFromDevis(
       route.params.documentId as number
     )
-    console.log(data)
     if (data.status === 'success') {
       router.push({
         name: 'entreprise-document-view',

@@ -46,9 +46,7 @@ const updateInformations = async () => {
       await entrepriseStore.updateEntrepriseInformations(formState)
 
     if (data.status === 'success') {
-      console.log(entrepriseStore.entreprise?.slug, data.data.slug)
       if (entrepriseStore.entreprise?.slug !== data.data.slug) {
-        console.log('update slug')
         router.replace({
           name: 'entreprise-settings',
           params: { entrepriseSlug: data.data.slug }
