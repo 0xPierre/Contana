@@ -122,8 +122,9 @@ const removeUser = async (user: EntrepriseUser) => {
           <b-button
             v-if="
               data.item.id !== entrepriseStore.entreprise?.owner &&
-              data.item.permissions.administrate &&
-              entrepriseStore.entreprise?.is_owner
+              ((data.item.permissions.administrate &&
+                entrepriseStore.entreprise?.is_owner) ||
+                entrepriseStore.entreprise?.is_owner)
             "
             variant="flat-danger"
             @click="removeUser(data.item)"
