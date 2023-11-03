@@ -3,11 +3,38 @@ import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
 import { useUserStore } from '@/stores/apps/User.ts'
 import { fullNameToText } from '@/helpers/utils.ts'
 import { ref } from 'vue'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const entrepriseStore = useEntrepriseStore()
 const userStore = useUserStore()
 
 const isOpen = ref(false)
+
+const selectEntreprise = async (slug: string) => {
+  await userStore.selectEntreprise(slug)
+  if (entrepriseStore?.entreprise?.user_permissions.access_dashboard) {
+    router.push({
+      name: 'entreprise-dashboard',
+      params: { entrepriseSlug: entrepriseStore.entreprise?.slug }
+    })
+  } else if (
+    entrepriseStore?.entreprise?.user_permissions.access_documents
+  ) {
+    router.push({
+      name: 'entreprise-documents',
+      params: { entrepriseSlug: entrepriseStore.entreprise?.slug }
+    })
+  } else if (
+    entrepriseStore?.entreprise?.user_permissions.access_clients
+  ) {
+    router.push({
+      name: 'entreprise-clients',
+      params: { entrepriseSlug: entrepriseStore.entreprise?.slug }
+    })
+  } else {
+    router.push({ name: 'home' })
+  }
+}
 </script>
 
 <template>
@@ -60,7 +87,7 @@ const isOpen = ref(false)
           :key="entreprise.id"
           link-class="d-flex align-items-center"
           :active="entreprise.id === entrepriseStore.entreprise?.id"
-          @click="userStore.selectEntreprise(entreprise.slug)"
+          @click="selectEntreprise(entreprise.slug)"
         >
           {{ entreprise.name }}
         </b-dropdown-item>

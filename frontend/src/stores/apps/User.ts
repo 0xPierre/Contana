@@ -129,7 +129,7 @@ export const useUserStore = defineStore('user', {
     async selectEntreprise(entrepriseSlug: string) {
       const entrepriseStore = useEntrepriseStore()
       entrepriseStore.selectedEntrepriseSlug = entrepriseSlug
-      await entrepriseStore.getEntrepriseData()
+      return entrepriseStore.getEntrepriseData()
     },
 
     async getData() {
