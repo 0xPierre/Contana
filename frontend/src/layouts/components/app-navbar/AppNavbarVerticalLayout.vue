@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import DarkToggler from './components/DarkToggler.vue'
 import UserDropdown from './components/UserDropdown.vue'
+import EntrepriseSelector from '@/layouts/components/app-navbar/components/EntrepriseSelector.vue'
 
 defineProps<{
   toggleVerticalMenuActive: () => void
@@ -16,6 +17,8 @@ defineProps<{
         </b-link>
       </li>
     </ul>
+
+    <EntrepriseSelector />
 
     <b-navbar-nav class="nav align-items-center ml-auto">
       <DarkToggler class="d-block" />

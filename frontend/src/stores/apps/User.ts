@@ -126,6 +126,12 @@ export const useUserStore = defineStore('user', {
       )
     },
 
+    async selectEntreprise(entrepriseSlug: string) {
+      const entrepriseStore = useEntrepriseStore()
+      entrepriseStore.selectedEntrepriseSlug = entrepriseSlug
+      await entrepriseStore.getEntrepriseData()
+    },
+
     async getData() {
       const { data } = await http.get<
         ApiResponse<{
@@ -137,9 +143,7 @@ export const useUserStore = defineStore('user', {
 
       const entrepriseStore = useEntrepriseStore()
       if (this.data.entreprises.length > 0) {
-        entrepriseStore.selectedEntrepriseSlug =
-          this.data.entreprises[0].slug
-        entrepriseStore.getEntrepriseData()
+        this.selectEntreprise(this.data.entreprises[0].slug)
       } else {
         entrepriseStore.selectedEntrepriseSlug = null
         entrepriseStore.entreprise = null
