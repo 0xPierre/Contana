@@ -22,8 +22,7 @@ export default [
       layout: 'layout-vertical',
       requireAuth: true,
       permissions: {
-        access_clients: true,
-        update_clients: true
+        access_clients: true
       }
     }
   }
