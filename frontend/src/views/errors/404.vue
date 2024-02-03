@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import NotFound from '@/assets/svg/errors/notfound.svg'
+import Logo from '@/assets/images/logo.png'
 </script>
 
 <template>
-  <div class="mt-2">
-    <b-link to="/">
-      <h2 class="text-primary ml-1">Contana</h2>
+  <div class="auth-wrapper auth-v2">
+    <b-link to="/" class="brand-logo">
+      <b-img :src="Logo" alt="Contana logo" />
+
+      <h2 class="brand-text text-primary ml-1">Contana</h2>
     </b-link>
 
-    <div class="w-100 text-center">
+    <div class="w-100 text-center mt-5">
       <b-img style="height: 200px" :src="NotFound" />
       <h2 class="mb-1 mt-3">Page non trouvée</h2>
       <p class="mb-2">
@@ -25,3 +28,7 @@ import NotFound from '@/assets/svg/errors/notfound.svg'
     </div>
   </div>
 </template>
+
+<style lang="scss">
+@import '@/assets/scss/template/vue/pages/page-auth.scss';
+</style>
