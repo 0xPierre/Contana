@@ -21,8 +21,8 @@ onMounted(async () => {
   isLoading.value = true
   try {
     const { data } = await entrepriseStore.getInvitationInfo(
-      route.params.invitationToken,
-      route.params.entrepriseSlug
+      route.params.invitationToken as string,
+      route.params.entrepriseSlug as string
     )
 
     if (data.status === 'success' && data.data.is_valid) {
