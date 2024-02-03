@@ -31,7 +31,16 @@ const router = createRouter({
     ...clientsRoutes,
     ...constructorRoutes,
     ...documentsRoutes,
-    ...dashboardRoutes
+    ...dashboardRoutes,
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('@/views/errors/404.vue'),
+      meta: {
+        title: 'Page non trouvée',
+        layout: 'layout-full'
+      }
+    }
   ]
 })
 
