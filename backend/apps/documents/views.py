@@ -12,7 +12,6 @@ from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import (
     action,
-    permission_classes as permission_classes_decorator,
 )
 from rest_framework.permissions import IsAuthenticated
 
@@ -97,8 +96,11 @@ class DocumentsViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-    @action(detail=True, methods=["post"])
-    @permission_classes_decorator([IsAuthenticated, IsInEntreprise])
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsAuthenticated, IsInEntreprise],
+    )
     def duplicate(self, *args, **kwargs):
         """
         Allows to duplicate a document
