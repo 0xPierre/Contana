@@ -23,5 +23,16 @@ export default [
       layout: 'layout-full',
       requireAuth: true
     }
+  },
+  {
+    path: '/creer-une-entreprise',
+    name: 'entreprise-create',
+    component: () =>
+      import('@/views/apps/entreprise/create/CreateEntreprise.vue'),
+    meta: {
+      title: 'Créer une entreprise',
+      layout: 'layout-full',
+      requireAuth: true
+    }
   }
 ]

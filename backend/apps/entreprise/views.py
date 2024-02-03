@@ -21,7 +21,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from .serializers import EntrepriseUpdateInformationsModelSerializer
+from .serializers import EntrepriseInformationsModelSerializer
 from .utils import build_invitation_link, get_entreprise_data
 from apps.documents.models import Document, DocumentSection
 from apps.clients.models import Client
@@ -41,6 +41,27 @@ def get_data(request: Request, entreprise_slug: str) -> Response:
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def create_entreprise(request: Request) -> Response:
+    """
+    Allows to create an entreprise
+    """
+    serializer = EntrepriseInformationsModelSerializer(data=request.data)
+
+    if not serializer.is_valid():
+        return Response({"status": "failed", "errors": serializer.errors})
+
+    entreprise = serializer.save(owner=request.user)
+    entreprise.users.add(request.user)
+
+    assign_perm("administrate", request.user, entreprise)
+
+    return Response(
+        {"status": "success", "data": get_entreprise_data(entreprise, request.user)}
+    )
+
+
+@api_view(["POST"])
 @permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
 def update_entreprise_informations(request: Request, entreprise_slug: str) -> Response:
     """
@@ -49,7 +70,7 @@ def update_entreprise_informations(request: Request, entreprise_slug: str) -> Re
 
     entreprise = Entreprise.objects.get(slug=entreprise_slug)
 
-    serializer = EntrepriseUpdateInformationsModelSerializer(
+    serializer = EntrepriseInformationsModelSerializer(
         data=request.data, instance=entreprise
     )
 

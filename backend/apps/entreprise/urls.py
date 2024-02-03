@@ -4,62 +4,67 @@ from . import views
 
 urlpatterns = [
     path(
-        "data",
+        "api/entreprise/<str:entreprise_slug>/data",
         views.get_data,
         name="get_data",
     ),
     path(
-        "settings/informations",
+        "api/entreprise/create",
+        views.create_entreprise,
+        name="create_entreprise",
+    ),
+    path(
+        "api/entreprise/<str:entreprise_slug>/settings/informations",
         views.update_entreprise_informations,
         name="update_entreprise_informations",
     ),
     path(
-        "settings/informations/personnalization/documents",
+        "api/entreprise/<str:entreprise_slug>/settings/informations/personnalization/documents",
         views.update_entreprise_document_personalisation,
         name="update_entreprise_document_personalisation",
     ),
     path(
-        "settings/informations/personnalization/documents/preview",
+        "api/entreprise/<str:entreprise_slug>/settings/informations/personnalization/documents/preview",
         views.get_document_personnalization_preview,
         name="get_document_personnalization_preview",
     ),
     path(
-        "settings/delete",
+        "api/entreprise/<str:entreprise_slug>/settings/delete",
         views.delete_entreprise,
         name="delete_entreprise",
     ),
     path(
-        "settings/logos",
+        "api/entreprise/<str:entreprise_slug>/settings/logos",
         views.update_entreprise_logos,
         name="update_entreprise_logos",
     ),
     path(
-        "settings/user/<int:user_id>/permissions",
+        "api/entreprise/<str:entreprise_slug>/settings/user/<int:user_id>/permissions",
         views.update_entreprise_user_permissions,
         name="update_entreprise_user_permissions",
     ),
     path(
-        "settings/user/<int:user_id>/remove",
+        "api/entreprise/<str:entreprise_slug>/settings/user/<int:user_id>/remove",
         views.remove_user_from_entreprise,
         name="remove_user_from_entreprise",
     ),
     path(
-        "settings/invitations/create",
+        "api/entreprise/<str:entreprise_slug>/settings/invitations/create",
         views.create_invitation_link,
         name="create_invitation_link",
     ),
     path(
-        "settings/invitations/send-by-email",
+        "api/entreprise/<str:entreprise_slug>/settings/invitations/send-by-email",
         views.send_invitation_link_by_email,
         name="send_invitation_link_by_email",
     ),
     path(
-        "settings/invitations/get-info",
+        "api/entreprise/<str:entreprise_slug>/settings/invitations/get-info",
         views.get_invitation_link_info,
         name="get_invitation_link_info",
     ),
     path(
-        "settings/invitations/join",
+        "api/entreprise/<str:entreprise_slug>/settings/invitations/join",
         views.join_entreprise,
         name="join_entreprise",
     ),

@@ -180,6 +180,17 @@ export const useEntrepriseStore = defineStore('entreprise', {
       return http.post<ApiResponse>(
         `/api/entreprise/${this.entreprise?.slug}/settings/delete`
       )
+    },
+
+    async createEntreprise(data: {
+      name: string
+      siren: string
+      email: string
+    }) {
+      return http.post<ApiResponse<EntrepriseModel>>(
+        `/api/entreprise/create`,
+        data
+      )
     }
   },
 

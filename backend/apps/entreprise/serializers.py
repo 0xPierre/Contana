@@ -2,7 +2,7 @@ from .models import Entreprise
 from rest_framework import serializers
 
 
-class EntrepriseUpdateInformationsModelSerializer(serializers.ModelSerializer):
+class EntrepriseInformationsModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Entreprise
         fields = [
@@ -37,6 +37,11 @@ class EntrepriseUpdateInformationsModelSerializer(serializers.ModelSerializer):
         }
 
     def validate_email(self, value):
+        if self.instance is None:
+            if Entreprise.objects.filter(email=value).exists():
+                raise serializers.ValidationError("Cet email est déjà utilisé")
+            return value
+
         if Entreprise.objects.filter(email=value).exclude(id=self.instance.id).exists():
             raise serializers.ValidationError("Cet email est déjà utilisé")
 

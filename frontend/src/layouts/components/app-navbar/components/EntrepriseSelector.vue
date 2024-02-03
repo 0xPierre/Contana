@@ -75,7 +75,10 @@ const selectEntreprise = async (slug: string) => {
           </b-button>
         </template>
 
-        <b-dropdown-item link-class="d-flex align-items-center">
+        <b-dropdown-item
+          link-class="d-flex align-items-center"
+          :to="{ name: 'entreprise-create' }"
+        >
           <vue-feather type="plus-square" :size="20" />
           <span class="ml-50"> Créer une entreprise </span>
         </b-dropdown-item>

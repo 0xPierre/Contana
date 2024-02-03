@@ -20,7 +20,7 @@ urlpatterns = [
     # path('admin/', admin.site.urls),
     path("api/user/", include("apps.user.urls")),
     path(
-        "api/entreprise/<str:entreprise_slug>/",
+        "",
         include("apps.entreprise.urls"),
     ),
     path("api/entreprise/<str:entreprise_slug>/clients/", include("apps.clients.urls")),
