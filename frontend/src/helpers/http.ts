@@ -29,6 +29,7 @@ http.interceptors.response.use(
         error.response?.status === 401 &&
         // @ts-ignore
         !originalRequest._retry &&
+        // @ts-ignore
         originalRequest.url !== '/api/user/refresh'
       ) {
         const token = await useUserStore().refreshToken()
@@ -37,18 +38,19 @@ http.interceptors.response.use(
           // @ts-ignore
           originalRequest._retry = true
 
+          // @ts-ignore
           return http(originalRequest)
         } else {
-          if (document.location.pathname !== '/connexion?disconnected') {
+          if (document.location.pathname !== '/?disconnected') {
             await useUserStore().logOut()
-            document.location.href = '/connexion?disconnected'
+            document.location.href = '/?disconnected'
           }
         }
         // @ts-ignore
       } else if (originalRequest.url === '/api/user/refresh') {
-        if (document.location.pathname !== '/connexion?disconnected') {
+        if (document.location.pathname !== '/?disconnected') {
           await useUserStore().logOut()
-          document.location.href = '/connexion?disconnected'
+          document.location.href = '/?disconnected'
         }
       }
     }

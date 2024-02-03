@@ -9,7 +9,7 @@ export default [
     }
   },
   {
-    path: '/connexion',
+    path: '/',
     name: 'login',
     component: () => import('@/views/apps/user/LoginView.vue'),
     meta: {
