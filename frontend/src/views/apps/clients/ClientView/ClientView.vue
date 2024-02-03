@@ -7,7 +7,9 @@ import type { ClientModel } from '@/types/clients.types'
 import { notify, notifyApiError, swalAlert } from '@/helpers/notify'
 import { AxiosError } from 'axios'
 import FileUploadManager from '@/components/file-upload-manager/FileUploadManager.vue'
+import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
 
+const entrepriseStore = useEntrepriseStore()
 const clientsStore = useClientsStore()
 const client = ref<ClientModel>({
   id: 0,
@@ -159,7 +161,11 @@ const unarchiveClient = async () => {
           </h4>
         </div>
 
-        <div>
+        <div
+          v-if="
+            entrepriseStore.entreprise?.user_permissions.update_clients
+          "
+        >
           <b-button
             v-if="!client.archived"
             variant="flat-secondary"
@@ -303,6 +309,9 @@ const unarchiveClient = async () => {
           </b-form-group>
 
           <b-button
+            v-if="
+              entrepriseStore.entreprise?.user_permissions.update_clients
+            "
             variant="primary"
             v-ripple
             @click="updateClient"
@@ -381,6 +390,9 @@ const unarchiveClient = async () => {
           />
 
           <b-button
+            v-if="
+              entrepriseStore.entreprise?.user_permissions.update_clients
+            "
             class="mt-1"
             variant="primary"
             v-ripple
