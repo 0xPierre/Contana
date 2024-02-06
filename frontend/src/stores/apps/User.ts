@@ -112,7 +112,11 @@ export const useUserStore = defineStore('user', {
         ApiResponse<{
           user: UserModel
         }>
-      >('/api/user/update-profile', data)
+      >('/api/user/update-profile', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
     },
 
     async updatePassword(data: {
