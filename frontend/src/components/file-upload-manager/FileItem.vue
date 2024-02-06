@@ -24,7 +24,7 @@ const fileName = computed(() => {
   if (props.file instanceof File) {
     return props.file.name
   }
-  return props.file.url.split('/').pop()
+  return props.file.url.split('/').pop().split('?')[0]
 })
 
 const fileUrl = computed(() => {
@@ -39,7 +39,7 @@ const isImage = computed(() => {
     return props.file.type.includes('image')
   }
 
-  return props.file.url.match(/\.(jpeg|jpg|gif|png)$/)
+  return props.file.url.match(/\.(jpeg|jpg|gif|png)/)
 })
 
 const isPdf = computed(() => {
