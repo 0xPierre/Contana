@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import VerticalNavMenuHeader from './vertical-nav-menu-header/VerticalNavMenuHeader.vue'
 import VerticalNavMenuLink from './vertical-nav-menu-link/VerticalNavMenuLink.vue'
-import VerticalNavMenuGroup from './vertical-nav-menu-group/VerticalNavMenuGroup.vue'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise'
 
 import { can } from '@/helpers/permissions'
@@ -10,7 +9,7 @@ const entrepriseStore = useEntrepriseStore()
 </script>
 
 <template>
-  <ul>
+  <ul :key="entrepriseStore.entreprise?.slug">
     <VerticalNavMenuLink
       :item="{ title: 'Accueil', route: { name: 'home' }, icon: 'home' }"
     />
