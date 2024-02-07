@@ -45,6 +45,7 @@ const selectEntreprise = async (slug: string) => {
         class="btn-with-icon"
         size="sm"
         v-ripple
+        :to="{ name: 'entreprise-create' }"
       >
         <vue-feather type="plus-square" :size="20" />
         <span class="ml-50"> Créer une entreprise </span>
