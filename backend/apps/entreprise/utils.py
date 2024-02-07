@@ -46,6 +46,11 @@ def get_entreprise_data(entreprise: Entreprise, user: User) -> dict:
         "document_other_mention": entreprise.document_other_mention,
         "document_notes": entreprise.document_notes,
         "vat_payer": entreprise.vat_payer,
+        "first_facture_number": entreprise.first_facture_number,
+        "first_devis_number": entreprise.first_devis_number,
+        "first_acompte_number": entreprise.first_acompte_number,
+        "first_avoir_number": entreprise.first_avoir_number,
+        "first_client_number": entreprise.first_client_number,
     }
 
     entreprise_permissions = entreprise._meta.permissions

@@ -51,22 +51,22 @@ class Entreprise(BaseModel):
     users = models.ManyToManyField(User, related_name="entreprises")
 
     email = models.EmailField(null=True, blank=True)
-    phone = models.CharField(null=True, blank=True)
+    phone = models.CharField(null=True, blank=True, default="")
 
-    country = models.CharField(null=True, blank=True)
-    city = models.CharField(null=True, blank=True)
-    zip_code = models.CharField(null=True, blank=True)
-    address = models.CharField(null=True, blank=True)
+    country = models.CharField(null=True, blank=True, default="France")
+    city = models.CharField(null=True, blank=True, default="")
+    zip_code = models.CharField(null=True, blank=True, default="")
+    address = models.CharField(null=True, blank=True, default="")
 
-    num_rcs = models.CharField(null=True, blank=True)
-    vat_number = models.CharField(null=True, blank=True)
-    iban = models.CharField(null=True, blank=True)
-    bic = models.CharField(null=True, blank=True)
-    bank = models.CharField(null=True, blank=True)
-    ape = models.CharField(null=True, blank=True)
-    forme = models.CharField(null=True, blank=True)
-    siren = models.CharField(null=True, blank=True)
-    capital = models.CharField(null=True, blank=True)
+    num_rcs = models.CharField(null=True, blank=True, default="")
+    vat_number = models.CharField(null=True, blank=True, default="")
+    iban = models.CharField(null=True, blank=True, default="")
+    bic = models.CharField(null=True, blank=True, default="")
+    bank = models.CharField(null=True, blank=True, default="")
+    ape = models.CharField(null=True, blank=True, default="")
+    forme = models.CharField(null=True, blank=True, default="")
+    siren = models.CharField(null=True, blank=True, default="")
+    capital = models.CharField(null=True, blank=True, default="")
 
     # Document personnalization
     document_logo_size = models.IntegerField(default=300)
@@ -88,9 +88,17 @@ class Entreprise(BaseModel):
     document_other_mention = models.CharField(blank=True, default="")
     document_notes = models.TextField(
         blank=True,
-        default="En cas de retard de paiement, il sera appliqué des pénalités et intérêts de retard suivant le taux minimum légal en vigueur, par mois de retard. En outre, une indemnité forfaitaire pour frais de recouvrement de 40€ sera due.",
+        default="En cas de retard de paiement, il sera appliqué des pénalités et intérêts de retard suivant le taux "
+        "minimum légal en vigueur, par mois de retard. En outre, une indemnité forfaitaire pour frais de "
+        "recouvrement de 40€ sera due.",
     )
     vat_payer = models.BooleanField(default=True)
+
+    first_facture_number = models.IntegerField(default=1)
+    first_devis_number = models.IntegerField(default=1)
+    first_acompte_number = models.IntegerField(default=1)
+    first_avoir_number = models.IntegerField(default=1)
+    first_client_number = models.IntegerField(default=1)
 
     def __str__(self):
         return self.name

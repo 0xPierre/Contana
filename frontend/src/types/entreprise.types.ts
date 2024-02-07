@@ -36,6 +36,11 @@ export interface EntrepriseSettingsInformations {
   document_other_mention: string
   document_notes: string
   vat_payer: boolean
+  first_facture_number: number
+  first_devis_number: number
+  first_acompte_number: number
+  first_avoir_number: number
+  first_client_number: number
 }
 
 export interface EntrepriseUser {

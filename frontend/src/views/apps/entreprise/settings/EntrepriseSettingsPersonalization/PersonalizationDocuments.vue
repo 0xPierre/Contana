@@ -17,7 +17,12 @@ const localData = reactive({
   document_payment_mention: '',
   document_other_mention: '',
   vat_payer: true,
-  document_notes: ''
+  document_notes: '',
+  first_facture_number: 1,
+  first_devis_number: 1,
+  first_acompte_number: 1,
+  first_avoir_number: 1,
+  first_client_number: 1
 })
 
 onBeforeMount(() => {
@@ -41,6 +46,16 @@ onBeforeMount(() => {
   localData.vat_payer = entrepriseStore.entreprise?.vat_payer || true
   localData.document_notes =
     entrepriseStore.entreprise?.document_notes || ''
+  localData.first_facture_number =
+    entrepriseStore.entreprise?.first_facture_number || 1
+  localData.first_devis_number =
+    entrepriseStore.entreprise?.first_devis_number || 1
+  localData.first_acompte_number =
+    entrepriseStore.entreprise?.first_acompte_number || 1
+  localData.first_avoir_number =
+    entrepriseStore.entreprise?.first_avoir_number || 1
+  localData.first_client_number =
+    entrepriseStore.entreprise?.first_client_number || 1
 })
 
 const savePersonnalization = async () => {
@@ -53,6 +68,8 @@ const savePersonnalization = async () => {
     if (data.status === 'success') {
       entrepriseStore.entreprise = data.data
       notify('Informations mises à jour avec succès', 'success')
+    } else {
+      notify(data.error, 'danger')
     }
   } catch (e) {
     notify("Une erreur est survenue lors de l'enregistrement", 'danger')
@@ -250,12 +267,71 @@ const logoUsedUrl = computed(() => {
             </b-form-group>
           </b-col>
           <b-col md="12">
-            <b-form-group label="document_notes du document">
+            <b-form-group label="Note du document">
               <b-form-textarea
                 rows="5"
                 max-rows="10"
                 placeholder="En cas de retard de paiement, il sera appliqué des pénalités et intérêts de retard suivant le taux minimum légal en vigueur, par mois de retard. En outre, une indemnité forfaitaire pour frais de recouvrement de 40€ sera due."
                 v-model="localData.document_notes"
+              />
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <hr />
+        <h4>Numéro de document</h4>
+        <p>
+          Vous pouvez modifier le premier numéro d'une série de document
+          seulement si aucun document de celle-ci n'a été créé.
+        </p>
+        <b-row>
+          <b-col md="6">
+            <b-form-group label="Premier numéro de facture">
+              <b-form-input
+                placeholder="1"
+                type="number"
+                min="0"
+                v-model="localData.first_facture_number"
+              />
+            </b-form-group>
+          </b-col>
+          <b-col md="6">
+            <b-form-group label="Premier numéro de devis">
+              <b-form-input
+                placeholder="1"
+                type="number"
+                min="0"
+                v-model="localData.first_devis_number"
+              />
+            </b-form-group>
+          </b-col>
+          <b-col md="6">
+            <b-form-group label="Premier numéro d'acompte">
+              <b-form-input
+                placeholder="1"
+                type="number"
+                min="0"
+                v-model="localData.first_acompte_number"
+              />
+            </b-form-group>
+          </b-col>
+          <b-col md="6">
+            <b-form-group label="Premier numéro d'avoir">
+              <b-form-input
+                placeholder="1"
+                type="number"
+                min="0"
+                v-model="localData.first_avoir_number"
+              />
+            </b-form-group>
+          </b-col>
+          <b-col md="6">
+            <b-form-group label="Premier numéro client">
+              <b-form-input
+                placeholder="1"
+                type="number"
+                min="0"
+                v-model="localData.first_client_number"
               />
             </b-form-group>
           </b-col>

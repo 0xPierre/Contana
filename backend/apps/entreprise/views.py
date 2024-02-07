@@ -4,11 +4,13 @@ import string
 from django.http import HttpResponse
 
 from services.constructor.generate import construct_pdf
+from ..clients.utils import generate_next_client_number
 from ..core.permissions import (
     CanAdministrate,
     IsInEntreprise,
     IsOwnerOfEntreprise,
 )
+from ..documents.utils import generate_next_document_number
 from ..entreprise.models import Entreprise, InvitationsLink
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
@@ -434,6 +436,81 @@ def update_entreprise_document_personalisation(
     else:
         entreprise.document_logo_used = None
 
+    first_facture_number = int(request.data.get("first_facture_number"))
+    first_devis_number = int(request.data.get("first_devis_number"))
+    first_avoir_number = int(request.data.get("first_avoir_number"))
+    first_acompte_number = int(request.data.get("first_acompte_number"))
+    first_client_number = int(request.data.get("first_client_number"))
+
+    if (
+        first_facture_number < 1
+        or first_devis_number < 1
+        or first_avoir_number < 1
+        or first_acompte_number < 1
+        or first_client_number < 1
+    ):
+        return Response(
+            {
+                "status": "failed",
+                "error": "Le numéro de départ des documents/clients doit être supérieur à 0",
+            }
+        )
+
+    if first_facture_number != entreprise.first_facture_number:
+        if entreprise.documents.filter(forme="facture", is_draft=False).exists():
+            return Response(
+                {
+                    "status": "failed",
+                    "error": "Vous ne pouvez pas changer le premier numéro de facture si des factures ont déjà été "
+                    "créées",
+                }
+            )
+        entreprise.first_facture_number = first_facture_number
+
+    if first_devis_number != entreprise.first_devis_number:
+        if entreprise.documents.filter(forme="devis", is_draft=False).exists():
+            return Response(
+                {
+                    "status": "failed",
+                    "error": "Vous ne pouvez pas changer le premier numéro de devis si des devis ont déjà été "
+                    "créés",
+                }
+            )
+        entreprise.first_devis_number = first_devis_number
+
+    if first_avoir_number != entreprise.first_avoir_number:
+        if entreprise.documents.filter(forme="avoir", is_draft=False).exists():
+            return Response(
+                {
+                    "status": "failed",
+                    "error": "Vous ne pouvez pas changer le premier numéro d'avoir si des avoirs ont déjà été "
+                    "créés",
+                }
+            )
+        entreprise.first_avoir_number = first_avoir_number
+
+    if first_acompte_number != entreprise.first_acompte_number:
+        if entreprise.documents.filter(forme="acompte", is_draft=False).exists():
+            return Response(
+                {
+                    "status": "failed",
+                    "error": "Vous ne pouvez pas changer le premier numéro d'acompte si des acomptes ont déjà été "
+                    "créées",
+                }
+            )
+        entreprise.first_acompte_number = first_acompte_number
+
+    if first_client_number != entreprise.first_client_number:
+        if entreprise.clients.exists():
+            return Response(
+                {
+                    "status": "failed",
+                    "error": "Vous ne pouvez pas changer le premier numéro de client si des clients ont déjà été "
+                    "créées",
+                }
+            )
+        entreprise.first_client_number = first_client_number
+
     entreprise.save()
 
     return Response(
@@ -463,7 +540,7 @@ def get_document_personnalization_preview(
     )
 
     client = Client(
-        client_number="C-000001",
+        client_number=generate_next_client_number(entreprise),
         socialreasonorname="Société Dupond",
         city="Paris",
         zip_code="75000",
@@ -487,7 +564,7 @@ def get_document_personnalization_preview(
 
     document = Document(
         entreprise=entreprise,
-        document_number="F-000001",
+        document_number=generate_next_document_number(entreprise, "facture"),
         forme="facture",
         subject="Création d'un site internet",
         payment_method=request.data.get("document_default_payment_method"),

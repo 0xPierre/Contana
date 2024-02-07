@@ -5,7 +5,7 @@ def generate_next_client_number(entreprise):
     identifier = "C-"
 
     if entreprise.clients.count() == 0:
-        return identifier + "000001"
+        return identifier + str(entreprise.first_client_number).zfill(6)
 
     last_client = entreprise.clients.last()
     new_client_number = int(last_client.client_number.replace(identifier, "")) + 1

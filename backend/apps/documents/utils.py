@@ -26,7 +26,16 @@ def generate_next_document_number(entreprise: Entreprise, forme: str, is_draft=F
         documents = documents.filter(is_draft=False, forme=forme)
 
     if documents.count() == 0:
-        return identifier + "000001"
+        if forme == "devis":
+            return identifier + str(entreprise.first_devis_number).zfill(6)
+        elif forme == "facture":
+            return identifier + str(entreprise.first_facture_number).zfill(6)
+        elif forme == "avoir":
+            return identifier + str(entreprise.first_avoir_number).zfill(6)
+        elif forme == "acompte":
+            return identifier + str(entreprise.first_acompte_number).zfill(6)
+        else:
+            raise Exception("Unknown document type")
 
     last_document = documents.last()
     new_document_number = int(last_document.document_number.replace(identifier, "")) + 1
