@@ -2,7 +2,7 @@ from django.db.models import QuerySet
 
 from ..clients.models import Client
 from ..core.permissions import IsInEntreprise, CanAccessClients, CanUpdateClients
-from ..core.utils import getEntrepriseFromRequest
+from ..core.utils import get_entreprise_from_request
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from rest_framework import viewsets
@@ -30,7 +30,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
         return ClientsDetailSerializer
 
     def get_queryset(self):
-        queryset: QuerySet[Client] = getEntrepriseFromRequest(
+        queryset: QuerySet[Client] = get_entreprise_from_request(
             self.request
         ).clients.all()
 
@@ -76,7 +76,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        entreprise = getEntrepriseFromRequest(request)
+        entreprise = get_entreprise_from_request(request)
 
         client = serializer.save(
             entreprise=entreprise,

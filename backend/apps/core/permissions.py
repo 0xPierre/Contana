@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from .utils import getEntrepriseFromRequest
+from .utils import get_entreprise_from_request
 
 
 class IsOwnerOfEntreprise(permissions.BasePermission):
@@ -10,7 +10,7 @@ class IsOwnerOfEntreprise(permissions.BasePermission):
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
-            entreprise = getEntrepriseFromRequest(request)
+            entreprise = get_entreprise_from_request(request)
             if entreprise:
                 if entreprise.owner == request.user:
                     return True
@@ -25,7 +25,7 @@ class IsInEntreprise(permissions.BasePermission):
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
-            entreprise = getEntrepriseFromRequest(request)
+            entreprise = get_entreprise_from_request(request)
             if entreprise:
                 if request.user in entreprise.users.all():
                     return True
@@ -35,7 +35,7 @@ class IsInEntreprise(permissions.BasePermission):
 
 def test_user_permission(self, request, permission):
     if request.user.is_authenticated:
-        entreprise = getEntrepriseFromRequest(request)
+        entreprise = get_entreprise_from_request(request)
         if entreprise:
             if request.user.has_perm(permission, entreprise) or request.user.has_perm(
                 "administrate", entreprise

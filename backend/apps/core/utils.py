@@ -2,7 +2,7 @@ from ..entreprise.models import Entreprise
 from rest_framework.request import Request
 
 
-def getEntrepriseFromRequest(request: Request) -> Entreprise or None:
+def get_entreprise_from_request(request: Request) -> Entreprise or None:
     """
     Get entreprise from request
     """

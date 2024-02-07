@@ -5,7 +5,7 @@ from django.db.models import QuerySet
 from services.constructor.generate import construct_pdf
 from .models import Document, DocumentSection
 from ..core.permissions import CanAccessDocuments, IsInEntreprise, CanAccessConstructor
-from ..core.utils import getEntrepriseFromRequest
+from ..core.utils import get_entreprise_from_request
 from .utils import generate_next_document_number
 from django.db.models import Q
 from django.utils import timezone
@@ -42,7 +42,7 @@ class DocumentsViewSet(viewsets.ModelViewSet):
         return DocumentsDetailSerializer
 
     def get_queryset(self):
-        queryset: QuerySet[Document] = getEntrepriseFromRequest(
+        queryset: QuerySet[Document] = get_entreprise_from_request(
             self.request
         ).documents.all()
 

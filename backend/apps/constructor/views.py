@@ -11,7 +11,7 @@ from django.utils.text import slugify
 
 from .utils import get_section_values
 from apps.core.permissions import IsInEntreprise, CanAccessConstructor
-from apps.core.utils import getEntrepriseFromRequest
+from apps.core.utils import get_entreprise_from_request
 from apps.documents.utils import generate_next_document_number
 from apps.entreprise.models import Entreprise
 from apps.documents.models import Document, DocumentSection, TemplateCategory, Template
@@ -430,13 +430,13 @@ class TemplateCategoriesViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessConstructor]
 
     def get_queryset(self):
-        return getEntrepriseFromRequest(self.request).template_categories.all()
+        return get_entreprise_from_request(self.request).template_categories.all()
 
     def create(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        entreprise = getEntrepriseFromRequest(request)
+        entreprise = get_entreprise_from_request(request)
 
         category = serializer.save(
             entreprise=entreprise,
