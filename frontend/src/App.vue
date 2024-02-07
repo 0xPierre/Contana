@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount } from 'vue'
+import { computed, onBeforeMount, ref, watch } from 'vue'
 import { RouterView } from 'vue-router'
 import { useRoute } from 'vue-router'
 import { useAppConfigStore } from '@/stores/AppConfig'
@@ -27,11 +27,18 @@ if (appConfigStore.theme === 'dark') {
 
 onBeforeMount(() => {
   document.documentElement.setAttribute('dir', 'ltr')
-
-  if (userStore.auth.isLoggedIn) {
-    userStore.getData()
-  }
 })
+
+const dataHasBeeGetted = ref(false)
+watch(
+  () => route.params.entrepriseSlug,
+  () => {
+    if (userStore.auth.isLoggedIn && !dataHasBeeGetted.value) {
+      userStore.getData(route.params.entrepriseSlug as string)
+      dataHasBeeGetted.value = true
+    }
+  }
+)
 </script>
 
 <template>

@@ -136,7 +136,7 @@ export const useUserStore = defineStore('user', {
       return entrepriseStore.getEntrepriseData()
     },
 
-    async getData() {
+    async getData(selectedEntrepriseSlug: string | null = null) {
       const { data } = await http.get<
         ApiResponse<{
           user: UserModel
@@ -147,6 +147,19 @@ export const useUserStore = defineStore('user', {
 
       const entrepriseStore = useEntrepriseStore()
       if (this.data.entreprises.length > 0) {
+        /*
+        If there is an entreprise slug in the url, we select it
+         */
+        if (selectedEntrepriseSlug) {
+          if (
+            this.data.entreprises.find(
+              (e) => e.slug === selectedEntrepriseSlug
+            )
+          ) {
+            this.selectEntreprise(selectedEntrepriseSlug)
+            return
+          }
+        }
         this.selectEntreprise(this.data.entreprises[0].slug)
       } else {
         entrepriseStore.selectedEntrepriseSlug = null
