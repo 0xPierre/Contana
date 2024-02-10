@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  database:
+    extends:
+      file: docker-compose.yml
+      service: database
+
+  backend:
+    extends:
+      file: docker-compose.yml
+      service: backend
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; gunicorn --bind 0.0.0.0:8000 contana.wsgi'
+
+
+volumes:
+  postgres_data:
