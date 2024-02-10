@@ -41,7 +41,7 @@ export default [
     path: '/parametres',
     name: 'settings',
     component: () =>
-      import('@/views/apps/user/settings/AccountSettings.vue'),
+      import('@/views/apps/user/Settings/AccountSettings.vue'),
     meta: {
       title: 'Paramètres',
       layout: 'layout-vertical',
