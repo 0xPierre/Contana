@@ -21,7 +21,7 @@ export default [
     path: '/mot-de-passe-oublie',
     name: 'forgot-password',
     component: () =>
-      import('@/views/apps/user/forgotpassword/ForgotPassword.vue'),
+      import('@/views/apps/user/ForgotPassword/ForgotPassword.vue'),
     meta: {
       title: 'Mot de passe oublié',
       layout: 'layout-full'
@@ -31,7 +31,7 @@ export default [
     path: '/reinitialisation-du-mot-de-passe',
     name: 'reset-password',
     component: () =>
-      import('@/views/apps/user/forgotpassword/ResetPassword.vue'),
+      import('@/views/apps/user/ForgotPassword/ResetPassword.vue'),
     meta: {
       title: 'Réinitialiser votre mot de passe',
       layout: 'layout-full'
