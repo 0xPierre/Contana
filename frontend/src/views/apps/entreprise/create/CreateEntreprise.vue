@@ -50,7 +50,7 @@ const createEntreprise = async () => {
         'Vous pouvez maintenant personnaliser votre entreprise'
       )
       await userStore.selectEntreprise(data.data.slug)
-      router.push({
+      await router.push({
         name: 'entreprise-settings',
         params: { entrepriseSlug: data.data.slug }
       })

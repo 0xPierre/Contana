@@ -50,7 +50,9 @@ const logIn = async () => {
       await userStore.getData()
 
       if (route.query.redirect) router.push(route.query.redirect as string)
-      else router.push({ name: 'home' })
+      else {
+        await router.push({ name: 'home' })
+      }
     } else {
       if (data.error) notify(data.error, 'danger')
     }
