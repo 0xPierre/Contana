@@ -14,7 +14,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Installation of wkhtmltopdf
-RUN apt-get update
+RUN apt-get update --fix-missing
 RUN apt-get install -y fontconfig libfreetype6 libjpeg62-turbo libpng16-16 \
     libx11-6 libxcb1 libxext6 libxrender1 xfonts-75dpi xfonts-base libfontconfig1 \
     fontconfig-config libx11-data libxau6 libxdmcp6 xfonts-utils ucf fonts-dejavu-core \

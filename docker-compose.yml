@@ -24,6 +24,19 @@ services:
     env_file:
       - ./backend/.env
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    command: yarn dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./frontend/.env
+
 
 volumes:
   postgres_data:
