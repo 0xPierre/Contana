@@ -24,3 +24,4 @@ core/migrations/*
 .coverage
 
 .env
+/celerybeat-schedule

@@ -10,6 +10,38 @@ services:
     env_file:
       - ./backend/.env
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana worker -l info'
+    depends_on:
+      - redis
+      - database
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+
+
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana beat -l info'
+    depends_on:
+      - redis
+      - database
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
+
   backend:
     build:
       context: ./backend

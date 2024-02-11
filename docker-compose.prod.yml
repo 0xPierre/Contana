@@ -6,6 +6,11 @@ services:
       file: docker-compose.yml
       service: database
 
+  redis:
+    extends:
+      file: docker-compose.yml
+      service: redis
+
   backend:
     extends:
       file: docker-compose.yml
