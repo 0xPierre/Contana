@@ -20,9 +20,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana worker -l info'
-    depends_on:
-      - redis
-      - database
     volumes:
       - ./backend:/app
     env_file:
@@ -34,9 +31,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana beat -l info'
-    depends_on:
-      - redis
-      - database
     volumes:
       - ./backend:/app
     env_file:
