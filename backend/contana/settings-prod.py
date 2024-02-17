@@ -1,7 +1,7 @@
 from .settings import *
 import os
 
-FRONTEND_URL = "https://contana.fr"
+FRONTEND_URL = "https://app.contana.fr"
 BACKEND_URL = "https://api.contana.fr"
 
 DEBUG = False
