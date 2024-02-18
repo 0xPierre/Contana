@@ -66,11 +66,7 @@ jobs:
             cd /home/0xpierre/Contana
             mv .env backend/.env
             echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
-            echo ${{ env.BACKEND_IMAGE }} > aa.txt
-            echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} > bb.txt
-            echo ${{ secrets.NAMESPACE }} > cc.txt
-            docker pull ${{ env.BACKEND_IMAGE }}
-          echo $GITHUB_REPOSITORY > dd.txt
+            docker pull ghcr.io/0xpierre/contana/backend:latest
             docker compose -f docker-compose.prod.yml up -d
           ENDSSH
           echo "Deployment completed."
