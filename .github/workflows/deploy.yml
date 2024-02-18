@@ -54,15 +54,10 @@ jobs:
           echo S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} >> backend/.env
           echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> backend/.env
       - name: Set up SSH key
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           mkdir -p ~/.ssh
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
           echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/github_actions
           chmod 600 ~/.ssh/github_actions
-          ssh-add ~/.ssh/github_actions
       - name: Deploy to server
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -70,8 +65,8 @@ jobs:
           NAMESPACE: ${{ secrets.NAMESPACE }}
         run: |
           echo "Starting deployment..."
-          scp  -o StrictHostKeyChecking=no -r ./backend/.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana
-          ssh -o StrictHostKeyChecking=no 0xpierre@${{ secrets.SERVER_IP }} << 'ENDSSH'
+          scp  -o StrictHostKeyChecking=no -r ./backend/.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana -i ~/.ssh/github_actions
+          ssh -o StrictHostKeyChecking=no 0xpierre@${{ secrets.SERVER_IP }} -i ~/.ssh/github_actions << 'ENDSSH'
             cd /home/0xpierre/Contana
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
             docker pull {{ env.BACKEND_IMAGE }}
