@@ -69,7 +69,7 @@ jobs:
             cd /home/0xpierre/Contana
             echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
             echo {{ env.BACKEND_IMAGE }} > aa.txt
-            docker pull {{ env.BACKEND_IMAGE }}
+            docker pull ${{ env.BACKEND_IMAGE }}
             docker compose -f docker-compose.prod.yml up -d
           ENDSSH
           echo "Deployment completed."
