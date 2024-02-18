@@ -68,6 +68,7 @@ jobs:
             echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
             docker pull ghcr.io/0xpierre/contana/backend:latest
             docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml exec backend python manage.py migrate
           ENDSSH
           echo "Deployment completed."
 
