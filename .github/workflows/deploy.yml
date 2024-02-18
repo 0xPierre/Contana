@@ -60,7 +60,6 @@ jobs:
           chmod 600 ~/.ssh/github_actions
       - name: Deploy to server
         env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           NAMESPACE: ${{ secrets.NAMESPACE }}
         run: |
@@ -68,9 +67,10 @@ jobs:
           scp -i ~/.ssh/github_actions -o StrictHostKeyChecking=no -r ./backend/.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana 
           ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no 0xpierre@${{ secrets.SERVER_IP }} << 'ENDSSH'
             cd /home/0xpierre/Contana
-            docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
+            echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+            echo {{ env.BACKEND_IMAGE }} > aa.txt
             docker pull {{ env.BACKEND_IMAGE }}
-            docker-compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d
           ENDSSH
           echo "Deployment completed."
 
