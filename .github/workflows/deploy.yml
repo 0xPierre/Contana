@@ -59,17 +59,15 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/github_actions
           chmod 600 ~/.ssh/github_actions
       - name: Deploy to server
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          NAMESPACE: ${{ secrets.NAMESPACE }}
         run: |
           echo "Starting deployment..."
-          scp -i ~/.ssh/github_actions -o StrictHostKeyChecking=no -r ./backend/.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana 
+          scp -i ~/.ssh/github_actions -o StrictHostKeyChecking=no -r ./backend/.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana  
           ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no 0xpierre@${{ secrets.SERVER_IP }} << 'ENDSSH'
             cd /home/0xpierre/Contana
-            echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+            mv .env backend/.env
+            echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
             echo ${{ env.BACKEND_IMAGE }} > aa.txt
-            echo ${PERSONAL_ACCESS_TOKEN} > bb.txt
+            echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} > bb.txt
             echo ${{ secrets.NAMESPACE }} > cc.txt
             docker pull ${{ env.BACKEND_IMAGE }}
             docker compose -f docker-compose.prod.yml up -d
