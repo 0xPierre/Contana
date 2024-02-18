@@ -58,8 +58,11 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-keyscan github.com >> ~/.ssh/known_hosts
-          ssh-add - <<< "${{ secrets.PRIVATE_KEY }}"
+          echo "${{ secrets.PRIVATE_KEY }}" > ~/.ssh/github_actions
+          chmod 600 ~/.ssh/github_actions
+          ssh-add ~/.ssh/github_actions
       - name: Deploy to server
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
