@@ -53,9 +53,9 @@ jobs:
           echo S3_REGION_NAME=${{ secrets.S3_REGION_NAME }} >> backend/.env
           echo S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} >> backend/.env
           echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> backend/.env
+      - name: Set up SSH key
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
