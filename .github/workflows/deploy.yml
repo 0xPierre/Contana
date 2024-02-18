@@ -65,8 +65,8 @@ jobs:
           NAMESPACE: ${{ secrets.NAMESPACE }}
         run: |
           echo "Starting deployment..."
-          scp  -o StrictHostKeyChecking=no -r ./backend/.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana -i ~/.ssh/github_actions
-          ssh -o StrictHostKeyChecking=no 0xpierre@${{ secrets.SERVER_IP }} -i ~/.ssh/github_actions << 'ENDSSH'
+          scp  -o StrictHostKeyChecking=no -r ./backend/.env ./docker-compose.prod.yml -i ~/.ssh/github_actions 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana 
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/github_actions 0xpierre@${{ secrets.SERVER_IP }} << 'ENDSSH'
             cd /home/0xpierre/Contana
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
             docker pull {{ env.BACKEND_IMAGE }}
