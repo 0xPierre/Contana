@@ -64,7 +64,7 @@ jobs:
           scp -i ~/.ssh/github_actions -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana  
           ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no 0xpierre@${{ secrets.SERVER_IP }} << 'ENDSSH'
             cd /home/0xpierre/Contana
-            mdkdir -p backend
+            mkdir -p backend
             mv .env backend/.env
             echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
             docker pull ghcr.io/0xpierre/contana/backend:latest
