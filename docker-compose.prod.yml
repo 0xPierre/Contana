@@ -16,9 +16,7 @@ services:
       - "6379:6379"
 
   celery:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/contana/backend
     command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana worker -l info'
     depends_on:
       - redis
@@ -27,9 +25,7 @@ services:
       - ./backend/.env
 
   celery_beat:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/contana/backend
     command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana beat -l info'
     depends_on:
       - redis
@@ -39,9 +35,7 @@ services:
 
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/contana/backend
     command: bash -c 'gunicorn --bind 0.0.0.0:9000 contana.wsgi'
     ports:
       - "9000:9000"
