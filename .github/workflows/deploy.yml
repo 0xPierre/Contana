@@ -25,7 +25,7 @@ jobs:
       - name: Pull image
         run: docker pull ${{ env.BACKEND_IMAGE }} || true
       - name: Build image
-        run: docker-compose -f docker-compose.prod.yml build
+        run: docker-compose -f docker-compose.prod.yml build --no-cache
       - name: Push image
         run: docker push ${{ env.BACKEND_IMAGE }}
 
