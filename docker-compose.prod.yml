@@ -2,40 +2,53 @@ version: '3.8'
 
 services:
   database:
-    extends:
-      file: docker-compose.yml
-      service: database
+    image: postgres:15-alpine
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    env_file:
+      - ./backend/.env
 
   redis:
-    extends:
-      file: docker-compose.yml
-      service: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
 
   celery:
-    extends:
-      file: docker-compose.yml
-      service: celery
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana worker -l info'
     depends_on:
-        - redis
-        - database
+      - redis
+      - database
+    env_file:
+      - ./backend/.env
 
   celery_beat:
-    extends:
-      file: docker-compose.yml
-      service: celery_beat
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana beat -l info'
     depends_on:
-        - redis
-        - database
+      - redis
+      - database
+    env_file:
+      - ./backend/.env
+
 
   backend:
-    extends:
-      file: docker-compose.yml
-      service: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     command: bash -c 'gunicorn --bind 0.0.0.0:9000 contana.wsgi'
     ports:
       - "9000:9000"
     depends_on:
-        - database
+      - database
+    env_file:
+      - ./backend/.env
 
 
 volumes:
