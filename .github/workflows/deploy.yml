@@ -72,21 +72,3 @@ jobs:
             docker compose -f docker-compose.prod.yml exec backend python manage.py migrate
           ENDSSH
           echo "Deployment completed."
-
-#  deploy:
-#    name: Deploy
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#      - name: Set up SSH key
-#        run: |
-#          mkdir -p ~/.ssh
-#          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-#          chmod 600 ~/.ssh/id_rsa
-#          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-#      - name: Deploy to server
-#        run: |
-#          echo "Starting deployment..."
-#          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no 0xpierre@host "cd /home/designcise && git pull origin main && <your-other-commands>"
-#          echo "Deployment completed."
