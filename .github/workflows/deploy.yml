@@ -52,7 +52,7 @@ jobs:
           echo S3_ENDPOINT=${{ secrets.S3_ENDPOINT }} >> .env
           echo S3_REGION_NAME=${{ secrets.S3_REGION_NAME }} >> .env
           echo S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} >> .env
-          echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+          echo SECRET_KEY=""${{ secrets.SECRET_KEY }}"" >> .env
           echo BACKEND_IMAGE=ghcr.io/0xpierre/contana/backend:latest
       - name: Set up SSH key
         run: |
@@ -73,8 +73,7 @@ jobs:
           
             echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
             docker pull ${BACKEND_IMAGE}
-            docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate
             docker compose -f docker-compose.prod.yml exec backend python manage.py migrate
           ENDSSH
           echo "Deployment completed."
