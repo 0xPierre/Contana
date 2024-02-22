@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   database:
+    restart: unless-stopped
     image: postgres:15-alpine
     volumes:
       - ./postgres_data:/var/lib/postgresql/data/
@@ -11,11 +12,13 @@ services:
       - ./backend/.env
 
   redis:
+    restart: unless-stopped
     image: redis:alpine
     ports:
       - "6379:6379"
 
   celery:
+    restart: unless-stopped
     image: "${BACKEND_IMAGE}"
     command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana worker -l info'
     depends_on:
@@ -25,6 +28,7 @@ services:
       - ./backend/.env
 
   celery_beat:
+    restart: unless-stopped
     image: "${BACKEND_IMAGE}"
     command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana beat -l info'
     depends_on:
@@ -35,6 +39,7 @@ services:
 
 
   backend:
+    restart: unless-stopped
     image: "${BACKEND_IMAGE}"
     build:
       context: ./backend
