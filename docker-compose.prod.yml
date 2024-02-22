@@ -16,7 +16,7 @@ services:
       - "6379:6379"
 
   celery:
-    image: ghcr.io/contana/backend
+    image: "${BACKEND_IMAGE}"
     command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana worker -l info'
     depends_on:
       - redis
@@ -25,9 +25,7 @@ services:
       - ./backend/.env
 
   celery_beat:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: "${BACKEND_IMAGE}"
     command: bash -c 'while !</dev/tcp/redis/6379; do sleep 1; done; celery -A contana beat -l info'
     depends_on:
       - redis
