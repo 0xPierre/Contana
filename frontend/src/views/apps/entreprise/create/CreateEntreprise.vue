@@ -85,8 +85,8 @@ const createEntreprise = async () => {
               Créer votre entreprise
             </b-card-title>
             <b-card-text class="mb-2">
-              Créer votre entreprise gratuitement, personnalisez là et
-              commencez à facturer vos clients dès maintenant.
+              Créer votre entreprise, personnalisez la et commencez à
+              facturer vos clients dès maintenant.
             </b-card-text>
             <div class="auth-register-form mt-2">
               <b-form @submit.prevent="createEntreprise">
@@ -136,9 +136,52 @@ const createEntreprise = async () => {
             </div>
           </b-col>
         </b-col>
-        <b-col lg="8" class="d-none d-lg-flex align-items-center">
+        <b-col lg="8" class="d-flex align-items-center">
+          <div class="" style="min-width: 50%">
+            <b-card
+              class="pricing-h-eq"
+              body-class="d-flex flex-column align-items-center"
+            >
+              <div class="monthly-plan">
+                <div class="plan-price">
+                  <span
+                    class="pricing-basic-value font-weight-bolder text-primary font-large-1"
+                    >44.99</span
+                  >
+                  <sup class="font-medium-1 font-weight-bold text-primary"
+                    >€ TTC</sup
+                  >
+                  <sub
+                    class="pricing-duration text-body font-medium-1 font-weight-bold"
+                    >/mois</sub
+                  >
+                </div>
+              </div>
+
+              <b-list-group class="list-group-circle text-left mt-1">
+                <b-list-group-item>
+                  <b>Tableau de bord</b> et suivis de chiffres.
+                </b-list-group-item>
+                <b-list-group-item>
+                  Devis, factures, acomptes et avoirs <b>illimités</b>.
+                </b-list-group-item>
+                <b-list-group-item>
+                  Utilisateurs <b>illimités</b>
+                </b-list-group-item>
+                <b-list-group-item>
+                  Gestion des <b>clients</b>.
+                </b-list-group-item>
+                <b-list-group-item>
+                  <b>Personnalisation</b> des documents.
+                </b-list-group-item>
+                <b-list-group-item>
+                  Support <b>premium</b> par email et téléphone.
+                </b-list-group-item>
+              </b-list-group>
+            </b-card>
+          </div>
           <div
-            class="w-100 d-lg-flex align-items-center justify-content-center px-5"
+            class="d-none d-lg-flex align-items-center justify-content-center px-5"
           >
             <b-img fluid :src="createEntrepriseSvg" />
           </div>
@@ -150,4 +193,5 @@ const createEntreprise = async () => {
 
 <style lang="scss">
 @import '@/assets/scss/template/vue/pages/page-auth.scss';
+@import '@/assets/scss/template/vue/pages/page-pricing.scss';
 </style>
