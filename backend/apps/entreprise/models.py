@@ -40,6 +40,24 @@ class InvitationsLink(BaseModel):
         return self.token
 
 
+class EntrepriseCheckoutSession(BaseModel):
+    """
+    This model is used to store the checkout session for the entreprise
+    """
+    session_id = models.CharField(max_length=255)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="checkout_sessions"
+    )
+    name = models.CharField(max_length=255)
+    siren = models.CharField(max_length=255)
+    email = models.EmailField()
+
+
+payment_status_choices = (
+    ("paid", "Paid"),
+    ("failed", "Failed"),
+)
+
 class Entreprise(BaseModel):
     name = models.CharField(max_length=255)
     slug = AutoSlugField(
@@ -99,6 +117,10 @@ class Entreprise(BaseModel):
     first_acompte_number = models.IntegerField(default=1)
     first_avoir_number = models.IntegerField(default=1)
     first_client_number = models.IntegerField(default=1)
+
+    stripe_subscription_id = models.CharField(blank=True)
+    stripe_customer_id = models.CharField(blank=True)
+    stripe_payment_status = models.CharField(choices=payment_status_choices, blank=True)
 
     def __str__(self):
         return self.name

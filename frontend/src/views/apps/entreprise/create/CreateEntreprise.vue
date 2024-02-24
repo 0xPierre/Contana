@@ -33,31 +33,20 @@ const { formState, v$ } = useFormValidation<{
   }
 )
 
-const createEntreprise = async () => {
+const createCheckoutSession = async () => {
   const validated = await v$.value.$validate()
   if (!validated) return
 
   isLoading.value = true
 
   try {
-    const { data } = await entrepriseStore.createEntreprise(formState)
+    const { data } =
+      await entrepriseStore.createEntrepriseCheckoutSession(formState)
 
     if (data.status === 'success') {
-      await userStore.getData()
-      notify(
-        'Entreprise créée avec succès',
-        'success',
-        'Vous pouvez maintenant personnaliser votre entreprise'
-      )
-      await userStore.selectEntreprise(data.data.slug)
-      await router.push({
-        name: 'entreprise-settings',
-        params: { entrepriseSlug: data.data.slug }
-      })
+      document.location.href = data.url
     } else {
-      if (data.errors) {
-        notifyApiError(data.errors)
-      }
+      notify('Une erreur est survenue', 'danger')
     }
   } catch (error: unknown) {
     notify('Une erreur est survenue', 'danger')
@@ -78,7 +67,7 @@ const createEntreprise = async () => {
 
         <b-col
           lg="4"
-          class="d-flex align-items-center auth-bg px-2 p-lg-5"
+          class="d-flex align-items-center auth-bg px-2 p-lg-5 mt-5 mt-md-0"
         >
           <b-col sm="8" md="6" lg="12" class="px-xl-2 mx-auto">
             <b-card-title title-tag="h2" class="font-weight-bold mb-1">
@@ -89,7 +78,7 @@ const createEntreprise = async () => {
               facturer vos clients dès maintenant.
             </b-card-text>
             <div class="auth-register-form mt-2">
-              <b-form @submit.prevent="createEntreprise">
+              <b-form @submit.prevent="createCheckoutSession">
                 <b-form-group label="Nom de l'entreprise">
                   <b-form-input
                     v-model="formState.name"

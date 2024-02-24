@@ -4,14 +4,14 @@ import string
 from django.http import HttpResponse
 
 from services.constructor.generate import construct_pdf
-from ..clients.utils import generate_next_client_number
-from ..core.permissions import (
+from apps.clients.utils import generate_next_client_number
+from apps.core.permissions import (
     CanAdministrate,
     IsInEntreprise,
     IsOwnerOfEntreprise,
 )
-from ..documents.utils import generate_next_document_number
-from ..entreprise.models import Entreprise, InvitationsLink
+from apps.documents.utils import generate_next_document_number
+from apps.entreprise.models import Entreprise, InvitationsLink
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -23,8 +23,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from .serializers import EntrepriseInformationsModelSerializer
-from .utils import build_invitation_link, get_entreprise_data
+from apps.entreprise.serializers import EntrepriseInformationsModelSerializer
+from apps.entreprise.utils import build_invitation_link, get_entreprise_data
 from apps.documents.models import Document, DocumentSection
 from apps.clients.models import Client
 
@@ -36,27 +36,6 @@ def get_data(request: Request, entreprise_slug: str) -> Response:
     Allows to get the entreprise data
     """
     entreprise = Entreprise.objects.get(slug=entreprise_slug)
-
-    return Response(
-        {"status": "success", "data": get_entreprise_data(entreprise, request.user)}
-    )
-
-
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def create_entreprise(request: Request) -> Response:
-    """
-    Allows to create an entreprise
-    """
-    serializer = EntrepriseInformationsModelSerializer(data=request.data)
-
-    if not serializer.is_valid():
-        return Response({"status": "failed", "errors": serializer.errors})
-
-    entreprise = serializer.save(owner=request.user)
-    entreprise.users.add(request.user)
-
-    assign_perm("administrate", request.user, entreprise)
 
     return Response(
         {"status": "success", "data": get_entreprise_data(entreprise, request.user)}

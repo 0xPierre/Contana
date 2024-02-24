@@ -182,13 +182,24 @@ export const useEntrepriseStore = defineStore('entreprise', {
       )
     },
 
-    async createEntreprise(data: {
+    // async createEntreprise(data: {
+    //   name: string
+    //   siren: string
+    //   email: string
+    // }) {
+    //   return http.post<ApiResponse<EntrepriseModel>>(
+    //     `/api/entreprise/create`,
+    //     data
+    //   )
+    // },
+
+    async createEntrepriseCheckoutSession(data: {
       name: string
       siren: string
       email: string
     }) {
-      return http.post<ApiResponse<EntrepriseModel>>(
-        `/api/entreprise/create`,
+      return http.post<ApiResponse<{ url: string }>>(
+        `/api/entreprise/create-checkout-session`,
         data
       )
     }

@@ -39,6 +39,16 @@ watch(
     }
   }
 )
+
+onBeforeMount(() => {
+  if (
+    userStore.auth.isLoggedIn &&
+    !dataHasBeeGetted.value &&
+    !route.params.entrepriseSlug
+  ) {
+    userStore.getData(route.params.entrepriseSlug as string)
+  }
+})
 </script>
 
 <template>

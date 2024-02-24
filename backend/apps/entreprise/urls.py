@@ -1,6 +1,7 @@
 from django.urls import path
 
-from . import views
+from .views import views
+from .views import stripe as stripe_views
 
 urlpatterns = [
     path(
@@ -9,9 +10,14 @@ urlpatterns = [
         name="get_data",
     ),
     path(
-        "api/entreprise/create",
-        views.create_entreprise,
-        name="create_entreprise",
+        "api/entreprise/create-checkout-session",
+        stripe_views.create_entreprise_checkout_session,
+        name="create_entreprise_checkout_session",
+    ),
+    path(
+        "api/entreprise/stripe-subscription-webhook",
+        stripe_views.stripe_entreprise_subscription_webhook,
+        name="stripe_entreprise_subscription_webhook",
     ),
     path(
         "api/entreprise/<str:entreprise_slug>/settings/informations",

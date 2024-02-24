@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import banner from '@/assets/images/banner.png'
+import NewEntreprise from '@/components/new-entreprise/NewEntreprise.vue'
 </script>
 
 <template>
@@ -33,6 +34,7 @@ import banner from '@/assets/images/banner.png'
         </b-card-body>
       </b-card>
     </section>
+    <NewEntreprise />
   </div>
 </template>
 
