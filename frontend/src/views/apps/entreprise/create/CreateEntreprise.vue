@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useFormValidation } from '@/composables/formValidation'
-import { required } from '@vuelidate/validators'
+import { required, email } from '@vuelidate/validators'
 
 import createEntrepriseSvg from '@/assets/svg/entreprise/createEntreprise.svg'
 import Logo from '@/assets/images/logo.png'
-import { notify, notifyApiError } from '@/helpers/notify'
+import { notify } from '@/helpers/notify'
 import { useRouter, useRoute } from 'vue-router'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
 import { useUserStore } from '@/stores/apps/User.ts'
@@ -29,7 +29,7 @@ const { formState, v$ } = useFormValidation<{
   {
     name: { required },
     siren: { required },
-    email: { required }
+    email: { required, email }
   }
 )
 
@@ -53,6 +53,10 @@ const createCheckoutSession = async () => {
   }
   isLoading.value = false
 }
+
+onMounted(() => {
+  notify('Création de votre entreprise annulée', 'danger')
+})
 </script>
 
 <template>
