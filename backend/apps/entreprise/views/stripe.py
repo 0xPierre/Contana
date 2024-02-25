@@ -84,7 +84,7 @@ def stripe_entreprise_subscription_webhook(request: Request):
     except ValueError:
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError:
-        return HttpResponse(status=400)
+        return HttpResponse(status=401)
 
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
