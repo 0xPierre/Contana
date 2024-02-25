@@ -55,7 +55,9 @@ const createCheckoutSession = async () => {
 }
 
 onMounted(() => {
-  notify('Création de votre entreprise annulée', 'danger')
+  if (route.query.status === 'cancelled') {
+    notify('Création de votre entreprise annulée', 'danger')
+  }
 })
 </script>
 
