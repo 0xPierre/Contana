@@ -31,7 +31,7 @@ onMounted(async () => {
       nav-wrapper-class="col-md-3 col-12"
       nav-class="nav-left"
     >
-      <b-tab active>
+      <b-tab active v-if="entrepriseStore.isPaymentStatusOk">
         <template #title>
           <vue-feather type="user" size="18" class="mr-50" />
           <span class="font-weight-bold">Informations</span>
@@ -40,7 +40,7 @@ onMounted(async () => {
         <EntrepriseSettingsInformations />
       </b-tab>
 
-      <b-tab>
+      <b-tab v-if="entrepriseStore.isPaymentStatusOk">
         <template #title>
           <vue-feather type="layout" size="18" class="mr-50" />
           <span class="font-weight-bold">Personnalisation</span>
@@ -49,7 +49,7 @@ onMounted(async () => {
         <EntrepriseSettingsPersonalization />
       </b-tab>
 
-      <b-tab>
+      <b-tab v-if="entrepriseStore.isPaymentStatusOk">
         <template #title>
           <vue-feather type="lock" size="18" class="mr-50" />
           <span class="font-weight-bold">Utilisateurs</span>
@@ -58,7 +58,7 @@ onMounted(async () => {
         <EntrepriseSettingsUsers />
       </b-tab>
 
-      <b-tab>
+      <b-tab v-if="entrepriseStore.isPaymentStatusOk">
         <template #title>
           <vue-feather type="eye" size="18" class="mr-50" />
           <span class="font-weight-bold">Identité visuelle</span>

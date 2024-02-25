@@ -7,6 +7,7 @@ export default [
       title: 'Documents',
       layout: 'layout-vertical',
       requireAuth: true,
+      requireStripe: true,
       permissions: {
         access_documents: true
       }
@@ -21,6 +22,7 @@ export default [
       title: 'Document',
       layout: 'layout-vertical',
       requireAuth: true,
+      requireStripe: true,
       forceComponentReload: true,
       permissions: {
         access_documents: true

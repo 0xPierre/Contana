@@ -21,4 +21,5 @@ export interface UserModel {
   full_name: string
   avatar: string
   entreprises: EntrepriseListingItem[]
+  is_billing_ok: boolean
 }

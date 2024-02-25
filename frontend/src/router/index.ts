@@ -55,6 +55,15 @@ router.beforeEach((to) => {
     }
   }
 
+  if (to.meta.requireStripe && !entrepriseStore.isPaymentStatusOk) {
+    return {
+      name: 'entreprise-settings',
+      params: {
+        entrepriseSlug: entrepriseStore.entreprise?.slug
+      }
+    }
+  }
+
   if (to.meta.permissions) {
     if (Object.keys(to.meta.permissions).length > 0) {
       const permissions = to.meta.permissions

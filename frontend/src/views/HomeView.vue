@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import banner from '@/assets/images/banner.png'
-import NewEntreprise from '@/components/new-entreprise/NewEntreprise.vue'
+import NewEntreprise from '@/components/home/NewEntreprise.vue'
+import { onMounted } from 'vue'
+import { useUserStore } from '@/stores/apps/User.ts'
+
+onMounted(() => {
+  useUserStore().getData()
+})
 </script>
 
 <template>

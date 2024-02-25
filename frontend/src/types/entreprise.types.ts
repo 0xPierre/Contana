@@ -5,6 +5,7 @@ export interface EntrepriseListingItem {
   id: number
   name: string
   slug: string
+  stripe_payment_status: 'paid' | 'failed' | 'cancelled'
 }
 
 export interface EntrepriseSettingsInformations {
@@ -41,6 +42,7 @@ export interface EntrepriseSettingsInformations {
   first_acompte_number: number
   first_avoir_number: number
   first_client_number: number
+  stripe_payment_status: 'paid' | 'failed' | 'cancelled'
 }
 
 export interface EntrepriseUser {

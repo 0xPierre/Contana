@@ -28,6 +28,10 @@ export const useEntrepriseStore = defineStore('entreprise', {
           (user) => user.id !== state.entreprise?.owner
         ) || []
       )
+    },
+
+    isPaymentStatusOk: (state) => {
+      return state.entreprise?.stripe_payment_status === 'paid'
     }
   },
 

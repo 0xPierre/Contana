@@ -5,6 +5,7 @@ import AppNavbarVerticalLayout from '../components/app-navbar/AppNavbarVerticalL
 import VerticalNavMenu from './vertical-nav-menu/VerticalNavMenu.vue'
 import { onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import BillingAlert from '@/components/home/BillingAlert.vue'
 
 const appConfigStore = useAppConfigStore()
 const route = useRoute()
@@ -81,6 +82,7 @@ onUnmounted(() => {
           <div class="header-navbar-shadow" />
           <div class="content-wrapper">
             <div class="content-body">
+              <BillingAlert />
               <Transition name="zoom-fade" mode="out-in">
                 <component :is="Component" />
               </Transition>

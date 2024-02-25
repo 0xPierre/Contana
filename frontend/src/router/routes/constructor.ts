@@ -8,6 +8,7 @@ export default [
       title: 'Constructeur',
       layout: 'layout-vertical',
       requireAuth: true,
+      requireStripe: true,
       permissions: {
         access_constructor: true
       }
@@ -22,6 +23,7 @@ export default [
       title: 'Modification du brouillon',
       layout: 'layout-vertical',
       requireAuth: true,
+      requireStripe: true,
       forceComponentReload: true,
       permissions: {
         access_constructor: true
@@ -37,6 +39,7 @@ export default [
       title: 'Créer un avoir - Constructeur',
       layout: 'layout-vertical',
       requireAuth: true,
+      requireStripe: true,
       forceComponentReload: true,
       permissions: {
         access_constructor: true

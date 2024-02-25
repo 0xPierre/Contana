@@ -7,6 +7,7 @@ export default [
       title: 'Clients',
       layout: 'layout-vertical',
       requireAuth: true,
+      requireStripe: true,
       permissions: {
         access_clients: true
       }
@@ -21,6 +22,7 @@ export default [
       title: 'Client',
       layout: 'layout-vertical',
       requireAuth: true,
+      requireStripe: true,
       permissions: {
         access_clients: true
       }

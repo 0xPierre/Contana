@@ -89,7 +89,11 @@ const selectEntreprise = async (slug: string) => {
         <b-dropdown-item
           v-for="entreprise in userStore.data?.entreprises"
           :key="entreprise.id"
-          link-class="d-flex align-items-center"
+          :link-class="`d-flex align-items-center ${
+            entreprise.stripe_payment_status != 'paid'
+              ? 'text-danger font-weight-bolder'
+              : ''
+          }`"
           :active="entreprise.id === entrepriseStore.entreprise?.id"
           @click="selectEntreprise(entreprise.slug)"
         >

@@ -11,6 +11,7 @@ def get_user_data(user: User) -> dict:
         "full_name": user.get_full_name,
         "avatar": user.avatar.url if user.avatar else None,
         "entreprises": [],
+        "is_billing_ok": True
     }
 
     entreprise: Entreprise
@@ -20,7 +21,11 @@ def get_user_data(user: User) -> dict:
                 "id": entreprise.id,
                 "name": entreprise.name,
                 "slug": entreprise.slug,
+                "stripe_payment_status": entreprise.stripe_payment_status,
             }
         )
+
+        if entreprise.stripe_payment_status != "paid":
+            data["is_billing_ok"] = False
 
     return data
