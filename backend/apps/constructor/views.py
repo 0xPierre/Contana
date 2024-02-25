@@ -6,11 +6,9 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from django.http import HttpResponse
-from django.core.files.base import ContentFile
-from django.utils.text import slugify
 
 from .utils import get_section_values
-from apps.core.permissions import IsInEntreprise, CanAccessConstructor
+from apps.core.permissions import IsInEntreprise, CanAccessConstructor, IsEntrepriseBillingOk
 from apps.core.utils import get_entreprise_from_request
 from apps.documents.utils import generate_next_document_number
 from apps.entreprise.models import Entreprise
@@ -168,7 +166,7 @@ def get_document_draft(request: Request, entreprise_slug: str, document_number: 
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor, IsEntrepriseBillingOk])
 def produce_document_preview(request: Request, entreprise_slug: str):
     """
     Used to produce the preview of a document from the constructor. Return the pdf file directly
@@ -261,7 +259,7 @@ def produce_document_preview(request: Request, entreprise_slug: str):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessConstructor, IsEntrepriseBillingOk])
 def produce_document(request: Request, entreprise_slug: str):
     """
     Used to produce a document from the constructor

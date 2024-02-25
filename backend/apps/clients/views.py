@@ -1,7 +1,7 @@
 from django.db.models import QuerySet
 
 from ..clients.models import Client
-from ..core.permissions import IsInEntreprise, CanAccessClients, CanUpdateClients
+from ..core.permissions import IsInEntreprise, CanAccessClients, CanUpdateClients, IsEntrepriseBillingOk
 from ..core.utils import get_entreprise_from_request
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -72,7 +72,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
         return queryset
 
     def create(self, request: Request, *args, **kwargs):
-        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessClients]
+        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessClients, IsEntrepriseBillingOk]
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -91,13 +91,13 @@ class ClientsViewSet(viewsets.ModelViewSet):
         )
 
     def retrieve(self, request, *args, **kwargs):
-        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessClients]
+        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessClients, IsEntrepriseBillingOk]
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response({"status": "success", "data": serializer.data})
 
     def update(self, request: Request, *args, **kwargs):
-        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanUpdateClients]
+        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanUpdateClients, IsEntrepriseBillingOk]
         instance: Client = self.get_object()
 
         if instance.archived:
@@ -118,7 +118,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["post"],
-        permission_classes=[IsAuthenticated, IsInEntreprise, CanUpdateClients],
+        permission_classes=[IsAuthenticated, IsInEntreprise, CanUpdateClients, IsEntrepriseBillingOk],
     )
     def archive(self, *args, **kwargs):
         client = self.get_object()
@@ -130,7 +130,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["post"],
-        permission_classes=[IsAuthenticated, IsInEntreprise, CanUpdateClients],
+        permission_classes=[IsAuthenticated, IsInEntreprise, CanUpdateClients, IsEntrepriseBillingOk],
     )
     def unarchive(self, *args, **kwargs):
         client = self.get_object()
@@ -143,7 +143,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=["post"],
         url_path="files",
-        permission_classes=[IsAuthenticated, IsInEntreprise, CanUpdateClients],
+        permission_classes=[IsAuthenticated, IsInEntreprise, CanUpdateClients, IsEntrepriseBillingOk],
     )
     def save_file(self, *args, **kwargs):
         client = self.get_object()

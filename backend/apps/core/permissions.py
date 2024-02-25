@@ -78,3 +78,17 @@ class CanUpdateDocuments(permissions.BasePermission):
 class CanAccessConstructor(permissions.BasePermission):
     def has_permission(self, request, view):
         return test_user_permission(self, request, "access_constructor")
+
+
+class IsEntrepriseBillingOk(permissions.BasePermission):
+    """
+    Verify that entreprise is billing ok
+    """
+
+    def has_permission(self, request, view):
+        entreprise = get_entreprise_from_request(request)
+        if entreprise:
+            if entreprise.stripe_payment_status == "paid":
+                return True
+
+        return False

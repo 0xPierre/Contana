@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 
 from services.constructor.generate import construct_pdf
 from .models import Document, DocumentSection
-from ..core.permissions import CanAccessDocuments, IsInEntreprise, CanAccessConstructor
+from ..core.permissions import CanAccessDocuments, IsInEntreprise, CanAccessConstructor, IsEntrepriseBillingOk
 from ..core.utils import get_entreprise_from_request
 from .utils import generate_next_document_number
 from django.db.models import Q
@@ -33,6 +33,7 @@ class DocumentsViewSet(viewsets.ModelViewSet):
         IsAuthenticated,
         IsInEntreprise,
         CanAccessDocuments,
+        IsEntrepriseBillingOk,
     ]
 
     def get_serializer_class(self):
