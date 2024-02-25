@@ -182,17 +182,6 @@ export const useEntrepriseStore = defineStore('entreprise', {
       )
     },
 
-    // async createEntreprise(data: {
-    //   name: string
-    //   siren: string
-    //   email: string
-    // }) {
-    //   return http.post<ApiResponse<EntrepriseModel>>(
-    //     `/api/entreprise/create`,
-    //     data
-    //   )
-    // },
-
     async createEntrepriseCheckoutSession(data: {
       name: string
       siren: string
@@ -201,6 +190,12 @@ export const useEntrepriseStore = defineStore('entreprise', {
       return http.post<ApiResponse<{ url: string }>>(
         `/api/entreprise/create-checkout-session`,
         data
+      )
+    },
+
+    async createCustomerPortal() {
+      return http.post<ApiResponse<{ url: string }>>(
+        `/api/entreprise/${this.entreprise?.slug}/settings/customer-portal/create`
       )
     }
   },

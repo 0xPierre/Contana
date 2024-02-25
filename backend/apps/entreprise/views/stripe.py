@@ -119,5 +119,32 @@ def stripe_entreprise_subscription_webhook(request: Request):
             entreprise.stripe_payment_status = "failed"
             entreprise.save()
 
+    elif event["type"] == "customer.subscription.deleted":
+        subscription = event["data"]["object"]
+
+        if Entreprise.objects.filter(stripe_subscription_id=subscription.id).exists():
+            entreprise = Entreprise.objects.get(stripe_subscription_id=subscription.id)
+            entreprise.stripe_payment_status = "cancelled"
+            entreprise.save()
+
     return HttpResponse(status=200)
 
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAdministrate])
+def create_customer_portal(request: Request, entreprise_slug) -> Response:
+    """
+    Allows to create a customer portal
+    """
+    entreprise = Entreprise.objects.get(slug=entreprise_slug)
+
+    session = stripe.billing_portal.Session.create(
+        customer=entreprise.stripe_customer_id,
+        locale="fr",
+        return_url=settings.FRONTEND_URL + "/" + entreprise.slug + "/parametres",
+    )
+
+    return Response({
+        "status": "success",
+        "url": session.url,
+    })

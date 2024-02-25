@@ -56,7 +56,9 @@ class EntrepriseCheckoutSession(BaseModel):
 payment_status_choices = (
     ("paid", "Paid"),
     ("failed", "Failed"),
+    ("cancelled", "Cancelled"),
 )
+
 
 class Entreprise(BaseModel):
     name = models.CharField(max_length=255)

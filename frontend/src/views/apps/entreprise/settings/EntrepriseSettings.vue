@@ -8,6 +8,7 @@ import EntrepriseSettingsSecurity from './EntrepriseSettingsSecurity.vue'
 import { can } from '@/helpers/permissions'
 import Personalization from '@/views/apps/entreprise/settings/EntrepriseSettingsPersonalization/EntrepriseSettingsPersonalization.vue'
 import EntrepriseSettingsPersonalization from '@/views/apps/entreprise/settings/EntrepriseSettingsPersonalization/EntrepriseSettingsPersonalization.vue'
+import EntrepriseSettingsBilling from '@/views/apps/entreprise/settings/EntrepriseSettingsBilling.vue'
 
 const isLoading = ref(false)
 const entrepriseStore = useEntrepriseStore()
@@ -64,6 +65,15 @@ onMounted(async () => {
         </template>
 
         <EntrepriseSettingsVisualIdentity />
+      </b-tab>
+
+      <b-tab>
+        <template #title>
+          <vue-feather type="dollar-sign" size="18" class="mr-50" />
+          <span class="font-weight-bold">Facturation</span>
+        </template>
+
+        <EntrepriseSettingsBilling />
       </b-tab>
 
       <b-tab v-if="entrepriseStore.entreprise?.is_owner">

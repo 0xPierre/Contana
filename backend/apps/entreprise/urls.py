@@ -10,16 +10,6 @@ urlpatterns = [
         name="get_data",
     ),
     path(
-        "api/entreprise/create-checkout-session",
-        stripe_views.create_entreprise_checkout_session,
-        name="create_entreprise_checkout_session",
-    ),
-    path(
-        "api/entreprise/stripe-subscription-webhook",
-        stripe_views.stripe_entreprise_subscription_webhook,
-        name="stripe_entreprise_subscription_webhook",
-    ),
-    path(
         "api/entreprise/<str:entreprise_slug>/settings/informations",
         views.update_entreprise_informations,
         name="update_entreprise_informations",
@@ -73,5 +63,20 @@ urlpatterns = [
         "api/entreprise/<str:entreprise_slug>/settings/invitations/join",
         views.join_entreprise,
         name="join_entreprise",
+    ),
+    path(
+        "api/entreprise/create-checkout-session",
+        stripe_views.create_entreprise_checkout_session,
+        name="create_entreprise_checkout_session",
+    ),
+    path(
+        "api/entreprise/stripe-subscription-webhook",
+        stripe_views.stripe_entreprise_subscription_webhook,
+        name="stripe_entreprise_subscription_webhook",
+    ),
+    path(
+        "api/entreprise/<str:entreprise_slug>/settings/customer-portal/create",
+        stripe_views.create_customer_portal,
+        name="create_customer_portal",
     ),
 ]
