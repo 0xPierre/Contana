@@ -141,7 +141,7 @@ onMounted(() => {
                 <div class="plan-price">
                   <span
                     class="pricing-basic-value font-weight-bolder text-primary font-large-1"
-                    >44.99</span
+                    >44,99</span
                   >
                   <sup class="font-medium-1 font-weight-bold text-primary"
                     >€ TTC</sup
