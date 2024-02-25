@@ -54,6 +54,10 @@ jobs:
           echo S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
           echo BACKEND_IMAGE=ghcr.io/0xpierre/contana/backend:latest >> .env
+          echo STRIPE_PUBLIC_KEY=${{ secrets.STRIPE_PUBLIC_KEY }} >> .env
+          echo STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} >> .env
+          echo STRIPE_ENTREPRISE_SUBSCRIPTION_PRICE_ID=${{ secrets.STRIPE_ENTREPRISE_SUBSCRIPTION_PRICE_ID }} >> .env
+          echo STRIPE_ENTREPRISE_SUBSCRIPTION_WEBHOOK_SECRET=${{ secrets.STRIPE_ENTREPRISE_SUBSCRIPTION_WEBHOOK_SECRET }} >> .env
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
