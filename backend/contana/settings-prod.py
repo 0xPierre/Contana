@@ -8,6 +8,12 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
+INSTALLED_APPS += [
+    "dbbackup",
+]
+
+DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+DBBACKUP_STORAGE_OPTIONS = {"location": "/home/0xpierre/contana-backups/"}
 
 
 import sentry_sdk
