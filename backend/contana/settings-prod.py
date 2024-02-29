@@ -1,5 +1,6 @@
 from .settings import *
 import os
+import sentry_sdk
 
 FRONTEND_URL = "https://app.contana.fr"
 BACKEND_URL = "https://api.contana.fr"
@@ -21,9 +22,9 @@ DBBACKUP_STORAGE_OPTIONS = {
     "endpoint_url": AWS_S3_ENDPOINT_URL,
     "region_name": AWS_S3_REGION_NAME,
 }
-
-
-import sentry_sdk
+DBBACKUP_CLEANUP_KEEP = 14
+DBBACKUP_SEND_EMAIL = True
+DBBACKUP_ADMINS = [os.environ.get("ADMIN_EMAIL")]
 
 sentry_sdk.init(
     dsn="https://b9046e239e1ef90b46226ada8fc9848a@o492474.ingest.sentry.io/4506728355725312",
@@ -35,3 +36,9 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
 )
+
+
+CELERY_BEAT_SCHEDULE["backup_database"] = {
+    "task": "contana.tasks.backup_database",
+    "schedule": crontab(minute="*/2"),
+}

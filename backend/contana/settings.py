@@ -181,7 +181,7 @@ CELERY_RESULT_BACKEND = "redis://redis:6379"
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
-    "sample_tasl": {
+    "expired_devis": {
         "task": "apps.documents.tasks.devis_expiry_periodic_task",
         "schedule": crontab(minute="*/5"),
     },

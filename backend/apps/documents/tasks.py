@@ -1,4 +1,3 @@
-from celery import shared_task
 from django.utils import timezone
 
 from contana.celery import app
@@ -7,6 +6,7 @@ from ..documents.models import Document
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(name=__name__)
+
 
 @app.task
 def devis_expiry_periodic_task():
