@@ -58,6 +58,7 @@ jobs:
           echo STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }} >> .env
           echo STRIPE_ENTREPRISE_SUBSCRIPTION_PRICE_ID=${{ secrets.STRIPE_ENTREPRISE_SUBSCRIPTION_PRICE_ID }} >> .env
           echo STRIPE_ENTREPRISE_SUBSCRIPTION_WEBHOOK_SECRET=${{ secrets.STRIPE_ENTREPRISE_SUBSCRIPTION_WEBHOOK_SECRET }} >> .env
+          echo BACKUP_S3_BUCKET_NAME=${{ secrets.BACKUP_S3_BUCKET_NAME }} >> .env
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
