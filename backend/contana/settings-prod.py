@@ -16,7 +16,7 @@ DBBACKUP_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 DBBACKUP_STORAGE_OPTIONS = {
     "access_key": AWS_S3_ACCESS_KEY_ID,
     "secret_key": AWS_S3_SECRET_ACCESS_KEY,
-    "bucket_name": AWS_STORAGE_BUCKET_NAME,
+    "bucket_name": os.environ.get('BACKUP_S3_BUCKET_NAME'),
     "default_acl": "private",
     "endpoint_url": AWS_S3_ENDPOINT_URL,
     "region_name": AWS_S3_REGION_NAME,
