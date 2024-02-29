@@ -23,6 +23,8 @@ RUN apt-get install -y fontconfig libfreetype6 libjpeg62-turbo libpng16-16 \
     x11-common xfonts-encodings
 RUN apt-get install -y wkhtmltopdf
 
+RUN apt-get install -y postgresql-client
+
 WORKDIR /app
 
 COPY --from=builder /app/wheels /wheels
