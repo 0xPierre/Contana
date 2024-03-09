@@ -199,5 +199,10 @@ class Document(BaseModel):
     def get_forme(self):
         return dict(documents_type)[self.forme]
 
+    def generate_pdf(self):
+        from services.constructor.generate import construct_pdf
+        self.file = construct_pdf(self, self.sections.all())
+        self.save()
+
     def __str__(self):
         return f"{self.document_number} - {self.subject}"
