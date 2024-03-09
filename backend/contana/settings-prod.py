@@ -26,6 +26,11 @@ DBBACKUP_CLEANUP_KEEP = 14
 DBBACKUP_SEND_EMAIL = True
 DBBACKUP_ADMINS = [os.environ.get("ADMIN_EMAIL")]
 
+CELERY_BEAT_SCHEDULE["backup_database"] = {
+    "task": "apps.core.tasks.backup_database",
+    "schedule": crontab(minutes="*/5"),
+}
+
 sentry_sdk.init(
     dsn="https://b9046e239e1ef90b46226ada8fc9848a@o492474.ingest.sentry.io/4506728355725312",
     # Set traces_sample_rate to 1.0 to capture 100%
@@ -37,8 +42,3 @@ sentry_sdk.init(
     profiles_sample_rate=1.0,
 )
 
-
-CELERY_BEAT_SCHEDULE["backup_database"] = {
-    "task": "contana.tasks.backup_database",
-    "schedule": crontab(minute="*/2"),
-}

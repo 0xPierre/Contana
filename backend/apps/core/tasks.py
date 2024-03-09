@@ -1,6 +1,6 @@
 from contana.celery import app
 from celery.utils.log import get_task_logger
-from django.core import management
+import os
 
 logger = get_task_logger(name=__name__)
 
@@ -11,5 +11,6 @@ def backup_database() -> None:
     Task to backup the database
     """
     logger.info("Running backup database task...")
-    management.call_command('dbbackup --noinput -z --clear')
+    os.system("python manage.py dbbackup --noinput -z --clean")
+
     logger.info("Backup database task finished.")
