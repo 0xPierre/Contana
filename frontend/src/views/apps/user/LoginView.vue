@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useFormValidation } from '@/composables/formValidation'
 import { required } from '@vuelidate/validators'
 import { usePasswordVisibility } from '@/composables/passwordVisiblity'
@@ -61,6 +61,11 @@ const logIn = async () => {
   }
   isLoading.value = false
 }
+
+onMounted(() => {
+  if (userStore.auth.isLoggedIn && !route.query.redirect)
+    router.push({ name: 'home' })
+})
 </script>
 
 <template>
