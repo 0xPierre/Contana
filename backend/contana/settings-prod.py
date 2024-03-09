@@ -28,7 +28,7 @@ DBBACKUP_ADMINS = [os.environ.get("ADMIN_EMAIL")]
 
 CELERY_BEAT_SCHEDULE["backup_database"] = {
     "task": "apps.core.tasks.backup_database",
-    "schedule": crontab(minute="*/5"),
+    "schedule": crontab(hour=4, minute=0),
 }
 
 sentry_sdk.init(
