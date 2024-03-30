@@ -486,6 +486,9 @@ def create_template(request: Request, entreprise_slug: str):
     if data.get("category_id"):
         category = entreprise.template_categories.get(id=data.get("category_id"))
 
+    if not values["quantity"]:
+        values["quantity"] = 1
+
     article = DocumentSection(
         type="section-article",
         title=values["title"],
@@ -545,6 +548,9 @@ def update_template(request: Request, entreprise_slug: str, template_id: int):
         return Response(
             {"status": "failed", "error": "Merci de donner un nom à l'article"}
         )
+
+    if not values["quantity"]:
+        values["quantity"] = 1
 
     template.name = data.get("name")
     template.article.title = values["title"]
