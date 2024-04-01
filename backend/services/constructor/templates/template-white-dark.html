@@ -974,21 +974,29 @@
                     {{ section.title}}
                   </td>
                   <td class="cell-money">
-                    {{ section.unit_price_ht|floatformat:2 }} €
+                    {% if section.display_price_infos %}
+                      {{ section.unit_price_ht|floatformat:2 }} €
+                    {% endif %}
                   </td>
                   <td class="cell-qty">
-                    {{ section.quantity }} {{ section.get_unit }}
+                    {% if section.display_price_infos %}
+                      {{ section.quantity }} {{ section.get_unit }}
+                    {% endif %}
                   </td>
                 {% if document.vat_payer %}
                   <td class="cell-percent">
+                    {% if section.display_price_infos %}
                       {{ section.vat_rate|floatformat:2 }}%
+                    {% endif %}
                   </td>
                 {% endif %}
                   <td class="cell-money">
-                    {% if section.discount > 0 %}
-                      <span style="text-decoration: line-through">{{ section.total_ht_without_discount|floatformat:2 }} €</span>
-                    {% else %}
-                      {{ section.total_ht|floatformat:2 }} €
+                    {% if section.display_price_infos %}
+                      {% if section.discount > 0 %}
+                        <span style="text-decoration: line-through">{{ section.total_ht_without_discount|floatformat:2 }} €</span>
+                      {% else %}
+                        {{ section.total_ht|floatformat:2 }} €
+                      {% endif %}
                     {% endif %}
                   </td>
                 </tr>
