@@ -68,9 +68,9 @@ jobs:
       - name: Deploy to server
         run: |
           echo "Starting deployment..."
-          scp -i ~/.ssh/github_actions -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/Contana  
+          scp -i ~/.ssh/github_actions -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml 0xpierre@${{ secrets.SERVER_IP }}:/home/0xpierre/apps/Contana  
           ssh -i ~/.ssh/github_actions -o StrictHostKeyChecking=no 0xpierre@${{ secrets.SERVER_IP }} << 'ENDSSH'
-            cd /home/0xpierre/Contana
+            cd /home/0xpierre/apps/Contana
             mkdir -p backend
           
             mv .env backend/.env
