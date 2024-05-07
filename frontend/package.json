@@ -30,6 +30,7 @@
     "strftime": "^0.10.2",
     "sweetalert2": "^11.7.12",
     "uuid": "^9.0.0",
+    "v-plausible": "^1.2.0",
     "vue": "^3.3.4",
     "vue-feather": "2",
     "vue-flatpickr-component": "^11.0.3",

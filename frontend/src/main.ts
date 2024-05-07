@@ -36,6 +36,23 @@ app.component(VuePerfectScrollbar.name, VuePerfectScrollbar)
 import VueApexCharts from 'vue3-apexcharts'
 app.use(VueApexCharts)
 
+import { createPlausible } from 'v-plausible/vue'
+
+const plausible = createPlausible({
+  init: {
+    domain: 'app.contana.fr',
+    apiHost: 'https://plausible.goubaud.com',
+    trackLocalhost: false
+  },
+  settings: {
+    enableAutoOutboundTracking: true,
+    enableAutoPageviews: true
+  },
+  partytown: false
+})
+
+app.use(plausible)
+
 // config flat pickr
 flatpickr.defaultConfig = {
   ...flatpickr.defaultConfig,
