@@ -239,16 +239,38 @@ const deleteTemplate = async (template: CatalogTemplate) => {
         <div v-if="searchTemplatesForConstructor.length === 0">
           Aucun article trouvé
         </div>
-        <div v-else class="mt-1">
-          <div
-            v-for="template in searchTemplatesForConstructor"
-            class="draggable article mx-25"
-          >
-            <vue-feather type="move" size="16" class="cursor-pointer" />
-            <span> {{ template.name }}</span>
-          </div>
-          <hr />
-        </div>
+        <draggable
+          v-else
+          class="mt-1"
+          :list="
+            searchTemplatesForConstructor.map((template) => {
+              return {
+                title: template.name,
+                type: SectionsType.Article,
+                values: template.values,
+                component: SectionArticle
+              }
+            })
+          "
+          item-key="type"
+          div="div"
+          :group="{
+            name: 'sections',
+            pull: 'clone',
+            put: false,
+            sort: false
+          }"
+          @start="emit('update-dragging', true)"
+          @end="emit('update-dragging', false)"
+          :clone="props.clone"
+        >
+          <template #item="{ element }">
+            <div class="draggable article mx-75">
+              <vue-feather type="move" size="16" class="cursor-pointer" />
+              <span>{{ element.title }}</span>
+            </div>
+          </template>
+        </draggable>
       </template>
 
       <template v-else>
