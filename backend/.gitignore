@@ -25,3 +25,5 @@ core/migrations/*
 
 .env
 /celerybeat-schedule
+
+/static/

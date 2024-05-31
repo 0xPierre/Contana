@@ -2,9 +2,9 @@
 <project version="4">
   <component name="Black">
     <option name="enabledOnSave" value="true" />
-    <option name="sdkUUID" value="badeafae-a9a2-422b-a789-73d6deeb74f0" />
+    <option name="sdkName" value="Remote Python 3.9.19 Docker Compose (backend)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.11.8 Docker Compose (backend)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.9.19 Docker Compose (backend)" project-jdk-type="Python SDK" />
   <component name="ViteConfiguration">
     <option name="mode" value="MANUAL" />
     <option name="path" value="$PROJECT_DIR$/frontend/vite.config.ts" />

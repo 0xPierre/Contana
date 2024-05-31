@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django_extensions",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    'django.contrib.staticfiles',
     "storages",
     "apps.core",
     "apps.user",
@@ -195,3 +196,6 @@ STRIPE_ENTREPRISE_SUBSCRIPTION_WEBHOOK_SECRET = os.environ.get(
 )
 import stripe
 stripe.api_key = STRIPE_SECRET_KEY
+
+STATIC_URL = "static/"
+STATIC_ROOT = "/app/static/"

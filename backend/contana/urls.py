@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('contana_admin_pr8d47awqfthgfpmnvtHzs/', admin.site.urls),
     path("api/user/", include("apps.user.urls")),
     path(
         "",
@@ -36,4 +38,4 @@ urlpatterns = [
         "api/entreprise/<str:entreprise_slug>/dashboard/",
         include("apps.dashboard.urls"),
     ),
-]
+] + static(settings.STATIC_URL)
