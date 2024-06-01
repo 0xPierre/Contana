@@ -26,6 +26,7 @@ RUN apt-get install -y wkhtmltopdf
 RUN apt-get install -y postgresql-client
 
 WORKDIR /app
+RUN mkdir -p /app/static
 
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
@@ -35,8 +36,6 @@ RUN pip install --upgrade pip && pip install --no-cache /wheels/*
 COPY . /app
 
 RUN adduser --system --group django_user && chown -R django_user:django_user /app
-RUN mkdir -p /app/static
-RUN chown -R django_user:django_user /app/static
 #    && chown -R django_user:django_user /usr/local/lib/python3.7/site-packages/guardian/
 
 USER django_user
