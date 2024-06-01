@@ -26,7 +26,6 @@ RUN apt-get install -y wkhtmltopdf
 RUN apt-get install -y postgresql-client
 
 WORKDIR /app
-RUN mkdir -p /app/static
 
 COPY --from=builder /app/wheels /wheels
 COPY --from=builder /app/requirements.txt .
