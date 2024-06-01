@@ -35,6 +35,7 @@ RUN pip install --upgrade pip && pip install --no-cache /wheels/*
 COPY . /app
 
 RUN adduser --system --group django_user && chown -R django_user:django_user /app
+    && chown -R django_user:django_user /app/static
 #    && chown -R django_user:django_user /usr/local/lib/python3.7/site-packages/guardian/
 
 USER django_user
