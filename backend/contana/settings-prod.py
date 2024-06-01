@@ -42,3 +42,4 @@ sentry_sdk.init(
     profiles_sample_rate=1.0,
 )
 
+CSRF_TRUSTED_ORIGINS = [FRONTEND_URL, BACKEND_URL]

@@ -198,4 +198,6 @@ import stripe
 stripe.api_key = STRIPE_SECRET_KEY
 
 STATIC_URL = "static/"
-STATIC_ROOT = "/app/static/"
+STATIC_ROOT = "static/"
+
+CSRF_TRUSTED_ORIGINS = [FRONTEND_URL, BACKEND_URL]
