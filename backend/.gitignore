@@ -26,4 +26,7 @@ core/migrations/*
 .env
 /celerybeat-schedule
 
-/static/
+/static/admin
+/static/django_extensions
+/static/rest_framework
+/static/guardian
