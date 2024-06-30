@@ -841,38 +841,50 @@
 															</address>
 														</td>
 													</tr>
+                          {% if entreprise.phone %}
 													<tr>
 														<td class="label right">Téléphone : </td>
 														<td class="value">
 																{{ entreprise.phone }}
 														</td>
 													</tr>
+                          {% endif %}
 													<tr>
 														<td class="label right">Email : </td>
 														<td class="value">
                                 {{ entreprise.email }}
 														</td>
 													</tr>
+                          {% if entreprise.num_rcs %}
 													<tr>
 														<td class="label right">RCS : </td>
 														<td class="value">{{ entreprise.num_rcs }}</td>
 													</tr>
+                          {% endif %}
+                          {% if entreprise.ape %}
 													<tr>
 														<td class="label right">Code APE : </td>
 														<td class="value">{{ entreprise.ape }}</td>
 													</tr>
+                          {% endif %}
+                          {% if entreprise.siren %}
 													<tr>
 														<td class="label right">Siren :</td>
 														<td class="value">{{ entreprise.siren }}</td>
 													</tr>
+                          {% endif %}
+                          {% if entreprise.vat_number %}
 													<tr>
 														<td class="label right" style="white-space: nowrap">Num TVA Intracom :</td>
 														<td class="value">{{ entreprise.vat_number }}</td>
 													</tr>
+                          {% endif %}
+                          {% if entreprise.forme %}
 													<tr>
 														<td class="label right">Forme juridique : </td>
 														<td class="value">{{ entreprise.forme }}</td>
 													</tr>
+                          {% endif %}
 											</tbody>
 										</table>
 									</div>
