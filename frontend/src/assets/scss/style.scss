@@ -55,3 +55,21 @@ body.dark-layout {
     color: #b4b7bd;
   }
 }
+
+.duplicate-dropdown {
+  a.dropdown-toggle {
+    padding: 0;
+  }
+  svg {
+    color: #6e6b7b;
+  }
+  list-style: none;
+  a::after {
+    display: none;
+  }
+}
+body.dark-layout .duplicate-dropdown {
+  svg {
+    color: #b4b7bd;
+  }
+}

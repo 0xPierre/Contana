@@ -9,7 +9,7 @@ const props = defineProps<{
   section: Section<SectionsType.Title>
 }>()
 
-const constructoreStore = useConstructorStore()
+const constructorStore = useConstructorStore()
 </script>
 
 <template>
@@ -18,12 +18,42 @@ const constructoreStore = useConstructorStore()
       <b-col cols="5">
         <h5 class="mb-0 font-small-5">Titre de section</h5>
         <div class="d-flex mt-1" style="gap: 1.2rem">
-          <span @click="constructoreStore.removeSection(section.id)">
+          <span @click="constructorStore.removeSection(section.id)">
             <vue-feather type="trash-2" size="22" class="cursor-pointer" />
           </span>
-          <span @click="constructoreStore.duplicateSection(section.id)">
-            <vue-feather type="copy" size="22" class="cursor-pointer" />
-          </span>
+          <b-nav-item-dropdown class="duplicate-dropdown">
+            <template #button-content>
+              <span>
+                <vue-feather
+                  type="copy"
+                  size="22"
+                  class="cursor-pointer"
+                />
+              </span>
+            </template>
+            <b-dropdown-item
+              link-class="d-flex align-items-center"
+              @click="
+                constructorStore.duplicateSection(
+                  props.section.id as string
+                )
+              "
+            >
+              <vue-feather size="16" type="chevron-down" class="mr-50" />
+              <span>En dessous</span>
+            </b-dropdown-item>
+            <b-dropdown-item
+              link-class="d-flex align-items-center"
+              @click="
+                constructorStore.dupplicateAtTheEnd(
+                  props.section.id as string
+                )
+              "
+            >
+              <vue-feather size="16" type="arrow-down" class="mr-50" />
+              <span>Tout en bas</span>
+            </b-dropdown-item>
+          </b-nav-item-dropdown>
         </div>
       </b-col>
       <b-col cols="7">

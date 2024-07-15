@@ -97,7 +97,7 @@ export const useConstructorStore = defineStore('constructeur', {
     subtotals(state) {
       let subtotal = euro(0)
 
-      let subtotals: {
+      const subtotals: {
         [key: string]: ReturnType<typeof euro>
       } = {}
 
@@ -179,6 +179,21 @@ export const useConstructorStore = defineStore('constructeur', {
         component: section.component
       }
       this.sections.splice(index + 1, 0, newSection)
+    },
+
+    /**
+     * Duplicate at the end of the list
+     */
+    dupplicateAtTheEnd(id: string) {
+      const index = this.sections.findIndex((section) => section.id === id)
+      const section = this.sections[index]
+      const newSection = {
+        id: uuidv4(),
+        type: section.type,
+        values: { ...section.values },
+        component: section.component
+      }
+      this.sections.push(newSection)
     },
 
     async saveDraft() {

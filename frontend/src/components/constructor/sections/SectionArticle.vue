@@ -123,13 +123,33 @@ const modal = ref<HTMLElement | null>(null)
         >
           <vue-feather type="trash-2" size="22" class="cursor-pointer" />
         </span>
-        <span
-          @click="
-            constructorStore.duplicateSection(props.section.id as string)
-          "
-        >
-          <vue-feather type="copy" size="22" class="cursor-pointer" />
-        </span>
+        <b-nav-item-dropdown class="duplicate-dropdown">
+          <template #button-content>
+            <span>
+              <vue-feather type="copy" size="22" class="cursor-pointer" />
+            </span>
+          </template>
+          <b-dropdown-item
+            link-class="d-flex align-items-center"
+            @click="
+              constructorStore.duplicateSection(props.section.id as string)
+            "
+          >
+            <vue-feather size="16" type="chevron-down" class="mr-50" />
+            <span>En dessous</span>
+          </b-dropdown-item>
+          <b-dropdown-item
+            link-class="d-flex align-items-center"
+            @click="
+              constructorStore.dupplicateAtTheEnd(
+                props.section.id as string
+              )
+            "
+          >
+            <vue-feather size="16" type="arrow-down" class="mr-50" />
+            <span>Tout en bas</span>
+          </b-dropdown-item>
+        </b-nav-item-dropdown>
       </div>
       <div v-else />
       <div class="font-medium-1">
