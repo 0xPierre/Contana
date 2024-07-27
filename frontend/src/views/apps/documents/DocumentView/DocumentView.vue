@@ -121,22 +121,22 @@ const produceFacture = async () => {
 }
 
 // Not working for now
-// const printDocument = () => {
-//   window.frames['documentPdfView'].focus()
-//   window.frames['documentPdfView'].print()
-// }
+const printDocument = () => {
+  window.frames['documentPdfView'].focus()
+  window.frames['documentPdfView'].print()
+}
 </script>
 
 <template>
   <b-overlay :show="isLoading">
     <b-row v-if="document">
-      <b-col md="8">
+      <b-col md="8" style="min-height: 85vh">
         <!--          :src="`${document.file}#toolbar=0&navpanes=0&scrollbar=1`"-->
         <iframe
           v-if="document.file"
           :src="`${document.file}#navpanes=0&scrollbar=1`"
           width="100%"
-          height="600px"
+          height="100%"
           name="documentPdfView"
         />
       </b-col>
