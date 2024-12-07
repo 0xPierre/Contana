@@ -64,6 +64,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/github_actions
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64
           chmod 600 ~/.ssh/github_actions
       - name: Deploy to server
         run: |
