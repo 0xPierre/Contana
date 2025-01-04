@@ -78,6 +78,10 @@ class CanUpdateDocuments(permissions.BasePermission):
 class CanAccessConstructor(permissions.BasePermission):
     def has_permission(self, request, view):
         return test_user_permission(self, request, "access_constructor")
+    
+class CanAccessCRM(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return  test_user_permission(self, request, "access_crm")
 
 
 class IsEntrepriseBillingOk(permissions.BasePermission):

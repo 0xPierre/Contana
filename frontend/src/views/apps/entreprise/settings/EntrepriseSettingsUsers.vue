@@ -179,6 +179,15 @@ const removeUser = async (user: EntrepriseUser) => {
               Accès au constructeur
             </b-form-checkbox>
           </b-form-group>
+          <h5>Constructeur</h5>
+          <b-form-group>
+            <b-form-checkbox
+              v-model="selectedUser.permissions.access_crm"
+              class="m-0"
+            >
+              Accès aux fonctionnalitées CRM
+            </b-form-checkbox>
+          </b-form-group>
         </b-col>
         <b-col md="6">
           <h5>Clients</h5>

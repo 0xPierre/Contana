@@ -6,6 +6,7 @@ export interface Permissions {
   update_clients: boolean
   access_constructor: boolean
   access_dashboard: boolean
+  access_crm: boolean
 }
 
 export enum DocumentsType {
