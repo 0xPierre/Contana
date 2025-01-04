@@ -1,19 +1,25 @@
 <script lang="ts" setup>
-import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
+import { onBeforeMount, reactive, ref, watch } from 'vue'
 import ClientsCreate from './ClientsCreate.vue'
 import { useClientsStore } from '@/stores/apps/Clients'
 import { notify } from '@/helpers/notify'
 import router from '@/router'
-import clients from '@/router/routes/clients'
+import { useEntrepriseStore } from '@/stores/apps/Entreprise'
+import { useUserStore } from '@/stores/apps/User'
+import type { EntrepriseUser } from '@/types/entreprise.types'
+import { can } from '@/helpers/permissions.ts'
 
+const entrepriseStore = useEntrepriseStore()
+const userStore = useUserStore()
 const clientsStore = useClientsStore()
 const isListingLoading = ref(false)
 const isFiltersUpdateFromQuery = ref(false)
 const filters = reactive({
-  perPage: 10,
+  perPage: 25,
   currentPage: 1,
   search: '',
   archived: false,
+  createdBy: userStore.data?.id || -1,
   sortBy: 'id',
   sortDesc: true
 })
@@ -45,6 +51,7 @@ const saveFiltersInQuery = () => {
       currentPage: filters.currentPage,
       search: filters.search,
       archived: filters.archived.toString(),
+      createdBy: filters.createdBy?.toString(),
       sortBy: filters.sortBy,
       sortDesc: filters.sortDesc.toString()
     }
@@ -57,7 +64,8 @@ watch(
     () => filters.search,
     () => filters.archived,
     () => filters.sortBy,
-    () => filters.sortDesc
+    () => filters.sortDesc,
+    () => filters.createdBy
   ],
   () => {
     if (!isFiltersUpdateFromQuery.value) {
@@ -94,6 +102,7 @@ onBeforeMount(() => {
     )
     filters.search = searchParams.get('search') as string
     filters.archived = searchParams.get('archived') === 'true'
+    filters.createdBy = parseInt(searchParams.get('createdBy') || ''),
     filters.sortBy = searchParams.get('sortBy') as string
     filters.sortDesc = searchParams.get('sortDesc') === 'true'
 
@@ -155,6 +164,18 @@ onBeforeMount(() => {
             />
           </b-form-group>
         </b-col>
+        <b-col v-if="can('administrate')" md="4">
+          <b-form-group label="Créé par">
+            <v-select
+              v-model="filters.createdBy"
+              :options="[{ full_name: 'Tous les utilisateurs', id: -1},  ...entrepriseStore.entreprise?.users]"
+              label="full_name"
+              :reduce="(option: EntrepriseUser) => option.id"
+              placeholder="Tous les utilisateurs"
+              :clearable="false"
+            />
+          </b-form-group>
+        </b-col>
       </b-row>
 
       <b-overlay :show="isListingLoading">
@@ -171,7 +192,8 @@ onBeforeMount(() => {
             },
             { key: 'phone', label: 'Téléphone', sortable: true },
             { key: 'email', label: 'Email', sortable: true },
-            { key: 'address', label: 'Adresse', sortable: false }
+            { key: 'address', label: 'Adresse', sortable: false },
+            { key: 'created_by', label: 'Créé par', sortable: false }
           ]"
           v-model:sort-by="filters.sortBy"
           v-model:sort-desc="filters.sortDesc"
@@ -218,6 +240,15 @@ onBeforeMount(() => {
             >
               {{ row.item.address }} {{ row.item.zip_code }}
               {{ row.item.city }}
+            </span>
+          </template>
+
+          <template #cell(created_by)="row">
+            <span v-if="row.item.created_by">
+              {{ row.item.created_by.full_name }}
+            </span>
+            <span v-else class="text-muted">
+              -
             </span>
           </template>
         </b-table>

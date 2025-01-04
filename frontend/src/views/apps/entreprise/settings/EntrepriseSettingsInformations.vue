@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useFormValidation } from '@/composables/formValidation'
 import { notify, notifyApiError } from '@/helpers/notify'
-import entreprise from '@/router/routes/entreprise'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise'
 import { required, email } from '@vuelidate/validators'
 import { ref } from 'vue'

@@ -3,6 +3,7 @@ from django.db.models import QuerySet
 from ..clients.models import Client
 from ..core.permissions import IsInEntreprise, CanAccessClients, CanUpdateClients, IsEntrepriseBillingOk
 from ..core.utils import get_entreprise_from_request
+from ..core.permissions import test_user_permission
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from rest_framework import viewsets
@@ -34,40 +35,48 @@ class ClientsViewSet(viewsets.ModelViewSet):
             self.request
         ).clients.all()
 
-        if self.request.query_params.get("search"):
-            search = self.request.query_params.get("search")
-            q_query = (
-                Q(socialreasonorname__icontains=search)
-                | Q(email__icontains=search)
-                | Q(phone__icontains=search)
-                | Q(country__icontains=search)
-                | Q(city__icontains=search)
-                | Q(zip_code__icontains=search)
-                | Q(address__icontains=search)
-                | Q(vat_number__icontains=search)
-                | Q(siren__icontains=search)
-                | Q(note__icontains=search)
-                | Q(website__icontains=search)
-                | Q(type__icontains=search)
-                | Q(client_number__icontains=search)
-            )
-            queryset = queryset.filter(q_query)
-
-        if self.request.query_params.get("archived"):
-            if self.request.query_params.get("archived") == "true":
-                queryset = queryset.filter(archived=True)
-            else:
-                queryset = queryset.filter(archived=False)
-
-        if self.request.query_params.get("sort_by"):
-            if self.request.query_params.get("sort_desc") == "true":
-                queryset = queryset.order_by(
-                    f"-{self.request.query_params.get('sort_by')}"
+        if self.action == 'list':
+            if self.request.query_params.get("search"):
+                search = self.request.query_params.get("search")
+                q_query = (
+                    Q(socialreasonorname__icontains=search)
+                    | Q(email__icontains=search)
+                    | Q(phone__icontains=search)
+                    | Q(country__icontains=search)
+                    | Q(city__icontains=search)
+                    | Q(zip_code__icontains=search)
+                    | Q(address__icontains=search)
+                    | Q(vat_number__icontains=search)
+                    | Q(siren__icontains=search)
+                    | Q(note__icontains=search)
+                    | Q(website__icontains=search)
+                    | Q(type__icontains=search)
+                    | Q(client_number__icontains=search)
                 )
+                queryset = queryset.filter(q_query)
+
+            if self.request.query_params.get("archived"):
+                if self.request.query_params.get("archived") == "true":
+                    queryset = queryset.filter(archived=True)
+                else:
+                    queryset = queryset.filter(archived=False)
+            
+            if test_user_permission(self, self.request, "administrate"):
+                if self.request.query_params.get("created_by") != "-1":
+                    created_by = self.request.query_params.get("created_by")
+                    queryset = queryset.filter(created_by_id=created_by)
             else:
-                queryset = queryset.order_by(
-                    f"{self.request.query_params.get('sort_by')}"
-                )
+                queryset = queryset.filter(created_by=self.request.user)
+
+            if self.request.query_params.get("sort_by"):
+                if self.request.query_params.get("sort_desc") == "true":
+                    queryset = queryset.order_by(
+                        f"-{self.request.query_params.get('sort_by')}"
+                    )
+                else:
+                    queryset = queryset.order_by(
+                        f"{self.request.query_params.get('sort_by')}"
+                    )
 
         return queryset
 
@@ -81,6 +90,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
         client = serializer.save(
             entreprise=entreprise,
             client_number=generate_next_client_number(entreprise),
+            created_by=request.user,
         )
 
         return Response(

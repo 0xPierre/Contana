@@ -22,6 +22,11 @@ export interface ClientModel extends ClientCreationForm {
   client_number: string
   archived: boolean
   document_count: number
+  created_by: {
+    id: number
+    full_name: string
+    email: string
+  } | null
   files: {
     id: number
     url: string

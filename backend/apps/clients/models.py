@@ -1,6 +1,7 @@
 from ..core.models import BaseModel
 from ..entreprise.models import Entreprise
 from django.db import models
+from ..user.models import User
 
 
 class ClientFiles(BaseModel):
@@ -42,6 +43,13 @@ class Client(BaseModel):
 
     entreprise = models.ForeignKey(
         Entreprise, on_delete=models.CASCADE, related_name="clients"
+    )
+
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='created_clients'
     )
 
     archived = models.BooleanField(default=False)

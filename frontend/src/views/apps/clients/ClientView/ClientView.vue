@@ -8,6 +8,8 @@ import { notify, notifyApiError, swalAlert } from '@/helpers/notify'
 import { AxiosError } from 'axios'
 import FileUploadManager from '@/components/file-upload-manager/FileUploadManager.vue'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
+import { EntrepriseUser } from '@/types/entreprise.types'
+import strftime from 'strftime'
 
 const entrepriseStore = useEntrepriseStore()
 const clientsStore = useClientsStore()
@@ -30,7 +32,8 @@ const client = ref<ClientModel>({
   updated_at: '',
   client_number: '',
   document_count: 0,
-  files: []
+  files: [],
+  created_by: null
 })
 const route = useRoute()
 const router = useRouter()
@@ -292,12 +295,34 @@ const unarchiveClient = async () => {
             </b-col>
           </b-row>
 
-          <hr />
-
           <div class="d-flex mt-1 mb-50">
             <vue-feather type="info" size="22" class="mr-1" />
-            <h3>Autre</h3>
+            <h3>CRM</h3>
           </div>
+
+          <b-row>
+            <b-col md="6">
+              <b-form-group label="Créé le">
+                <b-input :value="strftime('%d/%m/%Y', new Date(client.created_at))" disabled />
+              </b-form-group>
+            </b-col>
+            <b-col md="6">
+              <b-form-group label="Créé par">
+                <v-select
+                  v-model="client.created_by"
+                  :options="entrepriseStore.entreprise?.users || []"
+                  label="full_name"
+                  :reduce="(option: EntrepriseUser) => ({
+                    id: option.id,
+                    full_name: option.full_name,
+                    email: option.email
+                  })"
+                  :clearable="false"
+                  :disabled="client.archived"
+                />
+              </b-form-group>
+            </b-col>
+          </b-row>
 
           <b-form-group label="Commentaire">
             <b-textarea
