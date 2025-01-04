@@ -8,7 +8,7 @@ def get_user_data(user: User) -> dict:
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
-        "full_name": user.get_full_name,
+        "full_name": user.full_name,
         "avatar": user.avatar.url if user.avatar else None,
         "entreprises": [],
         "is_billing_ok": True

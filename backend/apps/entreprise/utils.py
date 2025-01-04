@@ -70,7 +70,7 @@ def get_entreprise_data(entreprise: Entreprise, user: User) -> dict:
         user_data = {
             "id": user.id,
             "email": user.email,
-            "full_name": user.get_full_name,
+            "full_name": user.full_name,
             "permissions": {},
             "avatar": "",
         }
