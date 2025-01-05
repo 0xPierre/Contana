@@ -295,6 +295,8 @@ const unarchiveClient = async () => {
             </b-col>
           </b-row>
 
+          <hr />
+
           <div class="d-flex mt-1 mb-50">
             <vue-feather type="info" size="22" class="mr-1" />
             <h3>CRM</h3>
