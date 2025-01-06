@@ -62,7 +62,7 @@ class ClientsViewSet(viewsets.ModelViewSet):
                     queryset = queryset.filter(archived=False)
             
             if test_user_permission(self, self.request, "administrate"):
-                if self.request.query_params.get("created_by") != "-1":
+                if self.request.query_params.get("created_by") != "-1" and self.request.query_params.get("created_by") != None:
                     created_by = self.request.query_params.get("created_by")
                     queryset = queryset.filter(created_by_id=created_by)
             else:
