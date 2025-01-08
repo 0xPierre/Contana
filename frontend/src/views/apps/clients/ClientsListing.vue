@@ -8,6 +8,7 @@ import { useEntrepriseStore } from '@/stores/apps/Entreprise'
 import { useUserStore } from '@/stores/apps/User'
 import type { EntrepriseUser } from '@/types/entreprise.types'
 import { can } from '@/helpers/permissions.ts'
+import strftime from 'strftime'
 
 const entrepriseStore = useEntrepriseStore()
 const userStore = useUserStore()
@@ -193,7 +194,8 @@ onBeforeMount(() => {
             { key: 'phone', label: 'Téléphone', sortable: true },
             { key: 'email', label: 'Email', sortable: true },
             { key: 'address', label: 'Adresse', sortable: false },
-            { key: 'created_by', label: 'Créé par', sortable: false }
+            { key: 'created_by', label: 'Créé par', sortable: false },
+            { key: 'created_at', label: 'Créé le', sortable: true }
           ]"
           v-model:sort-by="filters.sortBy"
           v-model:sort-desc="filters.sortDesc"
@@ -250,6 +252,10 @@ onBeforeMount(() => {
             <span v-else class="text-muted">
               -
             </span>
+          </template>
+
+          <template #cell(created_at)="row">
+            {{ strftime('%d/%m/%Y', new Date(row.value))}}
           </template>
         </b-table>
       </b-overlay>
