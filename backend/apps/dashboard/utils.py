@@ -29,12 +29,19 @@ def get_start_date_and_end_date_from_period(
     elif period == "month":
         today = datetime.today()
         start_date = datetime(today.year, today.month, 1)
-        end_date = datetime(today.year, today.month + 1, 1) - timedelta(days=1)
+        if today.month == 12:
+            end_date = datetime(today.year + 1, 1, 1) - timedelta(days=1)
+        else:
+            end_date = datetime(today.year, today.month + 1, 1) - timedelta(days=1)
 
     elif period == "last_month":
         today = datetime.today()
-        start_date = datetime(today.year, today.month - 1, 1)
-        end_date = datetime(today.year, today.month, 1) - timedelta(days=1)
+        if today.month == 1:
+            start_date = datetime(today.year - 1, 12, 1)
+            end_date = datetime(today.year - 1, 12, 31)
+        else:
+            start_date = datetime(today.year, today.month - 1, 1)
+            end_date = datetime(today.year, today.month, 1) - timedelta(days=1)
 
     elif period == "year":
         today = datetime.today()
