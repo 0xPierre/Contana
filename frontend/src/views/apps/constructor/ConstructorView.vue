@@ -282,6 +282,8 @@ const deleteDraft = async () => {
                 class="sections"
                 :group="{ name: 'sections' }"
                 :scroll-sensitivity="200"
+                :filter="'.nodrag'"
+                :prevent-on-filter="false"
               >
                 <template #item="{ element }">
                   <div>

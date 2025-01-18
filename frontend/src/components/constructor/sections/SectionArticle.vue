@@ -45,6 +45,7 @@ const modal = ref<HTMLElement | null>(null)
             type="text"
             placeholder="Titre de la section"
             v-model="props.section.values.title"
+            class="nodrag"
           />
         </b-form-group>
       </b-col>
@@ -52,7 +53,7 @@ const modal = ref<HTMLElement | null>(null)
         <b-form-group label="Prix">
           <b-input-group append="€">
             <input
-              class="form-control"
+              class="form-control nodrag"
               :value="formattedValue"
               type="number"
               step="0.01"
@@ -92,6 +93,7 @@ const modal = ref<HTMLElement | null>(null)
             :reduce="(option: any) => option.value"
             style="width: 100%"
             v-model="props.section.values.vatRate"
+            class="nodrag"
           />
         </b-form-group>
       </b-col>
@@ -102,6 +104,7 @@ const modal = ref<HTMLElement | null>(null)
             placeholder="Quantité"
             min="0"
             v-model="props.section.values.quantity"
+            class="nodrag"
           />
         </b-form-group>
       </b-col>
@@ -110,7 +113,7 @@ const modal = ref<HTMLElement | null>(null)
     <b-form-textarea
       placeholder="Description de la section"
       rows="3"
-      class="mb-1"
+      class="mb-1 nodrag"
       max-rows="10"
       v-model="props.section.values.description"
     />
