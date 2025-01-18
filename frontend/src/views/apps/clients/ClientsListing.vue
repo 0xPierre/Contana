@@ -103,8 +103,8 @@ onBeforeMount(() => {
     )
     filters.search = searchParams.get('search') as string
     filters.archived = searchParams.get('archived') === 'true'
-    filters.createdBy = parseInt(searchParams.get('createdBy') || ''),
-    filters.sortBy = searchParams.get('sortBy') as string
+    ;(filters.createdBy = parseInt(searchParams.get('createdBy') || '')),
+      (filters.sortBy = searchParams.get('sortBy') as string)
     filters.sortDesc = searchParams.get('sortDesc') === 'true'
 
     isFiltersUpdateFromQuery.value = true
@@ -169,7 +169,10 @@ onBeforeMount(() => {
           <b-form-group label="Créé par">
             <v-select
               v-model="filters.createdBy"
-              :options="[{ full_name: 'Tous les utilisateurs', id: -1},  ...entrepriseStore.entreprise?.users]"
+              :options="[
+                { full_name: 'Tous les utilisateurs', id: -1 },
+                ...entrepriseStore.entreprise?.users
+              ]"
               label="full_name"
               :reduce="(option: EntrepriseUser) => option.id"
               placeholder="Tous les utilisateurs"
@@ -193,7 +196,6 @@ onBeforeMount(() => {
             },
             { key: 'phone', label: 'Téléphone', sortable: true },
             { key: 'email', label: 'Email', sortable: true },
-            { key: 'address', label: 'Adresse', sortable: false },
             { key: 'created_by', label: 'Créé par', sortable: false },
             { key: 'created_at', label: 'Créé le', sortable: true }
           ]"
@@ -249,13 +251,11 @@ onBeforeMount(() => {
             <span v-if="row.item.created_by">
               {{ row.item.created_by.full_name }}
             </span>
-            <span v-else class="text-muted">
-              -
-            </span>
+            <span v-else class="text-muted"> - </span>
           </template>
 
           <template #cell(created_at)="row">
-            {{ strftime('%d/%m/%Y', new Date(row.value))}}
+            {{ strftime('%d/%m/%Y', new Date(row.value)) }}
           </template>
         </b-table>
       </b-overlay>
