@@ -211,8 +211,11 @@
 			table.component-list { width: 100%; border-collapse:collapse; }
 			table.component-list th { border: 1px solid #777777; }
 			table.component-list td { border-left: 1px solid #777777; border-right: 1px solid #777777; }
+			tr.component-item td.cell-label { padding-top: 8px; padding-bottom: 8px; }
 			tr.component-subtotal td { text-align: right; font-weight: bold; border: 1px solid #777777; }
 			tr.component-title td.label { text-align: center; font-weight: bold; border: 1px solid #777777; }
+			tr.component-description td { padding: 0 6px; }
+			table.component-list tr.component-description { height: auto;}
 			tr.component-comment td.label { text-align: left; font-style: italic; border: 1px solid #777777; padding-bottom: 16px; }
 			.bloc-mentions { width:100%; text-align: center;display:inline-block; }
 			/* Document total block */
@@ -979,6 +982,7 @@
 							</tr>
 						</thead>
 						<tbody>
+{% load custom_filters %}
             {% for section in sections %}
               {% if section.type == "section-article" %}
                 <tr class="component-item">
@@ -1025,18 +1029,22 @@
                   </td>
                   </tr>
                   {% endif %}
-                {% if section.description %}
-                  <tr class="component-title">
-                    <td class="cell-label description">
-                      {{  section.description }}
-                    </td>
-                    <td class="cell-money"></td>
-                    <td class="cell-qty"></td>
-                    {% if document.vat_payer %}
-                      <td class="cell-percent"></td>
-                    {% endif %}
-                    <td class="cell-money"></td>
-                  </tr>
+				{% if section.description %}
+					{% with section.description|split as descriptions %}
+						{% for desc in descriptions %}
+							<tr class="component-description">
+								<td class="cell-label description">
+									{{ desc }}
+								</td>
+								<td class="cell-money"></td>
+								<td class="cell-qty"></td>
+								{% if document.vat_payer %}
+									<td class="cell-percent"></td>
+								{% endif %}
+								<td class="cell-money"></td>
+							</tr>
+						{% endfor %}
+					{% endwith %}
                 {% endif %}
               {% elif section.type == "section-title" %}
                 <tr class="component-title">
