@@ -121,32 +121,49 @@ def get_turnover_chart(request: Request, entreprise_slug: str):
         "Nov",
         "Déc",
     ]
-    days = [
-        start_date + timedelta(days=x)
-        for x in range(((end_date + timedelta(days=1)) - start_date).days)
-    ]
 
     if period == "year" or period == "last_year":
-        for day in days:
-            if months[day.month - 1] in labels:
-                labels.append("")
-            else:
-                labels.append(months[day.month - 1])
+        labels = months
+
+        for month in range(1, 13):
+            turnover = (
+                entreprise.documents.filter(
+                    forme__in=["facture", "acompte"],
+                    is_draft=False,
+                    created_at__month=month,
+                    created_at__year=start_date.year,
+                ).aggregate(turnover=Sum("total_ht"))["turnover"]
+                or 0.0
+            )
+            serie.append(turnover)
 
     else:
-        for day in days:
-            labels.append(day.strftime("%d/%m/%Y"))
+        days = [
+            start_date + timedelta(days=x)
+            for x in range(((end_date + timedelta(days=1)) - start_date).days)
+        ]
 
-    for day in days:
-        turnover = (
-            entreprise.documents.filter(
-                forme__in=["facture", "acompte"],
-                is_draft=False,
-                created_at__date=day.date(),
-            ).aggregate(turnover=Sum("total_ht"))["turnover"]
-            or 0.0
-        )
-        serie.append(turnover)
+        if period == "year" or period == "last_year":
+            for day in days:
+                if months[day.month - 1] in labels:
+                    labels.append("")
+                else:
+                    labels.append(months[day.month - 1])
+
+        else:
+            for day in days:
+                labels.append(day.strftime("%d/%m/%Y"))
+
+        for day in days:
+            turnover = (
+                entreprise.documents.filter(
+                    forme__in=["facture", "acompte"],
+                    is_draft=False,
+                    created_at__date=day.date(),
+                ).aggregate(turnover=Sum("total_ht"))["turnover"]
+                or 0.0
+            )
+            serie.append(turnover)
 
     return Response(
         {
