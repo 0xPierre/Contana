@@ -1,7 +1,7 @@
 # Contana
 
 Contana ([https://contana.fr](https://contana.fr)) is an accounting/ERP/CRM web application made for small to medium business. 
-It allows to manage the invoicing and clients pf several companies at the same time.
+It allows to manage the invoicing and clients for several companies at the same time.
 
 This repository contains the source code of the new version of Contana, which is currently under development.
 Contana is a web application written using :
