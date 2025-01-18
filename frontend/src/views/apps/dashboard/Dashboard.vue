@@ -17,7 +17,7 @@ const fetchDatas = async () => {
 }
 
 onMounted(() => {
-  dashboardStore.period = 'week'
+  dashboardStore.period = 'month'
   dashboardStore.startDate = ''
   dashboardStore.endDate = ''
   fetchDatas()
