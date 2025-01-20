@@ -37,4 +37,4 @@ COPY . /app
 RUN adduser --system --group django_user && chown -R django_user:django_user /app
 #    && chown -R django_user:django_user /usr/local/lib/python3.7/site-packages/guardian/
 
-USER django_user
+# USER django_user

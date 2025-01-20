@@ -34,7 +34,8 @@ INSTALLED_APPS = [
     "django_extensions",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-    'django.contrib.staticfiles',
+    "django.contrib.postgres",
+    "django.contrib.staticfiles",
     "storages",
     "apps.core",
     "apps.user",
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     "apps.clients",
     "apps.constructor",
     "apps.documents",
+    "apps.tasks",
 ]
 
 MIDDLEWARE = [
@@ -190,11 +192,14 @@ CELERY_BEAT_SCHEDULE = {
 
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
-STRIPE_ENTREPRISE_SUBSCRIPTION_PRICE_ID = os.environ.get("STRIPE_ENTREPRISE_SUBSCRIPTION_PRICE_ID")
+STRIPE_ENTREPRISE_SUBSCRIPTION_PRICE_ID = os.environ.get(
+    "STRIPE_ENTREPRISE_SUBSCRIPTION_PRICE_ID"
+)
 STRIPE_ENTREPRISE_SUBSCRIPTION_WEBHOOK_SECRET = os.environ.get(
     "STRIPE_ENTREPRISE_SUBSCRIPTION_WEBHOOK_SECRET"
 )
 import stripe
+
 stripe.api_key = STRIPE_SECRET_KEY
 
 STATIC_URL = "static/"

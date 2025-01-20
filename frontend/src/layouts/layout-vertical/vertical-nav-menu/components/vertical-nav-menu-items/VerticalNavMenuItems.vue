@@ -62,6 +62,17 @@ const entrepriseStore = useEntrepriseStore()
         }"
       />
       <VerticalNavMenuLink
+        v-if="can('access_crm')"
+        :item="{
+          title: 'Tâches',
+          route: {
+            name: 'entreprise-tasks',
+            params: { entrepriseSlug: entrepriseStore.entreprise?.slug }
+          },
+          icon: 'check-square'
+        }"
+      />
+      <VerticalNavMenuLink
         v-if="can('administrate')"
         :item="{
           title: 'Paramètres',

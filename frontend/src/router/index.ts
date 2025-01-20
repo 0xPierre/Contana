@@ -8,6 +8,7 @@ import clientsRoutes from './routes/clients'
 import constructorRoutes from './routes/constructor'
 import documentsRoutes from './routes/documents'
 import dashboardRoutes from './routes/dashboard'
+import tasksRoutes from './routes/tasks'
 
 import { useUserStore } from '@/stores/apps/User'
 import { useEntrepriseStore } from '@/stores/apps/Entreprise'
@@ -32,6 +33,7 @@ const router = createRouter({
     ...constructorRoutes,
     ...documentsRoutes,
     ...dashboardRoutes,
+    ...tasksRoutes,
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',

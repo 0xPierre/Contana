@@ -5,10 +5,9 @@ import { useEntrepriseStore } from '@/stores/apps/Entreprise'
 import EntrepriseSettingsUsers from './EntrepriseSettingsUsers.vue'
 import EntrepriseSettingsVisualIdentity from './EntrepriseSettingsVisualIdentity.vue'
 import EntrepriseSettingsSecurity from './EntrepriseSettingsSecurity.vue'
-import { can } from '@/helpers/permissions'
-import Personalization from '@/views/apps/entreprise/settings/EntrepriseSettingsPersonalization/EntrepriseSettingsPersonalization.vue'
 import EntrepriseSettingsPersonalization from '@/views/apps/entreprise/settings/EntrepriseSettingsPersonalization/EntrepriseSettingsPersonalization.vue'
 import EntrepriseSettingsBilling from '@/views/apps/entreprise/settings/EntrepriseSettingsBilling.vue'
+import EntrepriseSettingsCRM from './EntrepriseSettingsCRM.vue'
 
 const isLoading = ref(false)
 const entrepriseStore = useEntrepriseStore()
@@ -66,6 +65,15 @@ onMounted(async () => {
 
         <EntrepriseSettingsVisualIdentity />
       </b-tab>
+
+      <!-- <b-tab v-if="entrepriseStore.isPaymentStatusOk">
+        <template #title>
+          <vue-feather type="check-square" size="18" class="mr-50" />
+          <span class="font-weight-bold">CRM</span>
+        </template>
+
+        <EntrepriseSettingsCRM />
+      </b-tab> -->
 
       <b-tab>
         <template #title>

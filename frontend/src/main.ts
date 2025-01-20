@@ -29,6 +29,13 @@ import { French } from 'flatpickr/dist/l10n/fr'
 app.component(VueFlatPickr.name, VueFlatPickr)
 import '@/assets/scss/template/vue/libs/vue-flatpicker.scss'
 
+import Vue3ColorPicker from "vue3-colorpicker"
+import "vue3-colorpicker/style.css"
+createApp(App)
+  .use(router)
+  .use(Vue3ColorPicker)
+  .mount("#app")
+
 // @ts-ignore
 import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 app.component(VuePerfectScrollbar.name, VuePerfectScrollbar)

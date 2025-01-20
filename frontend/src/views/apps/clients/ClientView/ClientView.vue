@@ -10,6 +10,8 @@ import FileUploadManager from '@/components/file-upload-manager/FileUploadManage
 import { useEntrepriseStore } from '@/stores/apps/Entreprise.ts'
 import { EntrepriseUser } from '@/types/entreprise.types'
 import strftime from 'strftime'
+import AppTimeline from '@/components/timeline/AppTimeline.vue'
+import AppTimelineItem from '@/components/timeline/AppTimelineItem.vue'
 
 const entrepriseStore = useEntrepriseStore()
 const clientsStore = useClientsStore()
@@ -305,7 +307,12 @@ const unarchiveClient = async () => {
           <b-row>
             <b-col md="6">
               <b-form-group label="Créé le">
-                <b-input :value="strftime('%d/%m/%Y', new Date(client.created_at))" disabled />
+                <b-input
+                  :value="
+                    strftime('%d/%m/%Y', new Date(client.created_at))
+                  "
+                  disabled
+                />
               </b-form-group>
             </b-col>
             <b-col md="6">
@@ -314,11 +321,13 @@ const unarchiveClient = async () => {
                   v-model="client.created_by"
                   :options="entrepriseStore.entreprise?.users || []"
                   label="full_name"
-                  :reduce="(option: EntrepriseUser) => ({
-                    id: option.id,
-                    full_name: option.full_name,
-                    email: option.email
-                  })"
+                  :reduce="
+                    (option: EntrepriseUser) => ({
+                      id: option.id,
+                      full_name: option.full_name,
+                      email: option.email
+                    })
+                  "
                   :clearable="false"
                   :disabled="client.archived"
                 />
@@ -428,6 +437,30 @@ const unarchiveClient = async () => {
           >
             Enregistrer les fichiers
           </b-button>
+        </b-card>
+
+        <b-card class="d-none">
+          <div class="d-flex">
+            <vue-feather type="file" size="22" class="mr-1" />
+            <h3 class="mb-50">Suivis client</h3>
+          </div>
+
+          <AppTimeline class="mt-2">
+            <AppTimelineItem
+              title="Création du client"
+              :time="strftime('%d/%m/%Y', new Date(client.created_at))"
+              icon="user"
+            >
+              <p>Le client a été créé</p>
+            </AppTimelineItem>
+            <AppTimelineItem
+              title="Création du client"
+              :time="strftime('%d/%m/%Y', new Date(client.created_at))"
+              icon="user"
+            >
+              <p>Le client a été créé</p>
+            </AppTimelineItem>
+          </AppTimeline>
         </b-card>
       </b-col>
     </b-row>

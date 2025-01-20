@@ -3,6 +3,15 @@ from ..entreprise.models import Entreprise
 from django.db import models
 from ..user.models import User
 
+class ClientStatus(models.TextChoices):
+    ACTIVE = "active", "Actif"
+    LEAD = "lead", "Lead"
+    FIRST_RELAUNCH = "first_relaunch", "Premier relance"
+    SECOND_RELAUNCH = "second_relaunch", "Deuxième relance"
+    THIRD_RELAUNCH = "third_relaunch", "Troisième relance"
+    LONG_TERM_RELAUNCH = "long_term_relaunch", "Relance long terme"
+    INACTIVE = "inactive", "Inactif"
+    
 
 class ClientFiles(BaseModel):
     file = models.FileField(upload_to="clients/files")
@@ -52,6 +61,11 @@ class Client(BaseModel):
         related_name='created_clients'
     )
 
+    status = models.CharField(
+        max_length=255,
+        choices=ClientStatus.choices,
+        default=ClientStatus.LEAD,
+    )
     archived = models.BooleanField(default=False)
 
     def __str__(self):
