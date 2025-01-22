@@ -139,9 +139,12 @@ watch(
                     v-model="taskStore.filters.completed"
                     class="completed"
                     :options="[
-                      { label: 'Complété Jamais', value: 'never' },
-                      { label: 'Complété Aujourd\'hui', value: 'today' },
-                      { label: 'Complété Toujours', value: 'always' }
+                      { label: 'Tâche en attente', value: 'never' },
+                      {
+                        label: 'Tâche terminé aujourd\'hui',
+                        value: 'today'
+                      },
+                      { label: 'Terminé depuis le début', value: 'always' }
                     ]"
                     style="min-width: 300px"
                     :reduce="(option: any) => option.value"
