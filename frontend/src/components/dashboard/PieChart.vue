@@ -1,6 +1,16 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useDashboardStore } from '@/stores/apps/Dashboard.ts'
+
+interface Props {
+  title: string
+  labels: string[]
+  series: number[][] | number[]
+  isLoading: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  isLoading: false
+})
 
 const dashboardStore = useDashboardStore()
 
@@ -11,7 +21,7 @@ const chartOptions = computed(() => ({
       fontFamily: 'Montserrat, Helvetica, Arial, serif'
     }
   },
-  labels: dashboardStore.bestClientsChart.data.labels,
+  labels: props.labels,
   dataLabels: {
     enabled: true,
     style: {
@@ -40,23 +50,23 @@ const chartOptions = computed(() => ({
 </script>
 
 <template>
-  <b-overlay :show="dashboardStore.bestClientsChart.isLoading">
+  <b-overlay :show="isLoading">
     <b-card no-body>
       <b-card-header>
-        <b-card-title>10 Meilleurs clients</b-card-title>
+        <b-card-title>{{ title }}</b-card-title>
       </b-card-header>
 
       <b-card-body class="pb-0">
         <apexchart
-          v-show="dashboardStore.bestClientsChart.data.serie.length > 0"
+          v-show="series.length > 0"
           ref="chart"
           type="pie"
-          height="350"
+          height="280"
           :options="chartOptions"
-          :series="dashboardStore.bestClientsChart.data.serie"
+          :series="series"
         />
         <div
-          v-show="dashboardStore.bestClientsChart.data.serie.length === 0"
+          v-show="series.length === 0"
           class="text-center"
           style="height: 330px"
         >

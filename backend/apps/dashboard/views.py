@@ -17,10 +17,17 @@ def get_cards_data(request: Request, entreprise_slug: str):
     """
     Get the data for the cards in the dashboard.
     Get :
+    - signed_quotes
     - turnover
     - cash_collection
     - outstanding_quotations
     - outstanding_client_amount
+    - discovery_calls
+    - follow_up_calls
+    - new_professional_clients
+    - new_private_customers
+    - clients_to_follow_up
+    - total_outsdanding_quotes
     """
     entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
 
@@ -29,6 +36,17 @@ def get_cards_data(request: Request, entreprise_slug: str):
         request.data.get("start_date"),
         request.data.get("end_date"),
         entreprise,
+    )
+
+    signed_quotes = (
+        entreprise.documents.filter(
+            forme__in=["devis"],
+            state="devis_accepted",
+            is_draft=False,
+            devis_accepted_or_refused_at__gte=start_date_,
+            devis_accepted_or_refused_at__lte=end_date,
+        ).aggregate(turnover=Sum("total_ht"))["turnover"]
+        or 0.0
     )
 
     turnover = (
@@ -51,17 +69,6 @@ def get_cards_data(request: Request, entreprise_slug: str):
         or 0.0
     )
 
-    outstanding_quotations = (
-        entreprise.documents.filter(
-            forme__in=["devis"],
-            is_draft=False,
-            state="produced",
-            created_at__gte=start_date_,
-            created_at__lte=end_date,
-        ).aggregate(outstanding_quotations=Sum("total_ht"))["outstanding_quotations"]
-        or 0.0
-    )
-
     outstanding_client_amount = (
         entreprise.documents.filter(
             forme__in=["facture", "acompte"],
@@ -75,14 +82,42 @@ def get_cards_data(request: Request, entreprise_slug: str):
         or 0.0
     )
 
+    discovery_calls = "-"
+    follow_up_calls = "-"
+
+    new_professional_clients = entreprise.clients.filter(
+        created_at__gte=start_date_, created_at__lte=end_date, type="professionnel"
+    ).count()
+
+    new_private_customers = entreprise.clients.filter(
+        created_at__gte=start_date_, created_at__lte=end_date, type="particulier"
+    ).count()
+
+    clients_to_follow_up = "-"
+
+    total_outstanding_quotations = (
+        entreprise.documents.filter(
+            forme__in=["devis"],
+            is_draft=False,
+            state="produced",
+        ).aggregate(outstanding_quotations=Sum("total_ht"))["outstanding_quotations"]
+        or 0.0
+    )
+
     return Response(
         {
             "status": "success",
             "data": {
+                "signed_quotes": signed_quotes,
                 "turnover": turnover,
                 "cash_collection": cash_collection,
-                "outstanding_quotations": outstanding_quotations,
                 "outstanding_client_amount": outstanding_client_amount,
+                "discovery_calls": discovery_calls,
+                "follow_up_calls": follow_up_calls,
+                "new_professional_clients": new_professional_clients,
+                "new_private_customers": new_private_customers,
+                "clients_to_follow_up": clients_to_follow_up,
+                "total_outstanding_quotations": total_outstanding_quotations,
             },
         }
     )
@@ -183,57 +218,9 @@ def get_turnover_chart(request: Request, entreprise_slug: str):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated, IsInEntreprise, CanAccessDashboard])
-def get_best_articles_chart(request: Request, entreprise_slug: str):
+def get_best_clients_by_signed_quotes(request: Request, entreprise_slug: str):
     """
-    Get the data for the best articles chart
-    Take the 10 best articles in the period
-    """
-    entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
-
-    period = request.data.get("period")
-    start_date, end_date = get_start_date_and_end_date_from_period(
-        period,
-        request.data.get("start_date"),
-        request.data.get("end_date"),
-        entreprise,
-    )
-
-    articles = {}
-
-    for document in entreprise.documents.filter(
-        forme__in=["facture", "acompte"],
-        is_draft=False,
-        created_at__gte=start_date,
-        created_at__lte=end_date,
-    ):
-        for section in document.sections.all():
-            if section.type == "section-article":
-                if section.title not in articles:
-                    articles[section.title] = 0
-                articles[section.title] += section.unit_price_ht * section.quantity
-
-    articles = sorted(articles.items(), key=lambda x: x[1], reverse=True)[:10]
-
-    labels = [article[0] for article in articles]
-    serie = [article[1] for article in articles]
-
-    return Response(
-        {
-            "status": "success",
-            "data": {
-                "labels": labels,
-                "serie": serie,
-            },
-        }
-    )
-
-
-@api_view(["POST"])
-@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessDashboard])
-def get_best_clients_chart(request: Request, entreprise_slug: str):
-    """
-    Get the data for the best clients chart
-    Take the 10 best clients in the period
+    Get the data for the 10 best clients by signed quotes
     """
     entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
 
@@ -248,10 +235,11 @@ def get_best_clients_chart(request: Request, entreprise_slug: str):
     clients = {}
 
     for document in entreprise.documents.filter(
-        forme__in=["facture", "acompte"],
+        forme__in=["devis"],
+        state="devis_accepted",
         is_draft=False,
-        created_at__gte=start_date,
-        created_at__lte=end_date,
+        devis_accepted_or_refused_at__gte=start_date,
+        devis_accepted_or_refused_at__lte=end_date,
     ):
         if document.client.socialreasonorname not in clients:
             clients[document.client.socialreasonorname] = 0
@@ -261,6 +249,85 @@ def get_best_clients_chart(request: Request, entreprise_slug: str):
 
     labels = [client[0] for client in clients]
     serie = [client[1] for client in clients]
+
+    return Response(
+        {
+            "status": "success",
+            "data": {
+                "labels": labels,
+                "serie": serie,
+            },
+        }
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessDashboard])
+def get_best_user_by_signed_quotes(request: Request, entreprise_slug: str):
+    """
+    Get the data for the 10 best user by signed quotes
+    """
+    entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
+
+    period = request.data.get("period")
+    start_date, end_date = get_start_date_and_end_date_from_period(
+        period,
+        request.data.get("start_date"),
+        request.data.get("end_date"),
+        entreprise,
+    )
+
+    users = {}
+
+    for user in entreprise.users.all():
+        users[user.full_name] = 0
+        for document in entreprise.documents.filter(
+            forme__in=["devis"],
+            state="devis_accepted",
+            is_draft=False,
+            devis_accepted_or_refused_at__gte=start_date,
+            devis_accepted_or_refused_at__lte=end_date,
+            created_by=user
+        ):
+            users[user.full_name] += document.total_ht
+
+
+    labels = [user for user in users]
+    serie = [users[user] for user in users]
+
+    return Response(
+        {
+            "status": "success",
+            "data": {
+                "labels": labels,
+                "serie": serie,
+            },
+        }
+    )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsInEntreprise, CanAccessDashboard])
+def get_outstanding_quote_by_commercial(request: Request, entreprise_slug: str):
+    """
+    Get the data for the 10 best user by signed quotes
+    """
+    entreprise = get_object_or_404(Entreprise, slug=entreprise_slug)
+    users = {}
+
+    for user in entreprise.users.all():
+        users[user.full_name] = 0
+        for document in entreprise.documents.filter(
+            forme__in=["devis"],
+            state="produced",
+            is_draft=False,
+            created_by=user
+        ):
+            users[user.full_name] += document.total_ht
+
+
+    labels = [user for user in users]
+    serie = [users[user] for user in users]
 
     return Response(
         {

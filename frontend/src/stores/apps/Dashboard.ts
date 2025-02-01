@@ -4,6 +4,14 @@ import type { ApiResponse } from '@/types/api.types'
 import { useEntrepriseStore } from './Entreprise'
 import { notify } from '@/helpers/notify.ts'
 
+interface PieChart {
+  isLoading: boolean
+  data: {
+    labels: string[]
+    serie: number[]
+  }
+}
+
 interface State {
   period:
     | 'week'
@@ -20,10 +28,16 @@ interface State {
   cardsData: {
     isLoading: boolean
     data: {
+      signed_quotes: number
       turnover: number
       cash_collection: number
-      outstanding_quotations: number
       outstanding_client_amount: number
+      discovery_calls: number
+      follow_up_calls: number
+      new_professional_clients: number
+      new_private_customers: number
+      clients_to_follow_up: number
+      total_outstanding_quotations: string
     }
   }
 
@@ -35,21 +49,9 @@ interface State {
     }
   }
 
-  bestArticlesChart: {
-    isLoading: boolean
-    data: {
-      labels: string[]
-      serie: number[]
-    }
-  }
-
-  bestClientsChart: {
-    isLoading: boolean
-    data: {
-      labels: string[]
-      serie: number[]
-    }
-  }
+  bestClientsByQuote: PieChart
+  bestUsersByQuote: PieChart
+  outstandingQuoteByCommercial: PieChart
 }
 
 export const useDashboardStore = defineStore('dashboard', {
@@ -62,10 +64,16 @@ export const useDashboardStore = defineStore('dashboard', {
       cardsData: {
         isLoading: false,
         data: {
+          signed_quotes: 0,
           turnover: 0,
           cash_collection: 0,
-          outstanding_quotations: 0,
-          outstanding_client_amount: 0
+          outstanding_client_amount: 0,
+          discovery_calls: 0,
+          follow_up_calls: 0,
+          new_professional_clients: 0,
+          new_private_customers: 0,
+          clients_to_follow_up: 0,
+          total_outstanding_quotations: ''
         }
       },
 
@@ -77,7 +85,7 @@ export const useDashboardStore = defineStore('dashboard', {
         }
       },
 
-      bestArticlesChart: {
+      bestClientsByQuote: {
         isLoading: false,
         data: {
           labels: [],
@@ -85,7 +93,15 @@ export const useDashboardStore = defineStore('dashboard', {
         }
       },
 
-      bestClientsChart: {
+      bestUsersByQuote: {
+        isLoading: false,
+        data: {
+          labels: [],
+          serie: []
+        }
+      },
+
+      outstandingQuoteByCommercial: {
         isLoading: false,
         data: {
           labels: [],
@@ -104,12 +120,7 @@ export const useDashboardStore = defineStore('dashboard', {
 
       try {
         const { data } = await http.post<
-          ApiResponse<{
-            turnover: number
-            cash_collection: number
-            outstanding_quotations: number
-            outstanding_client_amount: number
-          }>
+          ApiResponse<State['cardsData']['data']>
         >(
           `/api/entreprise/${entrepriseStore.entreprise?.slug}/dashboard/cards-data`,
           {
@@ -159,10 +170,10 @@ export const useDashboardStore = defineStore('dashboard', {
       this.turnoverChart.isLoading = false
     },
 
-    async getBestArticles() {
+    async getBestClientsBySignedQuote() {
       const entrepriseStore = useEntrepriseStore()
 
-      this.bestArticlesChart.isLoading = true
+      this.bestClientsByQuote.isLoading = true
 
       try {
         const { data } = await http.post<
@@ -171,7 +182,7 @@ export const useDashboardStore = defineStore('dashboard', {
             serie: number[]
           }>
         >(
-          `/api/entreprise/${entrepriseStore.entreprise?.slug}/dashboard/best-articles-chart`,
+          `/api/entreprise/${entrepriseStore.entreprise?.slug}/dashboard/best-clients-by-signed-quotes`,
           {
             period: this.period,
             start_date: this.startDate,
@@ -179,21 +190,20 @@ export const useDashboardStore = defineStore('dashboard', {
           }
         )
 
-        this.bestArticlesChart.data = data.data
+        this.bestClientsByQuote.data = data.data
       } catch {
         notify(
-          'Une erreur est survenue lors de la récupération des données du graphique des meilleurs articles',
+          'Une erreur est survenue lors de la récupération des données du graphique des meilleurs clients par devis signé',
           'danger'
         )
       }
 
-      this.bestArticlesChart.isLoading = false
+      this.bestClientsByQuote.isLoading = false
     },
-
-    async getBestClients() {
+    async getBestUserBySignedQuotes() {
       const entrepriseStore = useEntrepriseStore()
 
-      this.bestClientsChart.isLoading = true
+      this.bestUsersByQuote.isLoading = true
 
       try {
         const { data } = await http.post<
@@ -202,7 +212,7 @@ export const useDashboardStore = defineStore('dashboard', {
             serie: number[]
           }>
         >(
-          `/api/entreprise/${entrepriseStore.entreprise?.slug}/dashboard/best-clients-chart`,
+          `/api/entreprise/${entrepriseStore.entreprise?.slug}/dashboard/best-user-by-signed-quotes`,
           {
             period: this.period,
             start_date: this.startDate,
@@ -210,15 +220,40 @@ export const useDashboardStore = defineStore('dashboard', {
           }
         )
 
-        this.bestClientsChart.data = data.data
+        this.bestUsersByQuote.data = data.data
       } catch {
         notify(
-          'Une erreur est survenue lors de la récupération des données du graphique des meilleurs clients',
+          'Une erreur est survenue lors de la récupération des données du graphique du classement des commerciaux par devis signé',
           'danger'
         )
       }
 
-      this.bestClientsChart.isLoading = false
+      this.bestUsersByQuote.isLoading = false
+    },
+    async getOutstandingQuoteByCommercial() {
+      const entrepriseStore = useEntrepriseStore()
+
+      this.outstandingQuoteByCommercial.isLoading = true
+
+      try {
+        const { data } = await http.post<
+          ApiResponse<{
+            labels: string[]
+            serie: number[]
+          }>
+        >(
+          `/api/entreprise/${entrepriseStore.entreprise?.slug}/dashboard/outstanding-quote-by-commercial`
+        )
+
+        this.outstandingQuoteByCommercial.data = data.data
+      } catch (e) {
+        notify(
+          'Une erreur est survenue lors de la récupération des données du graphique des devis en cours par commercial',
+          'danger'
+        )
+      }
+
+      this.outstandingQuoteByCommercial.isLoading = false
     }
   },
   persist: true
