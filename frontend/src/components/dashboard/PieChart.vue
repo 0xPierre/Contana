@@ -68,7 +68,7 @@ const chartOptions = computed(() => ({
         <div
           v-show="series.length === 0"
           class="text-center"
-          style="height: 330px"
+          style="height: 265px"
         >
           Aucune donnée disponible
         </div>
