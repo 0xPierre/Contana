@@ -1,20 +1,17 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import http from '@/helpers/http'
-import type {
-  Label,
-  Task,
-} from '@/types/tasks.types'
+import type { Label, Task } from '@/types/tasks.types'
 import { TaskCompleted } from '@/types/tasks.types'
 import type { ApiPaginatedResponse, ApiResponse } from '@/types/api.types'
 import { useEntrepriseStore } from './Entreprise'
 
 interface State {
-  labels: Label[],
+  labels: Label[]
   filters: {
-    user: number | null,
-    search: '',
+    user: number | null
+    search: ''
     completed: TaskCompleted
-  },
+  }
   tasks: Task[]
 }
 
@@ -25,7 +22,7 @@ export const useTasksStore = defineStore('tasks', {
       filters: {
         user: null,
         search: '',
-        completed: TaskCompleted.today,
+        completed: TaskCompleted.today
       },
       tasks: []
     }
@@ -35,9 +32,9 @@ export const useTasksStore = defineStore('tasks', {
 
   actions: {
     /**
-     * 
+     *
      * Labels functions
-     * 
+     *
      */
     async createLabel(data: Omit<Label, 'id'>) {
       const entrepriseStore = useEntrepriseStore()
@@ -53,29 +50,28 @@ export const useTasksStore = defineStore('tasks', {
       const { data } = await http.get<ApiPaginatedResponse<Label>>(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/tasks/labels/`
       )
-
       this.labels = data.results
     },
     async updateLabel(data: Label) {
-        const entrepriseStore = useEntrepriseStore()
-    
-        return http.put<ApiResponse<Label>>(
-            `/api/entreprise/${entrepriseStore.entreprise?.slug}/tasks/labels/${data.id}/`,
-            data
-        )
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.put<ApiResponse<Label>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/tasks/labels/${data.id}/`,
+        data
+      )
     },
     async deleteLabel(data: Label) {
-        const entrepriseStore = useEntrepriseStore()
-    
-        return http.delete<ApiResponse<Label>>(
-            `/api/entreprise/${entrepriseStore.entreprise?.slug}/tasks/labels/${data.id}/`
-        )
+      const entrepriseStore = useEntrepriseStore()
+
+      return http.delete<ApiResponse<Label>>(
+        `/api/entreprise/${entrepriseStore.entreprise?.slug}/tasks/labels/${data.id}/`
+      )
     },
 
     /**
-     * 
+     *
      * Tasks functions
-     * 
+     *
      */
     async createTask(data: Omit<Task, 'id'>) {
       const entrepriseStore = useEntrepriseStore()

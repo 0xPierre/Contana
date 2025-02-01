@@ -1,3 +1,5 @@
+from rest_framework.pagination import PageNumberPagination
+
 from .models import Task, Labels
 from ..core.permissions import CanAdministrate, IsInEntreprise
 from rest_framework import viewsets, permissions
@@ -24,9 +26,15 @@ class LabelViewset(viewsets.ModelViewSet):
         serializer.save(entreprise=get_entreprise_from_request(self.request))
 
 
+class CustomTaskPagination(PageNumberPagination):
+    page_size = 10000
+    page_size_query_param = "page_size"
+    max_page_size = 10000
+
 class TaskViewset(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     permission_classes = [permissions.IsAuthenticated, IsInEntreprise]
+    pagination_class = CustomTaskPagination
 
     def get_serializer_class(self):
         if self.action == "list":
