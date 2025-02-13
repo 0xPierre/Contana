@@ -69,7 +69,7 @@ onUnmounted(() => {
       @click="isVerticalMenuActive = false"
     />
 
-    <RouterView v-slot="{ Component }">
+    <RouterView v-slot="{ Component }" :key="$route.fullPath">
       <Transition name="zoom-fade" mode="out-in">
         <div
           class="app-content content"

@@ -13,37 +13,54 @@ const isOpen = ref(false)
 
 const selectEntreprise = async (slug: string) => {
   await userStore.selectEntreprise(slug)
-  if (entrepriseStore?.entreprise?.user_permissions.access_dashboard) {
-    if (route.name === 'entreprise-dashboard') {
-      router.go()
-    } else {
-      router.push({
-        name: 'entreprise-dashboard',
-        params: { entrepriseSlug: entrepriseStore.entreprise?.slug }
-      })
-    }
-  } else if (
-    entrepriseStore?.entreprise?.user_permissions.access_documents
+  if (
+    entrepriseStore?.entreprise?.user_permissions.access_dashboard &&
+    route.name === 'entreprise-dashboard'
   ) {
-    if (route.name === 'entreprise-documents') {
-      router.go()
-    } else {
-      router.push({
-        name: 'entreprise-documents',
-        params: { entrepriseSlug: entrepriseStore.entreprise?.slug }
-      })
-    }
+    router.push({
+      name: 'entreprise-dashboard',
+      params: { entrepriseSlug: slug }
+    })
   } else if (
-    entrepriseStore?.entreprise?.user_permissions.access_clients
+    entrepriseStore?.entreprise?.user_permissions.access_documents &&
+    route.name === 'entreprise-documents'
   ) {
-    if (route.name === 'entreprise-clients') {
-      router.go()
-    } else {
-      router.push({
-        name: 'entreprise-clients',
-        params: { entrepriseSlug: entrepriseStore.entreprise?.slug }
-      })
-    }
+    router.push({
+      name: 'entreprise-documents',
+      params: { entrepriseSlug: slug }
+    })
+  } else if (
+    entrepriseStore?.entreprise?.user_permissions.access_clients &&
+    route.name === 'entreprise-clients'
+  ) {
+    router.push({
+      name: 'entreprise-clients',
+      params: { entrepriseSlug: slug }
+    })
+  } else if (
+    entrepriseStore?.entreprise?.user_permissions.access_constructor &&
+    route.name === 'entreprise-constructor'
+  ) {
+    router.push({
+      name: 'entreprise-constructor',
+      params: { entrepriseSlug: slug }
+    })
+  } else if (
+    entrepriseStore?.entreprise?.user_permissions.access_crm &&
+    route.name === 'entreprise-tasks'
+  ) {
+    router.push({
+      name: 'entreprise-tasks',
+      params: { entrepriseSlug: slug }
+    })
+  } else if (
+    entrepriseStore?.entreprise?.user_permissions.administrate &&
+    route.name === 'entreprise-settings'
+  ) {
+    router.push({
+      name: 'entreprise-settings',
+      params: { entrepriseSlug: slug }
+    })
   } else {
     router.push({ name: 'home' })
   }
