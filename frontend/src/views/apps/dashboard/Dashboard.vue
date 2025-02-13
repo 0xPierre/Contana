@@ -156,7 +156,7 @@ watch(
                 icon="dollar-sign"
                 variant="light-success"
                 :value="`${euro(
-                  dashboardStore.cardsData.data.turnover
+                  dashboardStore.cardsData.data.cash_collection
                 ).format()} €`"
               />
             </b-col>
