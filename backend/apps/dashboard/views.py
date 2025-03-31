@@ -43,8 +43,8 @@ def get_cards_data(request: Request, entreprise_slug: str):
             forme__in=["devis"],
             state="devis_accepted",
             is_draft=False,
-            devis_accepted_or_refused_at__gte=start_date_,
-            devis_accepted_or_refused_at__lte=end_date,
+            devis_accepted_or_refused_at__date__gte=start_date_,
+            devis_accepted_or_refused_at__date__lte=end_date,
         ).aggregate(turnover=Sum("total_ht"))["turnover"]
         or 0.0
     )
@@ -53,8 +53,8 @@ def get_cards_data(request: Request, entreprise_slug: str):
         entreprise.documents.filter(
             forme__in=["facture", "acompte"],
             is_draft=False,
-            created_at__gte=start_date_,
-            created_at__lte=end_date,
+            created_at__date__gte=start_date_,
+            created_at__date__lte=end_date,
         ).aggregate(turnover=Sum("total_ht"))["turnover"]
         or 0.0
     )
@@ -63,8 +63,8 @@ def get_cards_data(request: Request, entreprise_slug: str):
         entreprise.documents.filter(
             forme__in=["facture", "acompte"],
             is_draft=False,
-            paid_at__gte=start_date_,
-            paid_at__lte=end_date,
+            paid_at__date__gte=start_date_,
+            paid_at__date__lte=end_date,
         ).aggregate(cash_collection=Sum("total_ht"))["cash_collection"]
         or 0.0
     )
@@ -74,8 +74,8 @@ def get_cards_data(request: Request, entreprise_slug: str):
             forme__in=["facture", "acompte"],
             is_draft=False,
             state="produced",
-            created_at__gte=start_date_,
-            created_at__lte=end_date,
+            created_at__date__gte=start_date_,
+            created_at__date__lte=end_date,
         ).aggregate(outstanding_client_amount=Sum("total_ht"))[
             "outstanding_client_amount"
         ]
@@ -86,11 +86,11 @@ def get_cards_data(request: Request, entreprise_slug: str):
     follow_up_calls = "-"
 
     new_professional_clients = entreprise.clients.filter(
-        created_at__gte=start_date_, created_at__lte=end_date, type="professionnel"
+        created_at__date__gte=start_date_, created_at__date__lte=end_date, type="professionnel"
     ).count()
 
     new_private_customers = entreprise.clients.filter(
-        created_at__gte=start_date_, created_at__lte=end_date, type="particulier"
+        created_at__date__gte=start_date_, created_at__date__lte=end_date, type="particulier"
     ).count()
 
     clients_to_follow_up = "-"
