@@ -99,6 +99,9 @@ class DocumentSection(BaseModel):
     def __str__(self):
         return f"{self.type} - {self.title}"
 
+    class Meta:
+        ordering = ['id']
+
 
 class TemplateCategory(BaseModel):
     name = models.CharField(max_length=255)
