@@ -20,7 +20,9 @@ const filters = reactive({
   currentPage: 1,
   search: '',
   archived: false,
-  createdBy: userStore.data?.id || -1,
+  createdBy: can('administrate', entrepriseStore.entreprise)
+    ? -1
+    : userStore.data?.id,
   sortBy: 'id',
   sortDesc: true
 })
