@@ -7,3 +7,10 @@ pdfkit==1.0.0
 Pillow==11.1.0
 python-dotenv==1.1.0
 sentry_sdk==1.23.1
+gunicorn
+celery[redis]
+django-celery-beat
+redis
+sentry-sdk[django]
+stripe
+django-dbbackup
