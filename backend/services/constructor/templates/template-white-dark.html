@@ -1008,7 +1008,7 @@
                 {% endif %}
                   <td class="cell-money">
                     {% if section.display_price_infos %}
-                      {% if section.discount > 0 %}
+                      {% if section.discount > 0 and section.discount_type %}
                         <span style="text-decoration: line-through">{{ section.total_ht_without_discount|floatformat:2 }} €</span>
                       {% else %}
                         {{ section.total_ht|floatformat:2 }} €
@@ -1016,7 +1016,7 @@
                     {% endif %}
                   </td>
                 </tr>
-                {% if section.discount > 0 %}
+                {% if section.discount > 0 and section.discount_type %}
                   <tr>
                   <td>{{ section.discount_description }}</td>
                   <td></td>

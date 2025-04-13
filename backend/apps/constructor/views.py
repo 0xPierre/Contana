@@ -235,7 +235,7 @@ def produce_document_preview(request: Request, entreprise_slug: str):
             section.quantity = values["quantity"]
             section.vat_rate = values["vatRate"]
             section.article_type = values["articleType"]
-            section.discount = values["discount"]
+            section.discount = values["discount"] or 0
             section.discount_type = values["discountType"]
             section.discount_description = values["discountDescription"]
             section.unit = values["unit"]
