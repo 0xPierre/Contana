@@ -46,7 +46,6 @@ const saveFiltersInQuery = () => {
     query: {
       perPage: filters.perPage,
       currentPage: filters.currentPage,
-      search: filters.search,
       sortBy: filters.sortBy,
       sortDesc: filters.sortDesc.toString(),
       forme: filters.forme,
@@ -60,7 +59,6 @@ const saveFiltersInQuery = () => {
 watch(
   [
     () => filters.perPage,
-    () => filters.search,
     () => filters.sortBy,
     () => filters.sortDesc,
     () => filters.forme,
@@ -76,6 +74,14 @@ watch(
     } else isFiltersUpdateFromQuery.value = false
   }
 )
+
+// Watch only for filters.search to avoid saving in query
+watch([() => filters.search], () => {
+  if (!isFiltersUpdateFromQuery.value) {
+    filters.currentPage = 1
+    getDocuments()
+  } else isFiltersUpdateFromQuery.value = false
+})
 
 watch(
   () => filters.currentPage,
