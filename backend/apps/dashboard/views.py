@@ -69,6 +69,7 @@ def get_cards_data(request: Request, entreprise_slug: str):
         ).aggregate(turnover=Sum("total_ht"))["turnover"]
         or 0.0
     )
+    turnover += total_avoir
 
     cash_collection = (
         entreprise.documents.filter(
@@ -79,6 +80,7 @@ def get_cards_data(request: Request, entreprise_slug: str):
         ).aggregate(cash_collection=Sum("total_ht"))["cash_collection"]
         or 0.0
     )
+    cash_collection += total_avoir
 
     outstanding_client_amount = (
         entreprise.documents.filter(
