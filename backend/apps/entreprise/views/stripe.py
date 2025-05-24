@@ -38,6 +38,9 @@ def create_entreprise_checkout_session(request: Request) -> Response:
     """
     Allows to create a checkout session
     """
+    # Disable checkout session to avoid Stripe paiment
+    return Response()
+
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
         line_items=[
@@ -73,6 +76,8 @@ def stripe_entreprise_subscription_webhook(request: Request):
     """
     Allows to handle the stripe webhook for entreprise subscription
     """
+    # Disable stripe webhook handling
+    return Response()
     payload = request.body
     sig_header = request.META["HTTP_STRIPE_SIGNATURE"]
     event = None
@@ -136,6 +141,8 @@ def create_customer_portal(request: Request, entreprise_slug) -> Response:
     """
     Allows to create a customer portal
     """
+    # disable customer portal
+    return Response()
     entreprise = Entreprise.objects.get(slug=entreprise_slug)
 
     session = stripe.billing_portal.Session.create(

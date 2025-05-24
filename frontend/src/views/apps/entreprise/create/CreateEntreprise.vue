@@ -46,7 +46,10 @@ const createCheckoutSession = async () => {
     if (data.status === 'success') {
       document.location.href = data.url
     } else {
-      notify('Une erreur est survenue', 'danger')
+      notify(
+        "Vous ne pouvez pas créer d'entreprise sur Contana. Contactez l'administrateur.",
+        'danger'
+      )
     }
   } catch (error: unknown) {
     notify('Une erreur est survenue', 'danger')
