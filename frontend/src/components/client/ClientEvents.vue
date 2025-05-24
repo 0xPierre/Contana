@@ -87,8 +87,13 @@ const totalHT = computed(() => {
       // Already negative
       return acc + doc.total_ht
     }
+    if (
+      doc.forme === DocumentsType.Acompte ||
+      doc.forme === DocumentsType.Facture
+    )
+      return acc + doc.total_ht
 
-    return acc + doc.total_ht
+    return acc
   }, 0)
 })
 </script>
