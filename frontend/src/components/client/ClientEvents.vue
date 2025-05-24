@@ -7,6 +7,7 @@ import { euro } from '@/helpers/utils.ts'
 import type { ClientModel } from '@/types/clients.types.ts'
 import AppTimelineItem from '@/components/timeline/AppTimelineItem.vue'
 import AppTimeline from '@/components/timeline/AppTimeline.vue'
+import { DocumentsType } from '@/types/core.types.ts'
 
 interface Props {
   client: ClientModel
@@ -78,13 +79,32 @@ const timeline = computed(() => {
 
   return t.reverse()
 })
+
+const totalHT = computed(() => {
+  return props.client.documents.reduce((acc, doc) => {
+    if (doc.state === DocumentsState.Draft) return acc
+    if (doc.forme === DocumentsType.Avoir) {
+      // Already negative
+      return acc + doc.total_ht
+    }
+
+    return acc + doc.total_ht
+  }, 0)
+})
 </script>
 
 <template>
   <b-card>
-    <div class="d-flex">
-      <vue-feather type="file" size="22" class="mr-1" />
-      <h3 class="mb-50">Suivis client</h3>
+    <div class="d-flex justify-content-between">
+      <div class="d-flex">
+        <vue-feather type="file" size="22" class="mr-1" />
+        <h3 class="mb-50">Suivis client</h3>
+      </div>
+      <div>
+        <b-badge variant="light-success">
+          Total HT : {{ euro(totalHT).format() }} €
+        </b-badge>
+      </div>
     </div>
 
     <AppTimeline class="mt-2">
