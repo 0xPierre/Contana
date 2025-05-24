@@ -35,7 +35,7 @@ const timeline = computed(() => {
     {
       title: 'Création du client',
       subtitle: `${strftime(
-        '%d %b %Y',
+        '%d/%m/%Y',
         new Date(props.client.created_at)
       )}`,
       time: `${strftime(
