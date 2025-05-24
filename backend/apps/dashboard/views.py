@@ -48,6 +48,17 @@ def get_cards_data(request: Request, entreprise_slug: str):
         ).aggregate(turnover=Sum("total_ht"))["turnover"]
         or 0.0
     )
+    total_avoir = (
+            entreprise.documents.filter(
+                forme__in=["avoir"],
+                is_draft=False,
+                created_at__date__gte=start_date_,
+                created_at__date__lte=end_date,
+            ).aggregate(total_avoir=Sum("total_ht"))["total_avoir"]
+            or 0.0
+    )
+    # It's already negative
+    signed_quotes += total_avoir
 
     turnover = (
         entreprise.documents.filter(
