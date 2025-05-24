@@ -1,3 +1,5 @@
+import { DocumentModel } from '@/types/documents.types.ts'
+
 export type ClientType = 'particulier' | 'professionnel'
 
 export interface ClientCreationForm {
@@ -21,7 +23,15 @@ export interface ClientModel extends ClientCreationForm {
   updated_at: string
   client_number: string
   archived: boolean
-  document_count: number
+  documents: Pick<
+    DocumentModel,
+    | 'id'
+    | 'document_number'
+    | 'forme'
+    | 'state'
+    | 'created_at'
+    | 'total_ht'
+  >[]
   created_by: {
     id: number
     full_name: string

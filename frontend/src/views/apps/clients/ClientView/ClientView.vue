@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
 import { useClientsStore } from '@/stores/apps/Clients'
 import { useRoute, useRouter } from 'vue-router'
 import BackButton from '@/components/back-button/BackButton.vue'
@@ -12,6 +12,7 @@ import { EntrepriseUser } from '@/types/entreprise.types'
 import strftime from 'strftime'
 import AppTimeline from '@/components/timeline/AppTimeline.vue'
 import AppTimelineItem from '@/components/timeline/AppTimelineItem.vue'
+import ClientEvents from '@/components/client/ClientEvents.vue'
 
 const entrepriseStore = useEntrepriseStore()
 const clientsStore = useClientsStore()
@@ -33,8 +34,8 @@ const client = ref<ClientModel>({
   created_at: '',
   updated_at: '',
   client_number: '',
-  document_count: 0,
   files: [],
+  documents: [],
   created_by: null
 })
 const route = useRoute()
@@ -365,10 +366,10 @@ const unarchiveClient = async () => {
             <h3 class="m-0">Documents</h3>
           </div>
           <span class="text-muted">
-            {{ client.document_count }} document{{
-              client.document_count > 1 ? 's' : ''
+            {{ client.documents.length }} document{{
+              client.documents.length > 1 ? 's' : ''
             }}
-            enregistré{{ client.document_count > 1 ? 's' : '' }}
+            enregistré{{ client.documents.length > 1 ? 's' : '' }}
           </span>
 
           <div v-if="true" class="mt-1">
@@ -438,30 +439,7 @@ const unarchiveClient = async () => {
             Enregistrer les fichiers
           </b-button>
         </b-card>
-
-        <b-card class="d-none">
-          <div class="d-flex">
-            <vue-feather type="file" size="22" class="mr-1" />
-            <h3 class="mb-50">Suivis client</h3>
-          </div>
-
-          <AppTimeline class="mt-2">
-            <AppTimelineItem
-              title="Création du client"
-              :time="strftime('%d/%m/%Y', new Date(client.created_at))"
-              icon="user"
-            >
-              <p>Le client a été créé</p>
-            </AppTimelineItem>
-            <AppTimelineItem
-              title="Création du client"
-              :time="strftime('%d/%m/%Y', new Date(client.created_at))"
-              icon="user"
-            >
-              <p>Le client a été créé</p>
-            </AppTimelineItem>
-          </AppTimeline>
-        </b-card>
+        <ClientEvents :client="client" />
       </b-col>
     </b-row>
   </b-overlay>

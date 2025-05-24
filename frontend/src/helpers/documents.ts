@@ -1,4 +1,5 @@
 import { DocumentsState } from '@/types/documents.types.ts'
+import { DocumentsType } from '@/types/core.types.ts'
 
 export const DocumentStateBadgeInfo = {
   [DocumentsState.Draft]: {
@@ -36,4 +37,21 @@ export const DocumentStateBadgeInfo = {
     textColor: 'text-dark',
     text: 'Payé'
   }
+}
+
+export const DocumentStateText = {
+  [DocumentsState.Draft]: 'Brouillon',
+  [DocumentsState.Produced]: 'Produit',
+  [DocumentsState.DevisAccepted]: 'Devis accepté',
+  [DocumentsState.DevisRefused]: 'Devis refusé',
+  [DocumentsState.DevisExpired]: 'Devis expiré',
+  [DocumentsState.DevisInvoiced]: 'Devis facturé',
+  [DocumentsState.Paid]: 'Payé'
+}
+
+export const DocumentTypeText = {
+  [DocumentsType.Facture]: 'Facture',
+  [DocumentsType.Devis]: 'Devis',
+  [DocumentsType.Avoir]: 'Avoir',
+  [DocumentsType.Acompte]: 'Acompte'
 }

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import Client
+from ..documents.serializers import DocumentsListingSerializer
 
 
 class UserSerializer(serializers.Serializer):
@@ -45,18 +46,30 @@ class ClientsFilesField(serializers.RelatedField):
         }
 
 
+class ClientsDocumentsField(serializers.RelatedField):
+    """
+    Serializer for a Client's document
+    """
+
+    def to_representation(self, value):
+        return {
+            "id": value.id,
+            "document_number": value.document_number,
+            "forme": value.forme,
+            "state": value.state,
+            "created_at": value.created_at,
+            "total_ht": value.total_ht
+        }
+
+
 class ClientsDetailSerializer(serializers.ModelSerializer):
     """
     Serializer for the Client model for detail view
     """
 
     files = ClientsFilesField(many=True, read_only=True)
-    document_count = serializers.SerializerMethodField()
     created_by = UserSerializer(required=False)
-
-    @staticmethod
-    def get_document_count(obj):
-        return obj.documents.exclude(is_draft=True).count()
+    documents = ClientsDocumentsField(many=True, read_only=True)
 
     def update(self, instance, validated_data):
         if 'created_by' in validated_data:
@@ -85,8 +98,8 @@ class ClientsDetailSerializer(serializers.ModelSerializer):
             "updated_at",
             "archived",
             "files",
-            "document_count",
             "created_by",
+            "documents"
         ]
         extra_kwargs = {
             "socialreasonorname": {
