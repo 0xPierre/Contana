@@ -44,6 +44,7 @@ const getDocuments = async () => {
 const saveFiltersInQuery = () => {
   router.push({
     query: {
+      search: filters.search,
       perPage: filters.perPage,
       currentPage: filters.currentPage,
       sortBy: filters.sortBy,
