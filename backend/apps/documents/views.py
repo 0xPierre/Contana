@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
 from django.db.models import QuerySet
 
 from services.constructor.generate import construct_pdf
@@ -118,7 +119,7 @@ class DocumentsViewSet(viewsets.ModelViewSet):
             client=target_document.client,
             subject=target_document.subject,
             payment_method=target_document.payment_method,
-            validity_date=target_document.validity_date,
+            validity_date=(timezone.now() + relativedelta(months=2)).date(),
             payment_mention=target_document.payment_mention,
             other_mention=target_document.other_mention,
             notes=target_document.notes,
