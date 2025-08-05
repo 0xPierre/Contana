@@ -2,7 +2,6 @@
 import { computed, onBeforeMount, ref } from 'vue'
 import { useConstructorStore } from '@/stores/apps/Constructor.ts'
 import { notify, swalAlert } from '@/helpers/notify.ts'
-import { v4 as uuidv4 } from 'uuid'
 import draggable from 'vuedraggable'
 import {
   CatalogCategory,
@@ -58,7 +57,6 @@ const searchTemplatesForConstructor = computed(() => {
   constructorStore.catalog.categories.forEach((category) => {
     templates.push(...category.templates)
   })
-
   return templates.filter((template) => {
     return template.name
       .toLowerCase()
@@ -415,8 +413,7 @@ const deleteTemplate = async (template: CatalogTemplate) => {
           </b-col>
         </b-row>
       </div>
-
-      <div v-if="constructorSearchString">
+      <div v-if="catalogSearchString">
         <div v-if="searchTemplatesForCatalog.length === 0">
           Aucun article
         </div>
