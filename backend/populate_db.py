@@ -15,7 +15,7 @@ def add_user():
     """
 
     User.objects.all().delete()
-    user = User.objects.create_user(email="user@mail.com", password="password")
+    User.objects.create_user(email="user@mail.com", password="password", first_name="Jean", last_name="Dupond")
     print('User user@mail.com with password "password" created')
 
 
