@@ -15,7 +15,10 @@ def add_user():
     """
 
     User.objects.all().delete()
-    User.objects.create_user(email="user@mail.com", password="password", first_name="Jean", last_name="Dupond")
+    user = User.objects.create_user(email="user@mail.com", password="password")
+    user.first_name = "Jean"
+    user.last_name = "Dupond"
+    user.save()
     print('User user@mail.com with password "password" created')
 
 
@@ -37,7 +40,7 @@ def add_client():
     Create a first client in the database
     """
     Client.objects.all().delete()
-    client = Client.objects.create(socialreasonorname="DUPOND", entreprise=Entreprise.objects.first(), siren="123456789", address="11 rue des champs élysées", city="Paris", zip_code="75008", country="France")
+    client = Client.objects.create(socialreasonorname="DUPOND", entreprise=Entreprise.objects.first(), siren="123456789", address="11 rue des champs élysées", city="Paris", zip_code="75008", country="France", client_number="C-000001")
     print(f"Client {client.socialreasonorname} created")
 
 
