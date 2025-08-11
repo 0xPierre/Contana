@@ -1,5 +1,8 @@
 name: Deployment Workflow
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 env:
   BACKEND_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/backend
