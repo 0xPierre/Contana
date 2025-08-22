@@ -169,6 +169,7 @@ if os.environ.get("S3_ENDPOINT"):
     AWS_S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT")
 AWS_S3_SECRET_ACCESS_KEY = os.environ.get("S3_SECRET_KEY")
 AWS_QUERYSTRING_AUTH = True
+AWS_QUERYSTRING_EXPIRE = '604800'
 
 
 EMAIL_BACKEND = "django_ses.SESBackend"

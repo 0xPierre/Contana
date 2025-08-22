@@ -8,6 +8,7 @@ import {
 import { computed, ref, watch } from 'vue'
 import { useNumberInputHandler } from '@/composables/numberInputHandler.ts'
 import { euro, getSectionArticleTotalHT } from '@/helpers/utils.ts'
+import FileUploadManager from '@/components/file-upload-manager/FileUploadManager.vue'
 
 const props = defineProps<{
   section: Section<SectionsType.Article> | CatalogTemplate
@@ -25,6 +26,15 @@ const { inputHandler, formattedValue } = useNumberInputHandler(
     props.section.values.unitPriceHT = value
   }
 )
+
+const localImage = ref(
+  props.section.values.image ? [props.section.values.image] : []
+)
+const updateImage = (files: typeof localImage.value) => {
+  props.section.values.image = files[0]
+  localImage.value = files
+}
+
 const constructorStore = useConstructorStore()
 const modal = ref<HTMLElement | null>(null)
 </script>
@@ -32,7 +42,16 @@ const modal = ref<HTMLElement | null>(null)
 <template>
   <div class="section section-article">
     <div class="d-flex justify-content-between">
-      <h5 class="mb-0 font-small-5">Article</h5>
+      <h5 class="mb-0 font-small-5">
+        Article
+        <b-badge
+          v-show="props.section.values.image"
+          variant="light-primary"
+          class="ml-1"
+        >
+          Avec Image
+        </b-badge>
+      </h5>
       <div @click="modal.show()">
         <vue-feather type="settings" size="22" class="cursor-pointer" />
       </div>
@@ -341,6 +360,17 @@ const modal = ref<HTMLElement | null>(null)
             Afficher les informations de l'article</b-form-checkbox
           >
         </b-form-group>
+      </b-col>
+      <b-col md="12">
+        <FileUploadManager
+          label="Image de l'article"
+          :files="localImage"
+          :multiple="false"
+          accept="image/*"
+          @update-files="updateImage"
+          :preview="true"
+          :disabled="!isTemplate"
+        />
       </b-col>
     </b-row>
     <template #modal-footer="{ ok }">

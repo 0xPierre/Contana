@@ -6,6 +6,7 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from django.http import HttpResponse
+import json
 
 from .utils import get_section_values
 from apps.core.permissions import (
@@ -16,7 +17,7 @@ from apps.core.permissions import (
 from apps.core.utils import get_entreprise_from_request
 from apps.documents.utils import generate_next_document_number
 from apps.entreprise.models import Entreprise
-from apps.documents.models import Document, DocumentSection, TemplateCategory, Template
+from apps.documents.models import Document, DocumentSection, TemplateCategory, Template, DocumentSectionImage
 from .serializers import TemplateCategoriesDetailSerializer
 from services.constructor.generate import construct_pdf
 
@@ -242,6 +243,11 @@ def produce_document_preview(request: Request, entreprise_slug: str):
             section.display_price_infos = values["displayPriceInfos"]
             section.total_ht = values["totalHT"]
             section.total_ht_without_discount = values["totalHTWithoutDiscount"]
+
+            # If an image is linked, then we link it to the new section
+            if "image" in values:
+                img = DocumentSectionImage.objects.get(id=values["image"]["id"])
+                section.image = img
 
             if document.forme == "avoir":
                 section.unit_price_ht = -section.unit_price_ht
@@ -484,6 +490,12 @@ def create_template(request: Request, entreprise_slug: str):
     data = request.data
 
     values = data.get("values")
+    # values may come as a JSON string when using multipart/form-data
+    if isinstance(values, str):
+        try:
+            values = json.loads(values)
+        except Exception:
+            values = {}
 
     if not data.get("name"):
         return Response(
@@ -494,23 +506,30 @@ def create_template(request: Request, entreprise_slug: str):
     if data.get("category_id"):
         category = entreprise.template_categories.get(id=data.get("category_id"))
 
-    if not values["quantity"]:
+    if not values.get("quantity"):
         values["quantity"] = 1
 
     article = DocumentSection(
         type="section-article",
-        title=values["title"],
-        description=values["description"],
-        unit_price_ht=values["unitPriceHT"],
-        quantity=values["quantity"],
-        vat_rate=values["vatRate"],
-        article_type=values["articleType"],
-        discount=values["discount"],
-        discount_type=values["discountType"],
-        discount_description=values["discountDescription"],
-        unit=values["unit"],
-        display_price_infos=values["displayPriceInfos"],
+        title=values.get("title", ""),
+        description=values.get("description", ""),
+        unit_price_ht=values.get("unitPriceHT", 0),
+        quantity=values.get("quantity", 1),
+        vat_rate=values.get("vatRate", 20),
+        article_type=values.get("articleType", "service"),
+        discount=values.get("discount", 0),
+        discount_type=values.get("discountType"),
+        discount_description=values.get("discountDescription", ""),
+        unit=values.get("unit", ""),
+        display_price_infos=values.get("displayPriceInfos", True),
     )
+    # assign uploaded image if present
+    image_file = request.FILES.get("image")
+    if image_file:
+        article.image = DocumentSectionImage(
+            file=image_file,
+        )
+        article.image.save()
     article.save()
 
     template = Template(
@@ -551,27 +570,43 @@ def update_template(request: Request, entreprise_slug: str, template_id: int):
     template.category = category
 
     values = data.get("values")
+    # values may come as a JSON string when using multipart/form-data
+    if isinstance(values, str):
+        try:
+            values = json.loads(values)
+        except Exception:
+            values = {}
 
     if not data.get("name"):
         return Response(
             {"status": "failed", "error": "Merci de donner un nom à l'article"}
         )
 
-    if not values["quantity"]:
+    if not values.get("quantity"):
         values["quantity"] = 1
 
     template.name = data.get("name")
-    template.article.title = values["title"]
-    template.article.description = values["description"]
-    template.article.unit_price_ht = values["unitPriceHT"]
-    template.article.quantity = values["quantity"]
-    template.article.vat_rate = values["vatRate"]
-    template.article.article_type = values["articleType"]
-    template.article.discount = values["discount"]
-    template.article.discount_type = values["discountType"]
-    template.article.discount_description = values["discountDescription"]
-    template.article.unit = values["unit"]
-    template.article.display_price_infos = values["displayPriceInfos"]
+    template.article.title = values.get("title", "")
+    template.article.description = values.get("description", "")
+    template.article.unit_price_ht = values.get("unitPriceHT", 0)
+    template.article.quantity = values.get("quantity", 1)
+    template.article.vat_rate = values.get("vatRate", 20)
+    template.article.article_type = values.get("articleType", "service")
+    template.article.discount = values.get("discount", 0)
+    template.article.discount_type = values.get("discountType")
+    template.article.discount_description = values.get("discountDescription", "")
+    template.article.unit = values.get("unit", "")
+    template.article.display_price_infos = values.get("displayPriceInfos", True)
+
+    # handle uploaded image if present
+    image_file = request.FILES.get("image")
+    if image_file:
+        template.article.image = DocumentSectionImage(
+            file=image_file,
+        )
+        template.article.image.save()
+    elif not values.get("image"):
+        template.article.image = None
 
     template.article.save()
     template.save()

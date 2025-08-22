@@ -20,8 +20,12 @@ RUN apt-get install -y fontconfig libfreetype6 libjpeg62-turbo libpng16-16 \
     libx11-6 libxcb1 libxext6 libxrender1 xfonts-75dpi xfonts-base libfontconfig1 \
     fontconfig-config libx11-data libxau6 libxdmcp6 xfonts-utils ucf fonts-dejavu-core \
     ttf-bitstream-vera fonts-liberation libbsd0 libfontenc1 libxfont2 \
-    x11-common xfonts-encodings
-RUN apt-get install -y wkhtmltopdf
+    x11-common xfonts-encodings wget
+
+# Install wkhtmltopdf from official releases
+RUN wget -q https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && apt-get install -y ./wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && rm wkhtmltox_0.12.6.1-3.bookworm_amd64.deb
 
 RUN apt-get install -y postgresql-client
 

@@ -15,7 +15,7 @@ const props = defineProps<{
   preview?: boolean
   maxsize?: number
   accept?: string
-  disabled?: boolean
+  disabled?: boolean // Only update not deletion
   label?: string
 }>()
 
@@ -119,6 +119,7 @@ const deleteFile = (index: number) => {
             :file="file"
             :preview-file="props.preview"
             @delete-file="deleteFile(index)"
+            :update-disabled="disabled"
           />
         </div>
         <b-button
@@ -127,6 +128,7 @@ const deleteFile = (index: number) => {
           class="mb-50"
           v-ripple
           @click="fileInput?.click()"
+          :disabled="disabled"
         >
           {{
             multiple ? 'Ajouter un/des fichier(s)' : 'Changer un fichier'

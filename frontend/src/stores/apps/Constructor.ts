@@ -80,14 +80,14 @@ export const useConstructorStore = defineStore('constructeur', {
           state.forme === DocumentsType.Facture
             ? 'la facture'
             : state.forme === DocumentsType.Devis
-            ? 'le devis'
-            : "l'avoir",
+              ? 'le devis'
+              : "l'avoir",
         second:
           state.forme === DocumentsType.Facture
             ? 'de la facture'
             : state.forme === DocumentsType.Devis
-            ? 'du devis'
-            : "de l'avoir"
+              ? 'du devis'
+              : "de l'avoir"
       }
     },
 
@@ -423,11 +423,34 @@ export const useConstructorStore = defineStore('constructeur', {
     async createCatalogTemplate(template: CatalogTemplate) {
       const entrepriseStore = useEntrepriseStore()
 
+      // If there is an image file, send multipart/form-data
+      const hasImageFile = template.values.image instanceof File
+      let payload: any = template
+      let config: any = undefined
+
+      if (hasImageFile) {
+        const formData = new FormData()
+        formData.append('name', template.name)
+        if (
+          template.category_id !== null &&
+          template.category_id !== undefined
+        )
+          formData.append('category_id', String(template.category_id))
+
+        const { image, ...restValues } = template.values as any
+        formData.append('values', JSON.stringify(restValues))
+        formData.append('image', template.values.image as File)
+
+        payload = formData
+        config = { headers: { 'Content-type': 'multipart/form-data' } }
+      }
+
       const {
         data: { data }
       } = await http.post<ApiResponse<CatalogTemplate>>(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/template/`,
-        template
+        payload,
+        config
       )
 
       if (template.category_id) {
@@ -443,9 +466,32 @@ export const useConstructorStore = defineStore('constructeur', {
     async updateCatalogTemplate(template: CatalogTemplate) {
       const entrepriseStore = useEntrepriseStore()
 
+      const hasImageFile = template.values.image instanceof File
+      let payload: FormData | CatalogTemplate = template
+      let config: { headers: Record<string, string> } | undefined =
+        undefined
+
+      if (hasImageFile) {
+        const formData = new FormData()
+        formData.append('name', template.name)
+        if (
+          template.category_id !== null &&
+          template.category_id !== undefined
+        )
+          formData.append('category_id', String(template.category_id))
+
+        const { image, ...restValues } = template.values
+        formData.append('values', JSON.stringify(restValues))
+        formData.append('image', template.values.image as File)
+
+        payload = formData
+        config = { headers: { 'Content-type': 'multipart/form-data' } }
+      }
+
       await http.put<ApiResponse<CatalogTemplate>>(
         `/api/entreprise/${entrepriseStore.entreprise?.slug}/constructor/catalog/template/${template.id}/`,
-        template
+        payload,
+        config
       )
 
       await this.getCatalog()

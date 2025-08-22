@@ -272,7 +272,10 @@ const deleteTemplate = async (template: CatalogTemplate) => {
       </template>
 
       <template v-else>
-        <div v-for="category in constructorStore.catalog.categories">
+        <div
+          v-for="category in constructorStore.catalog.categories"
+          :key="category.id as number"
+        >
           <div
             class="d-flex justify-content-between cursor-pointer mx-1 mt-1"
             :key="`cat-` + category.id"

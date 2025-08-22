@@ -1030,22 +1030,31 @@
                   </tr>
                   {% endif %}
 				{% if section.description %}
-					{% with section.description|split as descriptions %}
-						{% for desc in descriptions %}
-							<tr class="component-description">
-								<td class="cell-label description">
-									{{ desc }}
-								</td>
-								<td class="cell-money"></td>
-								<td class="cell-qty"></td>
-								{% if document.vat_payer %}
-									<td class="cell-percent"></td>
-								{% endif %}
-								<td class="cell-money"></td>
-							</tr>
-						{% endfor %}
-					{% endwith %}
-                {% endif %}
+				<tr class="component-description">
+				  <td class="cell-label description" style="padding: 8px;">{% if section.image %}
+					<div style="overflow: hidden;"><div style="float: left; width: 70%; padding-right: 15px; box-sizing: border-box;">{{ section.description }}</div>
+						<div style="float: right; width: 30%; text-align: center;">
+						  <img
+							src="{{ section.image.file.url }}"
+							alt="{{ section.title|default:'Section image' }}"
+							style="max-width: 100%; max-height: 200px; border-radius: 4px;"
+						  >
+						</div>
+					</div>
+					{% else %}
+					{{ section.description }}
+					{% endif %}
+
+				  </td>
+				  <td class="cell-money"></td>
+				  <td class="cell-qty"></td>
+				  {% if document.vat_payer %}
+					<td class="cell-percent"></td>
+				  {% endif %}
+				  <td class="cell-money"></td>
+				</tr>
+			  {% endif %}
+			  
               {% elif section.type == "section-title" %}
                 <tr class="component-title">
                   <td
