@@ -126,7 +126,6 @@ def get_document_draft(request: Request, entreprise_slug: str, document_number: 
                 "title": section.title,
             },
         }
-
         if section.type == "section-article":
             section_data["values"]["description"] = section.description
             section_data["values"]["unitPriceHT"] = section.unit_price_ht
@@ -138,6 +137,12 @@ def get_document_draft(request: Request, entreprise_slug: str, document_number: 
             section_data["values"]["discountDescription"] = section.discount_description
             section_data["values"]["unit"] = section.unit
             section_data["values"]["displayPriceInfos"] = section.display_price_infos
+
+            if section.image:
+                section_data["values"]["image"] = {
+                    "id": section.image.id,
+                    "url": section.image.file.url,
+                }
 
         sections.append(section_data)
 

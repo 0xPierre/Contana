@@ -371,6 +371,9 @@ const modal = ref<HTMLElement | null>(null)
           :preview="true"
           :disabled="!isTemplate"
         />
+        <p v-if="!isTemplate" class="text-muted">
+          L'image peut être modifié en passant par la template seulement.
+        </p>
       </b-col>
     </b-row>
     <template #modal-footer="{ ok }">
