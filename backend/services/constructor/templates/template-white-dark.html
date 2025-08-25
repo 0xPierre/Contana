@@ -328,7 +328,7 @@
 			var documentLines = [];
 			_this.$pdfContent.find('table tbody tr').each(function ()
 			{
-				if ($(this).find('.cell-label').length) {
+				if ($(this).find('.cell-label.description').length) {
 					 var description = $(this).find('.cell-label')[0].innerHTML;
 					 var descLines   = description.split(/\r\n|\r|\n/);
 					 var descTr      = [];
@@ -986,8 +986,15 @@
             {% for section in sections %}
               {% if section.type == "section-article" %}
                 <tr class="component-item">
-                  <td class="cell-label strong">
-                    {{ section.title}}
+                  <td class="cell-label strong" style="position: relative; padding-right: {% if section.image %}200px{% else %}8px{% endif %}; padding-left: 8px;">
+                    <span style="display: inline-block; vertical-align: middle;">{{ section.title}}</span>
+                    {% if section.image %}
+                      <img
+                        src="{{ section.image.file.url }}"
+                        alt="{{ section.title|default:'Section image' }}"
+                        style="position: absolute; right: 8px; max-width: 100%; top: 10px; max-height: 200px; border-radius: 4px;"
+                      >
+                    {% endif %}
                   </td>
                   <td class="cell-money">
                     {% if section.display_price_infos %}
@@ -1030,27 +1037,21 @@
                   </tr>
                   {% endif %}
 				{% if section.description %}
-				<tr class="component-description">
-				  <td class="cell-label description" style="padding: 8px;">{% if section.image %}
-					<div style="overflow: hidden;"><div style="float: left; width: 70%; padding-right: 15px; box-sizing: border-box;">{{ section.description }}</div><div style="float: right; width: 30%; text-align: center; position: relative;"><img
-							src="{{ section.image.file.url }}"
-							alt="{{ section.title|default:'Section image' }}"
-							style="max-width: 100%; max-height: 200px; border-radius: 4px; position: absolute;"
-						  >
-						</div>
-					</div>
-					{% else %}
-					{{ section.description }}
-					{% endif %}
-
-				  </td>
-				  <td class="cell-money"></td>
-				  <td class="cell-qty"></td>
-				  {% if document.vat_payer %}
-					<td class="cell-percent"></td>
-				  {% endif %}
-				  <td class="cell-money"></td>
-				</tr>
+				{% with section.description|split as descriptions %}
+						{% for desc in descriptions %}
+							<tr class="component-description">
+								<td class="cell-label description" {% if section.image %} style="padding-right: 180px" {% endif %}>
+									{{ desc }}
+								</td>
+								<td class="cell-money"></td>
+								<td class="cell-qty"></td>
+								{% if document.vat_payer %}
+									<td class="cell-percent"></td>
+								{% endif %}
+								<td class="cell-money"></td>
+							</tr>
+						{% endfor %}
+					{% endwith %}
 			  {% endif %}
 			  
               {% elif section.type == "section-title" %}
