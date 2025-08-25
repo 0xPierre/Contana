@@ -992,7 +992,7 @@
                       <img
                         src="{{ section.image.file.url }}"
                         alt="{{ section.title|default:'Section image' }}"
-                        style="position: absolute; right: 8px; max-width: 100%; top: 10px; max-height: 200px; border-radius: 4px;"
+                        style="position: absolute; right: 8px; max-width: 200px; top: 10px; max-height: 200px; border-radius: 4px;"
                       >
                     {% endif %}
                   </td>
@@ -1040,7 +1040,7 @@
 				{% with section.description|split as descriptions %}
 						{% for desc in descriptions %}
 							<tr class="component-description">
-								<td class="cell-label description" {% if section.image %} style="padding-right: 180px" {% endif %}>
+								<td class="cell-label description" {% if section.image %} style="padding-right: 200px" {% endif %}>
 									{{ desc }}
 								</td>
 								<td class="cell-money"></td>
