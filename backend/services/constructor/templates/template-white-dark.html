@@ -1002,8 +1002,8 @@
             {% for section in sections %}
               {% if section.type == "section-article" %}
                 <tr class="component-item">
-                  <td class="cell-label strong" style="position: relative; padding-right: {% if section.image %}200px{% else %}8px{% endif %}; padding-left: 8px;">
-                    <span style="display: inline-block; vertical-align: middle;">{{ section.title}}</span>
+                  <td class="cell-label strong" style="{% if section.image %}position: relative; padding-right: 200px{% endif %}; padding-left: 8px;">
+                    <span >{{ section.title}}</span>
                     {% if section.image %}
                       <img
                         src="{{ section.image.file.url }}"
