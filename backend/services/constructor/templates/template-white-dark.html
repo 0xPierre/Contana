@@ -216,6 +216,10 @@
 			tr.component-title td.label { text-align: center; font-weight: bold; border: 1px solid #777777; }
 			tr.component-description td { padding: 0 6px; }
 			table.component-list tr.component-description { height: auto;}
+			/* Prevent page breaks within sections that have images */
+			.component-item.has-image, .component-description.has-image {
+				page-break-inside: avoid;
+			}
 			tr.component-comment td.label { text-align: left; font-style: italic; border: 1px solid #777777; padding-bottom: 16px; }
 			.bloc-mentions { width:100%; text-align: center;display:inline-block; }
 			/* Document total block */
@@ -473,9 +477,21 @@
 					 return currentAmount;
 				}
 			}
-			// if new line doesn't fit in current page, create a new page
-			if (_this.getCurrentPageHeight() + lineHeight + additionalFooter > _this.pageHeight) {
-				_this.generateNewPage(currentAmount);
+			// Check if section has an image that might cause overlap
+			var hasImage = $line.hasClass('component-item') && $line.find('img').length > 0;
+			if (hasImage) {
+        var imageHeight = 200
+				// Standard page break logic for sections without images
+				if (_this.getCurrentPageHeight() + lineHeight + additionalFooter + imageHeight > _this.pageHeight) {
+					console.log("Generate new page from image", _this.getCurrentPageHeight() + lineHeight + additionalFooter, " > ", _this.pageHeight, $line)
+					_this.generateNewPage(currentAmount);
+				} 
+			} else {
+				// Standard page break logic for sections without images
+				if (_this.getCurrentPageHeight() + lineHeight + additionalFooter > _this.pageHeight) {
+					console.log("Generate new page", _this.getCurrentPageHeight() + lineHeight + additionalFooter, " > ", _this.pageHeight, $line)
+					_this.generateNewPage(currentAmount);
+				}
 			}
 			// add new line
 			_this.addElementInTable($line);
@@ -992,6 +1008,7 @@
                       <img
                         src="{{ section.image.file.url }}"
                         alt="{{ section.title|default:'Section image' }}"
+                        class="section-image"
                         style="position: absolute; right: 8px; max-width: 200px; top: 10px; max-height: 200px; border-radius: 4px;"
                       >
                     {% endif %}
