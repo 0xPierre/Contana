@@ -363,7 +363,7 @@ def produce_document(request: Request, entreprise_slug: str):
             section.total_ht_without_discount = values["totalHTWithoutDiscount"]
 
             # If an image is linked, then we link it to the new section
-            if "image" in values:
+            if "image" in values and values["image"] is not None:
                 img = DocumentSectionImage.objects.get(id=values["image"]["id"])
                 section.image = img
 
