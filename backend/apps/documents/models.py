@@ -56,6 +56,16 @@ states = [
     ("paid", "Facture ou acompte payée"),
 ]
 
+class DocumentSectionImage(BaseModel):
+    """
+    This model is used to store images related to a document section.
+    Allowing linking to others sections.
+    """
+    file = models.ImageField(upload_to="document-sections/images")
+
+    def __str__(self):
+        return f"<DocumentSectionImage: {self.file.name}>"
+
 
 class DocumentSection(BaseModel):
     type = models.CharField(choices=sections_types)
@@ -74,6 +84,12 @@ class DocumentSection(BaseModel):
     display_price_infos = models.BooleanField(default=True)
     total_ht = models.FloatField(default=0)
     total_ht_without_discount = models.FloatField(default=0)
+    image = models.ForeignKey(
+        DocumentSectionImage,
+        on_delete=models.SET_NULL,
+        related_name="sections",
+        null=True,
+    )
 
     # Only for section-subtotal
     subtotal = models.FloatField(default=0)

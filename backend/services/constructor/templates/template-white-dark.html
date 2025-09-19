@@ -216,6 +216,10 @@
 			tr.component-title td.label { text-align: center; font-weight: bold; border: 1px solid #777777; }
 			tr.component-description td { padding: 0 6px; }
 			table.component-list tr.component-description { height: auto;}
+			/* Prevent page breaks within sections that have images */
+			.component-item.has-image, .component-description.has-image {
+				page-break-inside: avoid;
+			}
 			tr.component-comment td.label { text-align: left; font-style: italic; border: 1px solid #777777; padding-bottom: 16px; }
 			.bloc-mentions { width:100%; text-align: center;display:inline-block; }
 			/* Document total block */
@@ -328,7 +332,7 @@
 			var documentLines = [];
 			_this.$pdfContent.find('table tbody tr').each(function ()
 			{
-				if ($(this).find('.cell-label').length) {
+				if ($(this).find('.cell-label.description').length) {
 					 var description = $(this).find('.cell-label')[0].innerHTML;
 					 var descLines   = description.split(/\r\n|\r|\n/);
 					 var descTr      = [];
@@ -473,9 +477,21 @@
 					 return currentAmount;
 				}
 			}
-			// if new line doesn't fit in current page, create a new page
-			if (_this.getCurrentPageHeight() + lineHeight + additionalFooter > _this.pageHeight) {
-				_this.generateNewPage(currentAmount);
+			// Check if section has an image that might cause overlap
+			var hasImage = $line.hasClass('component-item') && $line.find('img').length > 0;
+			if (hasImage) {
+        var imageHeight = 200
+				// Standard page break logic for sections without images
+				if (_this.getCurrentPageHeight() + lineHeight + additionalFooter + imageHeight > _this.pageHeight) {
+					console.log("Generate new page from image", _this.getCurrentPageHeight() + lineHeight + additionalFooter, " > ", _this.pageHeight, $line)
+					_this.generateNewPage(currentAmount);
+				} 
+			} else {
+				// Standard page break logic for sections without images
+				if (_this.getCurrentPageHeight() + lineHeight + additionalFooter > _this.pageHeight) {
+					console.log("Generate new page", _this.getCurrentPageHeight() + lineHeight + additionalFooter, " > ", _this.pageHeight, $line)
+					_this.generateNewPage(currentAmount);
+				}
 			}
 			// add new line
 			_this.addElementInTable($line);
@@ -986,8 +1002,16 @@
             {% for section in sections %}
               {% if section.type == "section-article" %}
                 <tr class="component-item">
-                  <td class="cell-label strong">
-                    {{ section.title}}
+                  <td class="cell-label strong" style="{% if section.image %}position: relative; padding-right: 210px{% endif %}; padding-left: 8px;">
+                    <span >{{ section.title}}</span>
+                    {% if section.image %}
+                      <img
+                        src="{{ section.image.file.url }}"
+                        alt="{{ section.title|default:'Section image' }}"
+                        class="section-image"
+                        style="position: absolute; right: 8px; max-width: 200px; top: 10px; max-height: 200px; border-radius: 4px;"
+                      >
+                    {% endif %}
                   </td>
                   <td class="cell-money">
                     {% if section.display_price_infos %}
@@ -1030,10 +1054,10 @@
                   </tr>
                   {% endif %}
 				{% if section.description %}
-					{% with section.description|split as descriptions %}
+				{% with section.description|split as descriptions %}
 						{% for desc in descriptions %}
 							<tr class="component-description">
-								<td class="cell-label description">
+								<td class="cell-label description" {% if section.image %} style="padding-right: 210px" {% endif %}>
 									{{ desc }}
 								</td>
 								<td class="cell-money"></td>
@@ -1045,7 +1069,8 @@
 							</tr>
 						{% endfor %}
 					{% endwith %}
-                {% endif %}
+			  {% endif %}
+			  
               {% elif section.type == "section-title" %}
                 <tr class="component-title">
                   <td

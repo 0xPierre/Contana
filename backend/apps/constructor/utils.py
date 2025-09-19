@@ -20,6 +20,9 @@ def get_section_values(section: DocumentSection) -> dict:
         values["discountDescription"] = section.discount_description
         values["unit"] = section.unit
         values["displayPriceInfos"] = section.display_price_infos
+        values["image"] = (
+            {"id": section.image.id, "url": section.image.file.url} if section.image else None
+        )
 
     elif section.type == "section-subtotal":
         values["subtotal"] = section.subtotal
