@@ -28,6 +28,9 @@ const client = ref<ClientModel>({
   vat_number: '',
   siren: '',
   note: '',
+  source: '',
+  url: '',
+  platform: '',
   type: 'professionnel',
   website: '',
   archived: false,
@@ -331,6 +334,33 @@ const unarchiveClient = async () => {
                   "
                   :clearable="false"
                   :disabled="client.archived"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col md="6">
+              <b-form-group label="Source">
+                <b-input
+                  v-model="client.crm_source"
+                  placeholder="Google, recommandation, etc."
+                  type="text"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col md="6">
+              <b-form-group label="URL">
+                <b-input
+                  v-model="client.crm_url"
+                  placeholder="https://example.com"
+                  type="text"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col md="6">
+              <b-form-group label="Plateforme">
+                <b-input
+                  v-model="client.crm_platform"
+                  placeholder="Plateforme"
+                  type="text"
                 />
               </b-form-group>
             </b-col>

@@ -47,6 +47,9 @@ class Client(BaseModel):
             ("professionnel", "Professionnel"),
         ],
     )
+    crm_source = models.CharField(max_length=255, null=True, blank=True)
+    crm_url = models.CharField(max_length=255, null=True, blank=True)
+    crm_platform = models.CharField(max_length=255, null=True, blank=True)
 
     client_number = models.CharField(max_length=255, null=True, blank=True)
 
