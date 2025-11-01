@@ -68,6 +68,10 @@ class Client(BaseModel):
     )
     archived = models.BooleanField(default=False)
 
+    crm_source = models.CharField(max_length=255, null=True, blank=True)
+    crm_url = models.CharField(max_length=255, null=True, blank=True)
+    crm_platform = models.CharField(max_length=255, null=True, blank=True)
+
     def __str__(self):
         return self.socialreasonorname
 

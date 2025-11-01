@@ -41,6 +41,9 @@ export interface ClientModel extends ClientCreationForm {
     id: number
     url: string
   }[]
+  crm_platform: string
+  crm_source: string
+  crm_url: string
 }
 
 export interface ClientConstructor {

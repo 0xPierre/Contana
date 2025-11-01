@@ -99,7 +99,10 @@ class ClientsDetailSerializer(serializers.ModelSerializer):
             "archived",
             "files",
             "created_by",
-            "documents"
+            "documents",
+            "crm_source",
+            "crm_url",
+            "crm_platform"
         ]
         extra_kwargs = {
             "socialreasonorname": {

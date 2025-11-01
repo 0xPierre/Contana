@@ -36,7 +36,10 @@ const client = ref<ClientModel>({
   client_number: '',
   files: [],
   documents: [],
-  created_by: null
+  created_by: null,
+  crm_source: '',
+  crm_url: '',
+  crm_platform: ''
 })
 const route = useRoute()
 const router = useRouter()
@@ -331,6 +334,33 @@ const unarchiveClient = async () => {
                   "
                   :clearable="false"
                   :disabled="client.archived"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col md="6">
+              <b-form-group label="Source">
+                <b-input
+                  v-model="client.crm_source"
+                  placeholder="Google, recommandation, etc."
+                  type="text"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col md="6">
+              <b-form-group label="URL">
+                <b-input
+                  v-model="client.crm_url"
+                  placeholder="https://example.com"
+                  type="text"
+                />
+              </b-form-group>
+            </b-col>
+            <b-col md="6">
+              <b-form-group label="Plateforme">
+                <b-input
+                  v-model="client.crm_platform"
+                  placeholder="Plateforme"
+                  type="text"
                 />
               </b-form-group>
             </b-col>
