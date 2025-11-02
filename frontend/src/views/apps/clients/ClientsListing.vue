@@ -129,11 +129,11 @@ onBeforeMount(() => {
           </b-form-group>
         </b-col>
         <b-col md="3">
-          <b-form-group label="Status">
+          <b-form-group label="Statut">
             <v-select
               :options="[
                 {
-                  label: 'Tous les status actifs',
+                  label: 'Tous les statuts actifs',
                   value: ''
                 },
                 {
@@ -191,7 +191,7 @@ onBeforeMount(() => {
           :items="clientsStore.listing.clients"
           :fields="[
             { key: 'client_number', label: 'Numéro', sortable: true },
-            { key: 'status', label: 'Status', sortable: false },
+            { key: 'status', label: 'Statut', sortable: false },
             {
               key: 'socialreasonorname',
               label: 'Raison social',

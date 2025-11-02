@@ -186,13 +186,9 @@ const saveFiles = async () => {
                 />
               </b-form-group>
 
-              <b-form-group label="Status">
+              <b-form-group label="Statut">
                 <v-select
                   :options="[
-                    {
-                      label: 'Tous les status actifs',
-                      value: ''
-                    },
                     {
                       label: 'Suspect',
                       value: 'suspect'
