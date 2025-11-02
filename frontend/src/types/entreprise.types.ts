@@ -53,6 +53,12 @@ export interface EntrepriseUser {
   permissions: Permissions
 }
 
+export interface ApplicationToken {
+  key: string
+  name: string
+  created: string
+}
+
 export interface EntrepriseModel extends EntrepriseSettingsInformations {
   id: number
   created_at: string

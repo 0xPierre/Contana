@@ -1,9 +1,17 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views import views
 from .views import stripe as stripe_views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(
+    r"token/application", views.ApplicationTokenViewsSet, basename="application_token"
+)
+
 
 urlpatterns = [
+    path("", include(router.urls)),
     path(
         "api/entreprise/<str:entreprise_slug>/data",
         views.get_data,

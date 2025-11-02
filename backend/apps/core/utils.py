@@ -1,10 +1,14 @@
 from typing import Union
-
 from django.http import HttpRequest
-
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from apps.user.authentication import ApplicationTokenAuthentication
 from ..entreprise.models import Entreprise
 from rest_framework.request import Request
 
+PUBLIC_API_AUTHENTICATION_CLASSES = [
+    JWTAuthentication,
+    ApplicationTokenAuthentication
+]
 
 def get_entreprise_from_request(request: Union[Request, HttpRequest]) -> Entreprise or None:
     """

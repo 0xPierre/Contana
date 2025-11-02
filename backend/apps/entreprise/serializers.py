@@ -1,4 +1,4 @@
-from .models import Entreprise
+from .models import Entreprise, ApplicationToken
 from rest_framework import serializers
 
 
@@ -46,3 +46,9 @@ class EntrepriseInformationsModelSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Cet email est déjà utilisé")
 
         return value
+
+class ApplicationTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplicationToken
+        fields = ["key", "name", "created"]
+        read_only_fields = ["key", "created"]

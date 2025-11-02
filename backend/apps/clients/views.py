@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from .models import ClientStatus
 from ..clients.models import Client
 from ..core.permissions import IsInEntreprise, CanAccessClients, CanUpdateClients, IsEntrepriseBillingOk
-from ..core.utils import get_entreprise_from_request
+from ..core.utils import get_entreprise_from_request, PUBLIC_API_AUTHENTICATION_CLASSES
 from ..core.permissions import test_user_permission
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -24,6 +24,17 @@ class ClientsViewSet(viewsets.ModelViewSet):
     """
 
     pagination_class = ClientsSetPagination
+    authentication_classes = PUBLIC_API_AUTHENTICATION_CLASSES
+    permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessClients, IsEntrepriseBillingOk]
+
+    def get_permissions(self):
+        """
+        Override permissions based on action.
+        Update operations require CanUpdateClients instead of CanAccessClients.
+        """
+        if self.action in ['update', 'partial_update']:
+            return [IsAuthenticated(), IsInEntreprise(), CanUpdateClients(), IsEntrepriseBillingOk()]
+        return [permission() for permission in self.permission_classes]
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -81,7 +92,6 @@ class ClientsViewSet(viewsets.ModelViewSet):
         return queryset
 
     def create(self, request: Request, *args, **kwargs):
-        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessClients, IsEntrepriseBillingOk]
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -101,13 +111,11 @@ class ClientsViewSet(viewsets.ModelViewSet):
         )
 
     def retrieve(self, request, *args, **kwargs):
-        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanAccessClients, IsEntrepriseBillingOk]
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response({"status": "success", "data": serializer.data})
 
     def update(self, request: Request, *args, **kwargs):
-        self.permission_classes = [IsAuthenticated, IsInEntreprise, CanUpdateClients, IsEntrepriseBillingOk]
         instance: Client = self.get_object()
 
         serializer = self.get_serializer(instance, data=request.data, partial=True)

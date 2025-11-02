@@ -1,3 +1,5 @@
+from rest_framework.authtoken.models import Token
+
 from ..core.models import BaseModel, payments_method
 from ..user.models import User
 from autoslug import AutoSlugField
@@ -138,3 +140,23 @@ class Entreprise(BaseModel):
             ("access_dashboard", "Allows to access the dashboard"),
             ("access_crm", "Allows to access CRM features")
         )
+
+class ApplicationToken(Token):
+    user = models.ForeignKey(
+        User,
+        related_name="application_tokens",
+        on_delete=models.CASCADE,
+        verbose_name="User",
+    )
+    entreprise = models.ForeignKey(
+        Entreprise,
+        related_name="application_tokens",
+        on_delete=models.CASCADE,
+        verbose_name="Entreprise",
+    )
+    name = models.CharField(max_length=255, verbose_name="Name", blank=True)
+
+    class Meta:
+        verbose_name = "Application Token"
+        verbose_name_plural = "Application Tokens"
+        ordering = ["-created"]

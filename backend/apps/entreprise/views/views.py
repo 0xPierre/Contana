@@ -2,7 +2,10 @@ import random
 import string
 
 from django.http import HttpResponse
+from rest_framework import viewsets
 
+from apps.core.utils import get_entreprise_from_request
+from apps.entreprise.serializers import ApplicationTokenSerializer
 from services.constructor.generate import construct_pdf
 from apps.clients.utils import generate_next_client_number
 from apps.core.permissions import (
@@ -563,3 +566,15 @@ def get_document_personnalization_preview(
     response = HttpResponse(pdf.read(), content_type="application/pdf")
     response["Content-Disposition"] = 'inline; filename="preview.pdf"'
     return response
+
+
+class ApplicationTokenViewsSet(viewsets.ModelViewSet):
+    serializer_class = ApplicationTokenSerializer
+
+    permission_classes = [IsAuthenticated, IsInEntreprise, CanAdministrate]
+
+    def get_queryset(self):
+        return get_entreprise_from_request(self.request).application_tokens.all()
+
+    def perform_create(self, serializer):
+        serializer.save(entreprise=get_entreprise_from_request(self.request), user=self.request.user)

@@ -3,7 +3,8 @@ import http from '@/helpers/http'
 import type {
   EntrepriseModel,
   EntrepriseSettingsInformations,
-  EntrepriseUser
+  EntrepriseUser,
+  ApplicationToken
 } from '@/types/entreprise.types'
 import type { ApiResponse } from '@/types/api.types'
 import { PaymentsMethod } from '@/types/core.types.ts'
@@ -200,6 +201,55 @@ export const useEntrepriseStore = defineStore('entreprise', {
     async createCustomerPortal() {
       return http.post<ApiResponse<{ url: string }>>(
         `/api/entreprise/${this.entreprise?.slug}/settings/customer-portal/create`
+      )
+    },
+
+    async getApplicationTokens(): Promise<ApplicationToken[]> {
+      const { data } = await http.get<ApplicationToken[]>(
+        `/token/application/`,
+        {
+          params: {
+            entreprise_slug: this.entreprise?.slug
+          }
+        }
+      )
+      return data
+    },
+
+    async createApplicationToken(name?: string): Promise<ApplicationToken> {
+      const { data } = await http.post<ApplicationToken>(
+        `/token/application/`,
+        name ? { name } : {},
+        {
+          params: {
+            entreprise_slug: this.entreprise?.slug
+          }
+        }
+      )
+      return data
+    },
+
+    async updateApplicationToken(tokenKey: string, name: string): Promise<ApplicationToken> {
+      const { data } = await http.patch<ApplicationToken>(
+        `/token/application/${tokenKey}/`,
+        { name },
+        {
+          params: {
+            entreprise_slug: this.entreprise?.slug
+          }
+        }
+      )
+      return data
+    },
+
+    async deleteApplicationToken(tokenKey: string) {
+      return http.delete<ApiResponse>(
+        `/token/application/${tokenKey}/`,
+        {
+          params: {
+            entreprise_slug: this.entreprise?.slug
+          }
+        }
       )
     }
   },

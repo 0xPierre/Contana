@@ -7,7 +7,7 @@ import EntrepriseSettingsVisualIdentity from './EntrepriseSettingsVisualIdentity
 import EntrepriseSettingsSecurity from './EntrepriseSettingsSecurity.vue'
 import EntrepriseSettingsPersonalization from '@/views/apps/entreprise/settings/EntrepriseSettingsPersonalization/EntrepriseSettingsPersonalization.vue'
 import EntrepriseSettingsBilling from '@/views/apps/entreprise/settings/EntrepriseSettingsBilling.vue'
-import EntrepriseSettingsCRM from './EntrepriseSettingsCRM.vue'
+import EntrepriseSettingsApiKeys from './EntrepriseSettingsApiKeys.vue'
 
 const isLoading = ref(false)
 const entrepriseStore = useEntrepriseStore()
@@ -91,6 +91,15 @@ onMounted(async () => {
         </template>
 
         <EntrepriseSettingsSecurity />
+      </b-tab>
+
+      <b-tab v-if="entrepriseStore.entreprise?.is_owner || entrepriseStore.entreprise?.user_permissions?.administrate">
+        <template #title>
+          <vue-feather type="key" size="18" class="mr-50" />
+          <span class="font-weight-bold">Clé API</span>
+        </template>
+
+        <EntrepriseSettingsApiKeys />
       </b-tab>
     </b-tabs>
   </b-overlay>
