@@ -4,13 +4,10 @@ from django.db import models
 from ..user.models import User
 
 class ClientStatus(models.TextChoices):
-    ACTIVE = "active", "Actif"
-    LEAD = "lead", "Lead"
-    FIRST_RELAUNCH = "first_relaunch", "Premier relance"
-    SECOND_RELAUNCH = "second_relaunch", "Deuxième relance"
-    THIRD_RELAUNCH = "third_relaunch", "Troisième relance"
-    LONG_TERM_RELAUNCH = "long_term_relaunch", "Relance long terme"
-    INACTIVE = "inactive", "Inactif"
+    SUSPECT = "suspect", "Suspect"
+    PROSPECT = "prospect", "Prospect"
+    CLIENT = "client", "Client"
+    ARCHIVED = "archived", "Archivé"
     
 
 class ClientFiles(BaseModel):
@@ -64,7 +61,7 @@ class Client(BaseModel):
     status = models.CharField(
         max_length=255,
         choices=ClientStatus.choices,
-        default=ClientStatus.LEAD,
+        default=ClientStatus.SUSPECT,
     )
     archived = models.BooleanField(default=False)
 

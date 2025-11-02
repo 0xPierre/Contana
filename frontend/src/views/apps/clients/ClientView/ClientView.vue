@@ -3,7 +3,7 @@ import { computed, onBeforeMount, ref } from 'vue'
 import { useClientsStore } from '@/stores/apps/Clients'
 import { useRoute, useRouter } from 'vue-router'
 import BackButton from '@/components/back-button/BackButton.vue'
-import type { ClientModel } from '@/types/clients.types'
+import { ClientModel, ClientStatusEnum } from '@/types/clients.types'
 import { notify, notifyApiError, swalAlert } from '@/helpers/notify'
 import { AxiosError } from 'axios'
 import FileUploadManager from '@/components/file-upload-manager/FileUploadManager.vue'
@@ -30,7 +30,6 @@ const client = ref<ClientModel>({
   note: '',
   type: 'professionnel',
   website: '',
-  archived: false,
   created_at: '',
   updated_at: '',
   client_number: '',
@@ -39,7 +38,8 @@ const client = ref<ClientModel>({
   created_by: null,
   crm_source: '',
   crm_url: '',
-  crm_platform: ''
+  crm_platform: '',
+  status: ClientStatusEnum.SUSPECT
 })
 const route = useRoute()
 const router = useRouter()
@@ -96,58 +96,6 @@ const saveFiles = async () => {
 
   isLoading.value = false
 }
-
-const archiveClient = async () => {
-  const { value } = await swalAlert(
-    'Attention',
-    'warning',
-    `Êtes vous sûr de vouloir archiver ce client ?`
-  )
-
-  if (!value) return
-
-  isLoading.value = true
-
-  try {
-    await clientsStore.archiveClient(client.value)
-
-    notify('Client archivé', 'success')
-
-    router.push({ name: 'entreprise-clients' })
-  } catch (e) {
-    if (e instanceof AxiosError && e.response?.status === 400)
-      notifyApiError(e.response.data)
-    else notify('Une erreur est survenue', 'danger')
-  }
-
-  isLoading.value = false
-}
-
-const unarchiveClient = async () => {
-  const { value } = await swalAlert(
-    'Attention',
-    'warning',
-    `Êtes vous sûr de vouloir désarchiver ce client ?`
-  )
-
-  if (!value) return
-
-  isLoading.value = true
-
-  try {
-    await clientsStore.unarchiveClient(client.value)
-
-    notify('Client désarchiver', 'success')
-
-    router.push({ name: 'entreprise-clients' })
-  } catch (e) {
-    if (e instanceof AxiosError && e.response?.status === 400)
-      notifyApiError(e.response.data)
-    else notify('Une erreur est survenue', 'danger')
-  }
-
-  isLoading.value = false
-}
 </script>
 
 <template>
@@ -159,38 +107,7 @@ const unarchiveClient = async () => {
             text="Liste des clients"
             :to="{ name: 'entreprise-clients' }"
           />
-          <h4 class="ml-2 mt-50">
-            Client n°{{ client.client_number }}
-            <span
-              v-if="client.archived"
-              class="font-weight-bolder text-dark"
-            >
-              - archivé
-            </span>
-          </h4>
-        </div>
-
-        <div
-          v-if="
-            entrepriseStore.entreprise?.user_permissions.update_clients
-          "
-        >
-          <b-button
-            v-if="!client.archived"
-            variant="flat-secondary"
-            v-ripple
-            @click="archiveClient"
-          >
-            Archiver le client
-          </b-button>
-          <b-button
-            v-else
-            variant="flat-secondary"
-            v-ripple
-            @click="unarchiveClient"
-          >
-            Désarchiver le client
-          </b-button>
+          <h4 class="ml-2 mt-50">Client n°{{ client.client_number }}</h4>
         </div>
       </div>
     </b-card>
@@ -268,6 +185,36 @@ const unarchiveClient = async () => {
                   type="text"
                 />
               </b-form-group>
+
+              <b-form-group label="Status">
+                <v-select
+                  :options="[
+                    {
+                      label: 'Tous les status actifs',
+                      value: ''
+                    },
+                    {
+                      label: 'Suspect',
+                      value: 'suspect'
+                    },
+                    {
+                      label: 'Prospect',
+                      value: 'prospect'
+                    },
+                    {
+                      label: 'Client',
+                      value: 'client'
+                    },
+                    {
+                      label: 'Archivé',
+                      value: 'archived'
+                    }
+                  ]"
+                  :reduce="(option: any) => option.value"
+                  v-model="client.status"
+                  :clearable="false"
+                />
+              </b-form-group>
             </b-col>
           </b-row>
 
@@ -333,7 +280,6 @@ const unarchiveClient = async () => {
                     })
                   "
                   :clearable="false"
-                  :disabled="client.archived"
                 />
               </b-form-group>
             </b-col>
@@ -382,7 +328,6 @@ const unarchiveClient = async () => {
             variant="primary"
             v-ripple
             @click="updateClient"
-            :disabled="client.archived"
           >
             Enregistrer
           </b-button>
@@ -408,7 +353,6 @@ const unarchiveClient = async () => {
               class="btn-with-icon"
               block
               v-ripple
-              :disabled="client.archived"
               :to="{
                 name: 'entreprise-constructor',
                 query: {
@@ -426,7 +370,6 @@ const unarchiveClient = async () => {
               class="btn-with-icon"
               block
               v-ripple
-              :disabled="client.archived"
               :to="{
                 name: 'entreprise-constructor',
                 query: {
@@ -452,7 +395,6 @@ const unarchiveClient = async () => {
             :preview="true"
             :multiple="true"
             @update-files="filesUpdate"
-            :disabled="client.archived"
             label="Ajouter des fichiers liés au client"
           />
 
@@ -463,7 +405,6 @@ const unarchiveClient = async () => {
             class="mt-1"
             variant="primary"
             v-ripple
-            :disabled="client.archived"
             @click="saveFiles"
           >
             Enregistrer les fichiers

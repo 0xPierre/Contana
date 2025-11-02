@@ -2,6 +2,13 @@ import { DocumentModel } from '@/types/documents.types.ts'
 
 export type ClientType = 'particulier' | 'professionnel'
 
+export enum ClientStatusEnum {
+  SUSPECT = 'suspect',
+  PROSPECT = 'prospect',
+  CLIENT = 'client',
+  ARCHIVED = 'archived'
+}
+
 export interface ClientCreationForm {
   socialreasonorname: string
   email: string
@@ -22,7 +29,6 @@ export interface ClientModel extends ClientCreationForm {
   created_at: string
   updated_at: string
   client_number: string
-  archived: boolean
   documents: Pick<
     DocumentModel,
     | 'id'
@@ -44,6 +50,7 @@ export interface ClientModel extends ClientCreationForm {
   crm_platform: string
   crm_source: string
   crm_url: string
+  status: ClientStatusEnum
 }
 
 export interface ClientConstructor {

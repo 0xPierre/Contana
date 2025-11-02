@@ -1,5 +1,6 @@
 from django.db.models import QuerySet
 
+from .models import ClientStatus
 from ..clients.models import Client
 from ..core.permissions import IsInEntreprise, CanAccessClients, CanUpdateClients, IsEntrepriseBillingOk
 from ..core.utils import get_entreprise_from_request
@@ -55,11 +56,10 @@ class ClientsViewSet(viewsets.ModelViewSet):
                 )
                 queryset = queryset.filter(q_query)
 
-            if self.request.query_params.get("archived"):
-                if self.request.query_params.get("archived") == "true":
-                    queryset = queryset.filter(archived=True)
-                else:
-                    queryset = queryset.filter(archived=False)
+            if self.request.query_params.get("status"):
+                queryset = queryset.filter(status=self.request.query_params.get("status"))
+            else:
+                queryset = queryset.exclude(status=ClientStatus.ARCHIVED)
             
             if test_user_permission(self, self.request, "administrate"):
                 if self.request.query_params.get("created_by") != "-1" and self.request.query_params.get("created_by") != None:
@@ -110,9 +110,6 @@ class ClientsViewSet(viewsets.ModelViewSet):
         self.permission_classes = [IsAuthenticated, IsInEntreprise, CanUpdateClients, IsEntrepriseBillingOk]
         instance: Client = self.get_object()
 
-        if instance.archived:
-            raise PermissionDenied
-
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -124,30 +121,6 @@ class ClientsViewSet(viewsets.ModelViewSet):
         Clients can't be deleted
         """
         raise PermissionDenied
-
-    @action(
-        detail=True,
-        methods=["post"],
-        permission_classes=[IsAuthenticated, IsInEntreprise, CanUpdateClients, IsEntrepriseBillingOk],
-    )
-    def archive(self, *args, **kwargs):
-        client = self.get_object()
-        client.archived = True
-        client.save()
-
-        return Response({"status": "success"})
-
-    @action(
-        detail=True,
-        methods=["post"],
-        permission_classes=[IsAuthenticated, IsInEntreprise, CanUpdateClients, IsEntrepriseBillingOk],
-    )
-    def unarchive(self, *args, **kwargs):
-        client = self.get_object()
-        client.archived = False
-        client.save()
-
-        return Response({"status": "success"})
 
     @action(
         detail=True,

@@ -20,6 +20,7 @@ from apps.entreprise.models import Entreprise
 from apps.documents.models import Document, DocumentSection, TemplateCategory, Template, DocumentSectionImage
 from .serializers import TemplateCategoriesDetailSerializer
 from services.constructor.generate import construct_pdf
+from ..clients.models import ClientStatus
 
 
 @api_view(["POST"])
@@ -383,6 +384,16 @@ def produce_document(request: Request, entreprise_slug: str):
 
     document.file = construct_pdf(document, sections)
     document.save()
+
+    # When the client status is prospect and document is a facture, set status to client
+    if document.forme == "facture" and client.status != ClientStatus.CLIENT:
+        client.status = ClientStatus.CLIENT
+        client.save()
+
+    # When the client status is suspect and document is a quote, set status to prospect
+    if document.forme == "devis" and client.status == ClientStatus.SUSPECT:
+        client.status = ClientStatus.PROSPECT
+        client.save()
 
     return Response(
         {

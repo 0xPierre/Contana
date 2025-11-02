@@ -43,10 +43,10 @@ export const useClientsStore = defineStore('clients', {
       currentPage: number
       perPage: number
       search: string
-      archived: boolean
       sortBy: string
       sortDesc: boolean
-      createdBy: number
+      createdBy: number | undefined
+      status: string
     }) {
       const entrepriseStore = useEntrepriseStore()
 
@@ -60,7 +60,8 @@ export const useClientsStore = defineStore('clients', {
             archived: filters.archived,
             sort_by: filters.sortBy,
             sort_desc: filters.sortDesc,
-            created_by: filters.createdBy
+            created_by: filters.createdBy,
+            status: filters.status
           }
         }
       )

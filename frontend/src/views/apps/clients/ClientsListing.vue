@@ -9,6 +9,7 @@ import { useUserStore } from '@/stores/apps/User'
 import type { EntrepriseUser } from '@/types/entreprise.types'
 import { can } from '@/helpers/permissions.ts'
 import strftime from 'strftime'
+import ClientStatusBadge from '@/components/client/ClientStatusBadge.vue'
 
 const entrepriseStore = useEntrepriseStore()
 const userStore = useUserStore()
@@ -19,17 +20,13 @@ const filters = reactive({
   perPage: 25,
   currentPage: 1,
   search: '',
-  archived: false,
   createdBy: can('administrate', entrepriseStore.entreprise)
     ? -1
     : userStore.data?.id,
   sortBy: 'id',
-  sortDesc: true
+  sortDesc: true,
+  status: ''
 })
-
-const setClientsListingArchivedFilter = (archived: boolean) => {
-  filters.archived = archived
-}
 
 const getClients = async () => {
   isListingLoading.value = true
@@ -53,10 +50,10 @@ const saveFiltersInQuery = () => {
       perPage: filters.perPage,
       currentPage: filters.currentPage,
       search: filters.search,
-      archived: filters.archived.toString(),
       createdBy: filters.createdBy?.toString(),
       sortBy: filters.sortBy,
-      sortDesc: filters.sortDesc.toString()
+      sortDesc: filters.sortDesc.toString(),
+      status: filters.status
     }
   })
 }
@@ -65,10 +62,10 @@ watch(
   [
     () => filters.perPage,
     () => filters.search,
-    () => filters.archived,
     () => filters.sortBy,
     () => filters.sortDesc,
-    () => filters.createdBy
+    () => filters.createdBy,
+    () => filters.status
   ],
   () => {
     if (!isFiltersUpdateFromQuery.value) {
@@ -104,10 +101,10 @@ onBeforeMount(() => {
       searchParams.get('currentPage') as string
     )
     filters.search = searchParams.get('search') as string
-    filters.archived = searchParams.get('archived') === 'true'
-    ;(filters.createdBy = parseInt(searchParams.get('createdBy') || '')),
-      (filters.sortBy = searchParams.get('sortBy') as string)
+    filters.createdBy = parseInt(searchParams.get('createdBy') || '')
+    filters.sortBy = searchParams.get('sortBy') as string
     filters.sortDesc = searchParams.get('sortDesc') === 'true'
+    filters.status = searchParams.get('status') as string
 
     isFiltersUpdateFromQuery.value = true
   }
@@ -117,37 +114,10 @@ onBeforeMount(() => {
 
 <template>
   <div>
-    <div class="d-flex justify-content-between">
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <a
-            href="#"
-            class="nav-link"
-            :class="{ active: !filters.archived }"
-            @click="setClientsListingArchivedFilter(false)"
-          >
-            <vue-feather type="users" size="18" class="mr-50" />
-            <span class="font-weight-bold">Clients actifs</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a
-            href="#"
-            class="nav-link"
-            :class="{ active: filters.archived }"
-            @click="setClientsListingArchivedFilter(true)"
-          >
-            <vue-feather type="archive" size="18" class="mr-50" />
-            <span class="font-weight-bold">Clients archivés</span>
-          </a>
-        </li>
-      </ul>
-      <div>
+    <b-card>
+      <div class="d-flex justify-content-end mb-1">
         <ClientsCreate />
       </div>
-    </div>
-
-    <b-card>
       <b-row>
         <b-col md="4">
           <b-form-group label="Recherche par texte">
@@ -158,7 +128,38 @@ onBeforeMount(() => {
             />
           </b-form-group>
         </b-col>
-        <b-col md="4">
+        <b-col md="3">
+          <b-form-group label="Status">
+            <v-select
+              :options="[
+                {
+                  label: 'Tous les status actifs',
+                  value: ''
+                },
+                {
+                  label: 'Suspect',
+                  value: 'suspect'
+                },
+                {
+                  label: 'Prospect',
+                  value: 'prospect'
+                },
+                {
+                  label: 'Client',
+                  value: 'client'
+                },
+                {
+                  label: 'Archivé',
+                  value: 'archived'
+                }
+              ]"
+              :reduce="(option: any) => option.value"
+              v-model="filters.status"
+              :clearable="false"
+            />
+          </b-form-group>
+        </b-col>
+        <b-col md="2">
           <b-form-group label="Clients par page">
             <v-select
               :options="[10, 25, 50, 100]"
@@ -167,7 +168,7 @@ onBeforeMount(() => {
             />
           </b-form-group>
         </b-col>
-        <b-col v-if="can('administrate')" md="4">
+        <b-col v-if="can('administrate')" md="3">
           <b-form-group label="Créé par">
             <v-select
               v-model="filters.createdBy"
@@ -232,10 +233,7 @@ onBeforeMount(() => {
           </template>
 
           <template #cell(status)="row">
-            <b-badge v-if="row.item.archived" variant="light-secondary">
-              Archivé
-            </b-badge>
-            <b-badge v-else variant="light-success"> Actif </b-badge>
+            <ClientStatusBadge :status="row.value" />
           </template>
 
           <template #cell(address)="row">
