@@ -48,7 +48,20 @@ class EntrepriseInformationsModelSerializer(serializers.ModelSerializer):
         return value
 
 class ApplicationTokenSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = ApplicationToken
-        fields = ["key", "name", "created"]
+        fields = ["key", "name", "created", "user"]
         read_only_fields = ["key", "created"]
+
+    def get_user(self, obj):
+        if obj.user:
+            return {
+                "id": obj.user.id,
+                "first_name": obj.user.first_name,
+                "last_name": obj.user.last_name,
+                "full_name": obj.user.full_name,
+                "email": obj.user.email,
+            }
+        return None

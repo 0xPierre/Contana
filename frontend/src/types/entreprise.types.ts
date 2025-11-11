@@ -57,6 +57,13 @@ export interface ApplicationToken {
   key: string
   name: string
   created: string
+  user?: {
+    id: number
+    first_name: string
+    last_name: string
+    full_name: string
+    email: string
+  }
 }
 
 export interface EntrepriseModel extends EntrepriseSettingsInformations {

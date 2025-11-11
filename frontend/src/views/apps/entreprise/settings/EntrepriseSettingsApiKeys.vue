@@ -11,6 +11,7 @@ const tokens = ref<ApplicationToken[]>([])
 const modalCreateToken = ref<any>(null)
 const modalShowToken = ref<any>(null)
 const tokenName = ref('')
+const selectedUserId = ref<number | null>(null)
 const createdToken = ref<string | null>(null)
 
 const tableFields = ref([
@@ -23,6 +24,11 @@ const tableFields = ref([
     key: 'key',
     sortable: true,
     label: 'Clé'
+  },
+  {
+    key: 'user',
+    sortable: true,
+    label: 'Utilisateur'
   },
   {
     key: 'created',
@@ -40,9 +46,14 @@ const loadTokens = async () => {
   isLoading.value = true
   try {
     const result = await entrepriseStore.getApplicationTokens()
-    tokens.value = Array.isArray(result) ? result : (result as any).results || []
+    tokens.value = Array.isArray(result)
+      ? result
+      : (result as any).results || []
   } catch (error: any) {
-    notify('Une erreur est survenue lors du chargement des clés API', 'danger')
+    notify(
+      'Une erreur est survenue lors du chargement des clés API',
+      'danger'
+    )
     tokens.value = []
   }
   isLoading.value = false
@@ -50,14 +61,21 @@ const loadTokens = async () => {
 
 const openCreateTokenModal = () => {
   tokenName.value = ''
+  selectedUserId.value = null
   modalCreateToken.value?.show()
 }
 
 const createToken = async () => {
+  if (!selectedUserId.value) {
+    notify('Veuillez sélectionner un utilisateur', 'warning')
+    return
+  }
+
   isLoading.value = true
   try {
     const newToken = await entrepriseStore.createApplicationToken(
-      tokenName.value ? tokenName.value : undefined
+      tokenName.value ? tokenName.value : undefined,
+      selectedUserId.value
     )
     loadTokens()
     createdToken.value = newToken.key
@@ -67,7 +85,10 @@ const createToken = async () => {
     if (error.response?.data?.errors) {
       notifyApiError(error.response.data.errors)
     } else {
-      notify('Une erreur est survenue lors de la création de la clé API', 'danger')
+      notify(
+        'Une erreur est survenue lors de la création de la clé API',
+        'danger'
+      )
     }
   }
   isLoading.value = false
@@ -95,7 +116,10 @@ const deleteToken = async (token: ApplicationToken) => {
       loadTokens()
       notify('Clé API supprimée avec succès', 'success')
     } catch {
-      notify('Une erreur est survenue lors de la suppression de la clé API', 'danger')
+      notify(
+        'Une erreur est survenue lors de la suppression de la clé API',
+        'danger'
+      )
     }
     isLoading.value = false
   }
@@ -131,7 +155,9 @@ onMounted(() => {
   <b-overlay :show="isLoading">
     <b-card>
       <template #header>
-        <div class="d-flex w-100 justify-content-between align-items-center">
+        <div
+          class="d-flex w-100 justify-content-between align-items-center"
+        >
           <h4 class="mb-0">Clés API</h4>
           <b-button
             variant="primary"
@@ -156,7 +182,12 @@ onMounted(() => {
           <span v-if="data.value">{{ data.value }}</span>
           <span v-else class="text-muted">Sans nom</span>
         </template>
-        
+
+        <template #cell(user)="data">
+          <span v-if="data.value?.full_name">{{ data.value.full_name }}</span>
+          <span v-else class="text-muted">-</span>
+        </template>
+
         <template #cell(created)="data">
           {{ formatDate(data.value) }}
         </template>
@@ -177,7 +208,7 @@ onMounted(() => {
   <b-modal
     ref="modalCreateToken"
     title="Créer une clé API"
-    @hidden="tokenName = ''"
+    @hidden="tokenName = ''; selectedUserId = null"
   >
     <b-form-group label="Nom de la clé API (optionnel)">
       <b-form-input
@@ -186,11 +217,32 @@ onMounted(() => {
         :disabled="isLoading"
       />
     </b-form-group>
+    <b-form-group label="Clé liée à" required>
+      <v-select
+        v-model="selectedUserId"
+        :options="entrepriseStore.entreprise?.users"
+        :reduce="(a: any) => a.id"
+        label="full_name"
+        :disabled="isLoading"
+        :clearable="false"
+        placeholder="Sélectionner un utilisateur..."
+      />
+    </b-form-group>
     <template #modal-footer="{ cancel }">
-      <b-button variant="flat-danger" v-ripple @click="cancel" :disabled="isLoading">
+      <b-button
+        variant="flat-danger"
+        v-ripple
+        @click="cancel"
+        :disabled="isLoading"
+      >
         Annuler
       </b-button>
-      <b-button variant="primary" v-ripple @click="createToken" :disabled="isLoading">
+      <b-button
+        variant="primary"
+        v-ripple
+        @click="createToken"
+        :disabled="isLoading"
+      >
         Créer
       </b-button>
     </template>

@@ -577,4 +577,21 @@ class ApplicationTokenViewsSet(viewsets.ModelViewSet):
         return get_entreprise_from_request(self.request).application_tokens.all()
 
     def perform_create(self, serializer):
-        serializer.save(entreprise=get_entreprise_from_request(self.request), user=self.request.user)
+        entreprise = get_entreprise_from_request(self.request)
+        user_id = self.request.data.get('user_id')
+        
+        if user_id:
+            # Validate that the user belongs to the entreprise
+            from apps.user.models import User
+            try:
+                user = User.objects.get(id=user_id)
+                if not entreprise.users.filter(id=user_id).exists():
+                    from rest_framework.exceptions import ValidationError
+                    raise ValidationError("L'utilisateur sélectionné n'appartient pas à cette entreprise")
+            except User.DoesNotExist:
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError("Utilisateur non trouvé")
+        else:
+            user = self.request.user
+            
+        serializer.save(entreprise=entreprise, user=user)

@@ -216,10 +216,14 @@ export const useEntrepriseStore = defineStore('entreprise', {
       return data
     },
 
-    async createApplicationToken(name?: string): Promise<ApplicationToken> {
+    async createApplicationToken(name?: string, user_id?: number): Promise<ApplicationToken> {
+      const payload: { name?: string; user_id?: number } = {}
+      if (name) payload.name = name
+      if (user_id) payload.user_id = user_id
+
       const { data } = await http.post<ApplicationToken>(
         `/token/application/`,
-        name ? { name } : {},
+        payload,
         {
           params: {
             entreprise_slug: this.entreprise?.slug
